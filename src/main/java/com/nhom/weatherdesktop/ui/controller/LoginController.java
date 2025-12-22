@@ -89,9 +89,9 @@ public class LoginController {
 
     private void goToMainLayout() {
         try {
-            var url = getClass().getResource("/ui/view/dashboard.fxml");
+            var url = getClass().getResource("/ui/view/main-layout.fxml");
             if (url == null) {
-                throw new RuntimeException("dashboard.fxml NOT FOUND");
+                throw new RuntimeException("main-layout.fxml NOT FOUND");
             }
 
             FXMLLoader loader = new FXMLLoader(url);
@@ -101,11 +101,11 @@ public class LoginController {
             stage.setScene(scene);
             stage.setTitle("Weather Desktop");
 
-            log.info("Switched to dashboard view");
+            log.info("Switched to main layout view");
 
         } catch (Exception e) {
-            log.error("Failed to load dashboard.fxml", e);
-            showError("Failed to load dashboard");
+            log.error("Failed to load main layout.fxml", e);
+            showError("Failed to load main layout");
         }
     }
 
