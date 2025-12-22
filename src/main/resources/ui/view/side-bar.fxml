@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefWidth="94.0"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.nhom.weatherdesktop.ui.controller.SideBarController">
+
+    <Button fx:id="myStationsButton" onAction="#handleMyStations" prefWidth="79.0" text="My Stations" />
+    <Button fx:id="publicStationsButton" onAction="#handlePublicStations" text="Public Stations" />
+    <Button fx:id="alertsButton" onAction="#handleAlerts" text="Alerts" />
+    <Button fx:id="settingsButton" onAction="#handleSettings" text="Settings" />
+</VBox>

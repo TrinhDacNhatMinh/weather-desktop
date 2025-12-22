@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.control.Label?>
-<BorderPane xmlns:fx="http://javafx.com/fxml"
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefWidth="600.0"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.nhom.weatherdesktop.ui.controller.MainLayoutController">
 
+    <top>
+
+    </top>
+
+    <left>
+        <fx:include source="side-bar.fxml" />
+    </left>
+
+    <center>
+        <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="0.0" prefWidth="506.0">
+
+        </ScrollPane>
+    </center>
 
 </BorderPane>
