@@ -100,6 +100,7 @@ public class LoginController {
             Stage stage = (Stage) usernameField.getScene().getWindow();
             stage.setScene(scene);
             stage.setTitle("Weather Desktop");
+            stage.setMaximized(true); // Set full screen/maximized after login
 
             log.info("Switched to main layout view");
 

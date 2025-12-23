@@ -1,0 +1,330 @@
+/* ===== ROOT VARIABLES ===== */
+:root {
+    /* Color Palette - Vibrant Dark Theme */
+    --primary-bg: hsl(220, 20%, 12%);
+    --secondary-bg: hsl(220, 18%, 16%);
+    --card-bg: hsl(220, 16%, 20%);
+    --hover-bg: hsl(220, 16%, 24%);
+
+    --primary-accent: hsl(220, 90%, 56%);
+    --primary-accent-hover: hsl(220, 85%, 65%);
+    --success-accent: hsl(145, 70%, 50%);
+    --warning-accent: hsl(45, 100%, 60%);
+    --danger-accent: hsl(0, 85%, 60%);
+
+    --text-primary: hsl(0, 0%, 95%);
+    --text-secondary: hsl(0, 0%, 70%);
+    --text-muted: hsl(0, 0%, 50%);
+
+    --border-color: hsl(220, 16%, 28%);
+    --shadow-sm: 0 2px 8px hsla(220, 20%, 0%, 0.3);
+    --shadow-md: 0 4px 16px hsla(220, 20%, 0%, 0.4);
+    --shadow-lg: 0 8px 24px hsla(220, 20%, 0%, 0.5);
+
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+/* ===== GLOBAL STYLES ===== */
+.root {
+    -fx-background-color: var(--primary-bg);
+    -fx-font-family: 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: var(--text-primary);
+}
+
+/* ===== BORDER PANE ===== */
+.border-pane {
+    -fx-background-color: var(--primary-bg);
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    -fx-background-color: hsl(0, 0%, 85%);
+    -fx-border-color: hsl(0, 0%, 75%);
+    -fx-border-width: 0 1px 0 0;
+    -fx-padding: var(--spacing-md) 0;
+    -fx-spacing: 2px;
+    -fx-pref-width: 220px;
+}
+
+/* Sidebar Button Styles */
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: hsl(0, 0%, 20%);
+    -fx-font-size: 15px;
+    -fx-font-weight: 400;
+    -fx-padding: 14px var(--spacing-md);
+    -fx-cursor: hand;
+    -fx-background-radius: 0;
+    -fx-border-width: 0 0 0 4px;
+    -fx-border-color: transparent;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: hsla(0, 0%, 100%, 0.5);
+}
+
+.sidebar-button:pressed {
+    -fx-background-color: hsla(0, 0%, 100%, 0.7);
+}
+
+.sidebar-button.active {
+    -fx-background-color: hsla(0, 0%, 100%, 0.6);
+    -fx-border-color: hsl(210, 100%, 50%);
+}
+
+.sidebar-button Label {
+    -fx-text-fill: hsl(0, 0%, 10%);
+}
+
+/* ===== CENTER CONTENT AREA ===== */
+.center-content {
+    -fx-background-color: var(--primary-bg);
+    -fx-padding: var(--spacing-xl);
+}
+
+/* ===== CARD STYLES ===== */
+.card {
+    -fx-background-color: var(--card-bg);
+    -fx-background-radius: var(--radius-md);
+    -fx-padding: var(--spacing-lg);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 12, 0, 0, 4);
+    -fx-border-color: var(--border-color);
+    -fx-border-width: 1px;
+    -fx-border-radius: var(--radius-md);
+}
+
+.card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 16, 0, 0, 6);
+}
+
+/* Card Header */
+.card-header {
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-text-fill: var(--text-primary);
+    -fx-padding: 0 0 var(--spacing-md) 0;
+}
+
+/* Card Title */
+.card-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: var(--text-primary);
+}
+
+/* Card Subtitle */
+.card-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: var(--text-secondary);
+}
+
+/* ===== TEMPERATURE DISPLAY ===== */
+.temperature-container {
+    -fx-alignment: CENTER;
+    -fx-spacing: var(--spacing-lg);
+    -fx-padding: var(--spacing-xl);
+}
+
+.temperature-large {
+    -fx-font-size: 64px;
+    -fx-font-weight: 700;
+    -fx-text-fill: var(--primary-accent);
+}
+
+.temperature-unit {
+    -fx-font-size: 32px;
+    -fx-font-weight: 300;
+    -fx-text-fill: var(--text-secondary);
+}
+
+.temperature-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: var(--text-muted);
+    -fx-font-weight: 500;
+    -fx-padding: var(--spacing-sm) 0 0 0;
+}
+
+/* ===== BUTTON STYLES ===== */
+.button {
+    -fx-background-color: var(--primary-accent);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: var(--spacing-md) var(--spacing-lg);
+    -fx-background-radius: var(--radius-sm);
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.3), 8, 0, 0, 2);
+}
+
+.button:hover {
+    -fx-background-color: var(--primary-accent-hover);
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.5), 12, 0, 0, 4);
+    -fx-scale-y: 1.02;
+    -fx-scale-x: 1.02;
+}
+
+.button:pressed {
+    -fx-background-color: hsl(220, 85%, 50%);
+    -fx-scale-y: 0.98;
+    -fx-scale-x: 0.98;
+}
+
+/* Secondary Button */
+.button-secondary {
+    -fx-background-color: var(--card-bg);
+    -fx-text-fill: var(--text-primary);
+    -fx-border-color: var(--border-color);
+    -fx-border-width: 1px;
+    -fx-border-radius: var(--radius-sm);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 4, 0, 0, 2);
+}
+
+.button-secondary:hover {
+    -fx-background-color: var(--hover-bg);
+    -fx-border-color: var(--primary-accent);
+}
+
+/* ===== STATION LIST ===== */
+.station-list {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: var(--text-primary);
+    -fx-padding: var(--spacing-md);
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: var(--border-color);
+}
+
+.list-cell:hover {
+    -fx-background-color: var(--hover-bg);
+}
+
+.list-cell:selected {
+    -fx-background-color: linear-gradient(to right,
+            hsla(220, 90%, 56%, 0.2),
+            transparent);
+    -fx-text-fill: var(--primary-accent);
+}
+
+/* ===== SCROLL PANE ===== */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: var(--border-color);
+    -fx-background-radius: 4px;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: var(--text-muted);
+}
+
+/* ===== LABELS ===== */
+.label {
+    -fx-text-fill: var(--text-primary);
+}
+
+.label-secondary {
+    -fx-text-fill: var(--text-secondary);
+}
+
+.label-muted {
+    -fx-text-fill: var(--text-muted);
+}
+
+/* ===== SEPARATOR ===== */
+.separator {
+    -fx-background-color: var(--border-color);
+}
+
+/* ===== UTILITY CLASSES ===== */
+.text-center {
+    -fx-alignment: CENTER;
+}
+
+.spacing-lg {
+    -fx-spacing: var(--spacing-lg);
+}
+
+.spacing-md {
+    -fx-spacing: var(--spacing-md);
+}
+
+.padding-lg {
+    -fx-padding: var(--spacing-lg);
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+    -fx-alignment: CENTER;
+    -fx-spacing: var(--spacing-md);
+    -fx-padding: var(--spacing-xl);
+}
+
+.empty-state-text {
+    -fx-font-size: 16px;
+    -fx-text-fill: var(--text-muted);
+}
+
+/* ===== STATS GRID ===== */
+.stats-grid {
+    -fx-hgap: var(--spacing-lg);
+    -fx-vgap: var(--spacing-lg);
+    -fx-padding: var(--spacing-lg);
+}
+
+.stat-card {
+    -fx-background-color: linear-gradient(135deg,
+            var(--card-bg),
+            hsl(220, 16%, 18%));
+    -fx-background-radius: var(--radius-md);
+    -fx-padding: var(--spacing-lg);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0, 0, 2);
+    -fx-border-color: var(--border-color);
+    -fx-border-width: 1px;
+    -fx-border-radius: var(--radius-md);
+}
+
+.stat-value {
+    -fx-font-size: 32px;
+    -fx-font-weight: 700;
+    -fx-text-fill: var(--primary-accent);
+}
+
+.stat-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: var(--text-secondary);
+    -fx-font-weight: 500;
+}
