@@ -29,10 +29,6 @@ public class StationService {
             String url = String.format("%s/stations/user/me/stations?page=%d&size=%d",
                     ApiClient.baseUrl(), page, size);
 
-            System.out.println("=== DEBUG: Station API Request ===");
-            System.out.println("URL: " + url);
-            System.out.println("Token: " + (token != null ? "Bearer " + token.substring(0, Math.min(20, token.length())) + "..." : "null"));
-
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("Authorization", "Bearer " + token)
@@ -42,11 +38,6 @@ public class StationService {
 
             HttpResponse<String> response =
                     client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
-
-            System.out.println("Status Code: " + response.statusCode());
-            System.out.println("Raw Response Body:");
-            System.out.println(response.body());
-            System.out.println("=== END DEBUG ===");
 
             return switch (response.statusCode()) {
                 case 200 -> MAPPER.readValue(response.body(),
@@ -73,10 +64,6 @@ public class StationService {
             String url = ApiClient.baseUrl() + "/stations/attach";
             String json = MAPPER.writeValueAsString(request);
 
-            System.out.println("=== DEBUG: Add Station API Request ===");
-            System.out.println("URL: " + url);
-            System.out.println("Request Body: " + json);
-
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("Authorization", "Bearer " + token)
@@ -86,10 +73,6 @@ public class StationService {
 
             HttpResponse<String> response =
                     client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
-
-            System.out.println("Status Code: " + response.statusCode());
-            System.out.println("Response Body: " + response.body());
-            System.out.println("=== END DEBUG ===");
 
             return switch (response.statusCode()) {
                 case 200 -> MAPPER.readValue(response.body(), StationResponse.class);

@@ -4,6 +4,8 @@ import com.nhom.weatherdesktop.dto.request.AddStationRequest;
 import com.nhom.weatherdesktop.dto.response.PageResponse;
 import com.nhom.weatherdesktop.dto.response.StationResponse;
 import com.nhom.weatherdesktop.service.StationService;
+import com.nhom.weatherdesktop.ui.component.ToggleSwitch;
+import com.nhom.weatherdesktop.ui.component.MapLocationPicker;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -232,18 +234,47 @@ public class MainLayoutController {
         
         TextField latitudeField = new TextField();
         latitudeField.setPromptText("10.762622");
+        latitudeField.setEditable(false);
+        latitudeField.setStyle("-fx-background-color: #F3F4F6;");
         
         TextField longitudeField = new TextField();
         longitudeField.setPromptText("106.660720");
+        longitudeField.setEditable(false);
+        longitudeField.setStyle("-fx-background-color: #F3F4F6;");
+        
+        // Hidden values to store actual lat/lng
+        final double[] selectedLat = {0};
+        final double[] selectedLng = {0};
+        
+        Button pickLocationBtn = new Button("🗺️ Pick on Map");
+        pickLocationBtn.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 8 16; -fx-cursor: hand;");
+        pickLocationBtn.setOnAction(e -> {
+            MapLocationPicker mapPicker = new MapLocationPicker();
+            mapPicker.showMapPicker((javafx.stage.Stage) dialog.getDialogPane().getScene().getWindow());
+            
+            // Store actual values
+            selectedLat[0] = mapPicker.getLatitude();
+            selectedLng[0] = mapPicker.getLongitude();
+            
+            // Display address instead of numbers
+            String address = mapPicker.getAddress();
+            if (!address.isEmpty()) {
+                latitudeField.setText(address);
+                longitudeField.setText(""); // Clear longitude field
+            } else {
+                // Fallback to numbers if no address
+                latitudeField.setText(String.valueOf(selectedLat[0]));
+                longitudeField.setText(String.valueOf(selectedLng[0]));
+            }
+        });
 
         grid.add(new Label("Name:"), 0, 0);
         grid.add(nameField, 1, 0);
         grid.add(new Label("API Key:"), 0, 1);
         grid.add(apiKeyField, 1, 1);
-        grid.add(new Label("Latitude:"), 0, 2);
+        grid.add(new Label("Address:"), 0, 2);
         grid.add(latitudeField, 1, 2);
-        grid.add(new Label("Longitude:"), 0, 3);
-        grid.add(longitudeField, 1, 3);
+        grid.add(pickLocationBtn, 1, 3);
 
         dialog.getDialogPane().setContent(grid);
 
@@ -253,12 +284,14 @@ public class MainLayoutController {
                 try {
                     String name = nameField.getText().trim();
                     String apiKey = apiKeyField.getText().trim();
-                    BigDecimal latitude = new BigDecimal(latitudeField.getText().trim());
-                    BigDecimal longitude = new BigDecimal(longitudeField.getText().trim());
                     
                     if (name.isEmpty() || apiKey.isEmpty()) {
                         throw new IllegalArgumentException("Name and API Key cannot be empty");
                     }
+                    
+                    // Use selected lat/lng from map picker
+                    BigDecimal latitude = BigDecimal.valueOf(selectedLat[0]);
+                    BigDecimal longitude = BigDecimal.valueOf(selectedLng[0]);
                     
                     return new AddStationRequest(name, apiKey, latitude, longitude);
                 } catch (Exception e) {
@@ -343,9 +376,9 @@ public class MainLayoutController {
     private VBox createStationCard(StationResponse station) {
         // Main container
         VBox card = new VBox(8);
-        card.setStyle("-fx-padding: 16; -fx-background-color: rgba(59, 130, 246, 0.15); -fx-background-radius: 8;");
+        card.setStyle("-fx-padding: 16; -fx-background-color: rgba(59, 130, 246, 0.15); -fx-background-radius: 8; -fx-cursor: hand;");
         
-        // Content HBox
+        // Content HBox (main row with icon and info)
         HBox content = new HBox(12);
         content.setAlignment(Pos.CENTER_LEFT);
         
@@ -371,10 +404,247 @@ public class MainLayoutController {
         statusLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: " + statusColor + ";");
         
         info.getChildren().addAll(nameLabel, locationLabel, statusLabel);
-        content.getChildren().addAll(icon, info);
+        
+        // Spacer
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+        
+        // Action buttons container (initially hidden)
+        HBox actionButtons = new HBox(8);
+        actionButtons.setAlignment(Pos.CENTER_RIGHT);
+        actionButtons.setVisible(false);
+        actionButtons.setManaged(false);
+        
+        // Update button
+        Button updateBtn = new Button("✏️");
+        updateBtn.setStyle("-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-font-size: 16px; " +
+                          "-fx-padding: 6 12; -fx-background-radius: 6; -fx-cursor: hand;");
+        updateBtn.setOnAction(e -> handleUpdateStation(station));
+        
+        // Detach button
+        Button detachBtn = new Button("🗑️");
+        detachBtn.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-size: 16px; " +
+                          "-fx-padding: 6 12; -fx-background-radius: 6; -fx-cursor: hand;");
+        detachBtn.setOnAction(e -> handleDetachStation(station));
+        
+        actionButtons.getChildren().addAll(updateBtn, detachBtn);
+        
+        content.getChildren().addAll(icon, info, spacer, actionButtons);
         card.getChildren().add(content);
         
+        // Hover effect to show/hide action buttons
+        card.setOnMouseEntered(e -> {
+            card.setStyle("-fx-padding: 16; -fx-background-color: rgba(59, 130, 246, 0.25); -fx-background-radius: 8; -fx-cursor: hand;");
+            actionButtons.setVisible(true);
+            actionButtons.setManaged(true);
+        });
+        
+        card.setOnMouseExited(e -> {
+            card.setStyle("-fx-padding: 16; -fx-background-color: rgba(59, 130, 246, 0.15); -fx-background-radius: 8; -fx-cursor: hand;");
+            actionButtons.setVisible(false);
+            actionButtons.setManaged(false);
+        });
+        
         return card;
+    }
+    
+    private void handleUpdateStation(StationResponse station) {
+        // Create dialog
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Update Station");
+        dialog.setHeaderText("Update station information and threshold settings");
+        
+        // Buttons
+        ButtonType saveButtonType = new ButtonType("Save Changes", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+        
+        // Create scrollable content
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(500);
+        scrollPane.setPrefViewportWidth(500);
+        
+        VBox mainContent = new VBox(16);
+        mainContent.setPadding(new Insets(20));
+        
+        // === STATION INFO SECTION ===
+        Label sectionTitle1 = new Label("Station Information");
+        sectionTitle1.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        
+        GridPane stationInfoGrid = new GridPane();
+        stationInfoGrid.setHgap(10);
+        stationInfoGrid.setVgap(10);
+        
+        TextField nameField = new TextField(station.name());
+        TextField locationField = new TextField(station.location());
+        
+        // Display current coordinates as address placeholder
+        TextField addressField = new TextField("");
+        addressField.setEditable(false);
+        addressField.setStyle("-fx-background-color: #F3F4F6;");
+        addressField.setPromptText("Click 'Pick on Map' to select location");
+        
+        // Hidden values to store actual lat/lng
+        final double[] selectedLat = {station.latitude() != null ? station.latitude().doubleValue() : 0};
+        final double[] selectedLng = {station.longitude() != null ? station.longitude().doubleValue() : 0};
+        
+        Button pickLocationBtn = new Button("🗺️ Pick on Map");
+        pickLocationBtn.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 8 16; -fx-cursor: hand;");
+        pickLocationBtn.setOnAction(e -> {
+            MapLocationPicker mapPicker = new MapLocationPicker();
+            mapPicker.showMapPicker((javafx.stage.Stage) dialog.getDialogPane().getScene().getWindow());
+            
+            // Store actual values
+            selectedLat[0] = mapPicker.getLatitude();
+            selectedLng[0] = mapPicker.getLongitude();
+            
+            // Display address in address field only
+            String address = mapPicker.getAddress();
+            if (!address.isEmpty()) {
+                addressField.setText(address);
+            } else {
+                // Fallback to numbers
+                addressField.setText(String.format("%.6f, %.6f", selectedLat[0], selectedLng[0]));
+            }
+        });
+        
+        stationInfoGrid.add(new Label("Name:"), 0, 0);
+        stationInfoGrid.add(nameField, 1, 0);
+        stationInfoGrid.add(new Label("Location:"), 0, 1);
+        stationInfoGrid.add(locationField, 1, 1);
+        stationInfoGrid.add(new Label("Address:"), 0, 2);
+        stationInfoGrid.add(addressField, 1, 2);
+        stationInfoGrid.add(pickLocationBtn, 1, 3);
+        
+        // Public station toggle
+        HBox publicBox = new HBox(10);
+        publicBox.setAlignment(Pos.CENTER_LEFT);
+        Label publicLabel = new Label("Public Station:");
+        ToggleSwitch publicStationToggle = new ToggleSwitch();
+        publicStationToggle.setSwitchedOn(station.isPublic() != null && station.isPublic());
+        publicBox.getChildren().addAll(publicLabel, publicStationToggle);
+        
+        Separator separator1 = new Separator();
+        
+        // === THRESHOLD SETTINGS SECTION ===
+        Label sectionTitle2 = new Label("Threshold Settings");
+        sectionTitle2.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        
+        // Temperature
+        VBox tempBox = createThresholdBox("Temperature (°C)", 
+            new String[]{"Min", "Max", "Active"});
+        TextField tempMinField = (TextField) ((HBox)tempBox.getChildren().get(1)).getChildren().get(1);
+        TextField tempMaxField = (TextField) ((HBox)tempBox.getChildren().get(2)).getChildren().get(1);
+        ToggleSwitch tempActiveToggle = (ToggleSwitch) ((HBox)tempBox.getChildren().get(3)).getChildren().get(1);
+        
+        // Humidity
+        VBox humidityBox = createThresholdBox("Humidity (%)", 
+            new String[]{"Min", "Max", "Active"});
+        TextField humidityMinField = (TextField) ((HBox)humidityBox.getChildren().get(1)).getChildren().get(1);
+        TextField humidityMaxField = (TextField) ((HBox)humidityBox.getChildren().get(2)).getChildren().get(1);
+        ToggleSwitch humidityActiveToggle = (ToggleSwitch) ((HBox)humidityBox.getChildren().get(3)).getChildren().get(1);
+        
+        // Rainfall
+        VBox rainfallBox = createThresholdBox("Rainfall (mm)", 
+            new String[]{"Max", "Active"});
+        TextField rainfallMaxField = (TextField) ((HBox)rainfallBox.getChildren().get(1)).getChildren().get(1);
+        ToggleSwitch rainfallActiveToggle = (ToggleSwitch) ((HBox)rainfallBox.getChildren().get(2)).getChildren().get(1);
+        
+        // Wind Speed
+        VBox windSpeedBox = createThresholdBox("Wind Speed (km/h)", 
+            new String[]{"Max", "Active"});
+        TextField windSpeedMaxField = (TextField) ((HBox)windSpeedBox.getChildren().get(1)).getChildren().get(1);
+        ToggleSwitch windSpeedActiveToggle = (ToggleSwitch) ((HBox)windSpeedBox.getChildren().get(2)).getChildren().get(1);
+        
+        // Dust
+        VBox dustBox = createThresholdBox("Dust (AQI)", 
+            new String[]{"Max", "Active"});
+        TextField dustMaxField = (TextField) ((HBox)dustBox.getChildren().get(1)).getChildren().get(1);
+        ToggleSwitch dustActiveToggle = (ToggleSwitch) ((HBox)dustBox.getChildren().get(2)).getChildren().get(1);
+        
+        // Add all to main content
+        mainContent.getChildren().addAll(
+            sectionTitle1,
+            stationInfoGrid,
+            publicBox,
+            separator1,
+            sectionTitle2,
+            tempBox,
+            humidityBox,
+            rainfallBox,
+            windSpeedBox,
+            dustBox
+        );
+        
+        scrollPane.setContent(mainContent);
+        dialog.getDialogPane().setContent(scrollPane);
+        
+        // Handle save button
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == saveButtonType) {
+                try {
+                    // TODO: Create UpdateStationRequest DTO and call API
+                    
+                    Platform.runLater(() -> {
+                        showError("Update API not implemented yet! Check console for form data.");
+                    });
+                } catch (Exception e) {
+                    Platform.runLater(() -> {
+                        showError("Invalid input: " + e.getMessage());
+                    });
+                }
+            }
+            return dialogButton;
+        });
+        
+        dialog.showAndWait();
+    }
+    
+    private VBox createThresholdBox(String title, String[] fields) {
+        VBox box = new VBox(8);
+        box.setStyle("-fx-padding: 12; -fx-background-color: rgba(59, 130, 246, 0.1); -fx-background-radius: 6;");
+        
+        Label titleLabel = new Label(title);
+        titleLabel.setStyle("-fx-font-weight: bold;");
+        box.getChildren().add(titleLabel);
+        
+        for (String field : fields) {
+            if (field.equals("Active")) {
+                HBox row = new HBox(10);
+                row.setAlignment(Pos.CENTER_LEFT);
+                Label label = new Label(field + ":");
+                label.setPrefWidth(60);
+                ToggleSwitch toggleSwitch = new ToggleSwitch();
+                row.getChildren().addAll(label, toggleSwitch);
+                box.getChildren().add(row);
+            } else {
+                HBox row = new HBox(10);
+                row.setAlignment(Pos.CENTER_LEFT);
+                Label label = new Label(field + ":");
+                label.setPrefWidth(60);
+                TextField textField = new TextField();
+                textField.setPrefWidth(150);
+                textField.setPromptText("Enter " + field.toLowerCase());
+                row.getChildren().addAll(label, textField);
+                box.getChildren().add(row);
+            }
+        }
+        
+        return box;
+    }
+    
+    private void handleDetachStation(StationResponse station) {
+        // Show confirmation dialog
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmDialog.setTitle("Detach Station");
+        confirmDialog.setHeaderText("Are you sure you want to detach this station?");
+        confirmDialog.setContentText("Station: " + station.name() + "\nLocation: " + station.location());
+        
+        Optional<ButtonType> result = confirmDialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // TODO: Call detach API
+            showError("Detach station API not implemented yet!");
+        }
     }
     
     private void showError(String message) {
