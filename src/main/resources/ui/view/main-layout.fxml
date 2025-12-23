@@ -174,39 +174,7 @@
                     <Separator style="-fx-background-color: rgba(255,255,255,0.2);"/>
                     <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
                         <VBox fx:id="stationList" spacing="12" style="-fx-background-color: transparent;">
-                            <!-- Station items -->
-                            <VBox spacing="8" style="-fx-padding: 16; -fx-background-color: rgba(59, 130, 246, 0.15); -fx-background-radius: 8;">
-                                <HBox spacing="12" alignment="CENTER_LEFT">
-                                    <Label text="🏠" style="-fx-font-size: 24px;"/>
-                                    <VBox spacing="4">
-                                        <Label text="Home Station" style="-fx-font-weight: 600; -fx-text-fill: white; -fx-font-size: 15px;"/>
-                                        <Label text="Location: Hà Nội" styleClass="label-secondary" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.7);"/>
-                                        <Label text="Status: Active" style="-fx-font-size: 12px; -fx-text-fill: #10B981;"/>
-                                    </VBox>
-                                </HBox>
-                            </VBox>
-                            
-                            <VBox spacing="8" style="-fx-padding: 16; -fx-background-color: rgba(59, 130, 246, 0.15); -fx-background-radius: 8;">
-                                <HBox spacing="12" alignment="CENTER_LEFT">
-                                    <Label text="🏢" style="-fx-font-size: 24px;"/>
-                                    <VBox spacing="4">
-                                        <Label text="Office Station" style="-fx-font-weight: 600; -fx-text-fill: white; -fx-font-size: 15px;"/>
-                                        <Label text="Location: TP.HCM" styleClass="label-secondary" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.7);"/>
-                                        <Label text="Status: Active" style="-fx-font-size: 12px; -fx-text-fill: #10B981;"/>
-                                    </VBox>
-                                </HBox>
-                            </VBox>
-                            
-                            <VBox spacing="8" style="-fx-padding: 16; -fx-background-color: rgba(59, 130, 246, 0.15); -fx-background-radius: 8;">
-                                <HBox spacing="12" alignment="CENTER_LEFT">
-                                    <Label text="🌳" style="-fx-font-size: 24px;"/>
-                                    <VBox spacing="4">
-                                        <Label text="Garden Station" style="-fx-font-weight: 600; -fx-text-fill: white; -fx-font-size: 15px;"/>
-                                        <Label text="Location: Đà Nẵng" styleClass="label-secondary" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.7);"/>
-                                        <Label text="Status: Offline" style="-fx-font-size: 12px; -fx-text-fill: #EF4444;"/>
-                                    </VBox>
-                                </HBox>
-                            </VBox>
+                            <!-- Station items will be populated dynamically from API -->
                         </VBox>
                     </ScrollPane>
                 </VBox>

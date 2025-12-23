@@ -1,14 +1,23 @@
 package com.nhom.weatherdesktop.ui.controller;
 
+import com.nhom.weatherdesktop.dto.response.PageResponse;
+import com.nhom.weatherdesktop.dto.response.StationResponse;
+import com.nhom.weatherdesktop.service.StationService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 public class MainLayoutController {
+
+    private final StationService stationService = new StationService();
 
     // Sidebar
     @FXML
@@ -178,15 +187,106 @@ public class MainLayoutController {
     private void handleShowStationList() {
         // Toggle station list visibility
         boolean isVisible = stationListContainer.isVisible();
-        stationListContainer.setVisible(!isVisible);
-        stationListContainer.setManaged(!isVisible);
         
-        // Update button text
         if (!isVisible) {
+            // Load stations when showing the list
+            loadStations();
             showStationsButton.setText("🔼 Hide Station List");
         } else {
             showStationsButton.setText("📋 Show Station List");
         }
+        
+        stationListContainer.setVisible(!isVisible);
+        stationListContainer.setManaged(!isVisible);
+    }
+    
+    private void loadStations() {
+        // Run API call in background thread
+        new Thread(() -> {
+            try {
+                PageResponse<StationResponse> response = stationService.getMyStations(0, 10);
+                
+                // Update UI on JavaFX thread
+                Platform.runLater(() -> {
+                    displayStations(response.content());
+                });
+                
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    showError("Không thể tải danh sách trạm: " + e.getMessage());
+                });
+            }
+        }).start();
+    }
+    
+    private void displayStations(java.util.List<StationResponse> stations) {
+        // Find the stationList VBox in the stationListContainer
+        VBox stationList = null;
+        for (Node node : stationListContainer.getChildren()) {
+            if (node instanceof javafx.scene.control.ScrollPane) {
+                javafx.scene.control.ScrollPane scrollPane = (javafx.scene.control.ScrollPane) node;
+                if (scrollPane.getContent() instanceof VBox) {
+                    stationList = (VBox) scrollPane.getContent();
+                    break;
+                }
+            }
+        }
+        
+        if (stationList == null) {
+            showError("Cannot find station list container");
+            return;
+        }
+        
+        // Clear existing items
+        stationList.getChildren().clear();
+        
+        // Add stations dynamically
+        for (StationResponse station : stations) {
+            VBox stationCard = createStationCard(station);
+            stationList.getChildren().add(stationCard);
+        }
+    }
+    
+    private VBox createStationCard(StationResponse station) {
+        // Main container
+        VBox card = new VBox(8);
+        card.setStyle("-fx-padding: 16; -fx-background-color: rgba(59, 130, 246, 0.15); -fx-background-radius: 8;");
+        
+        // Content HBox
+        HBox content = new HBox(12);
+        content.setAlignment(Pos.CENTER_LEFT);
+        
+        // Icon
+        Label icon = new Label("📍");
+        icon.setStyle("-fx-font-size: 24px;");
+        
+        // Info VBox
+        VBox info = new VBox(4);
+        
+        // Name
+        Label nameLabel = new Label(station.name());
+        nameLabel.setStyle("-fx-font-weight: 600; -fx-text-fill: white; -fx-font-size: 15px;");
+        
+        // Location
+        Label locationLabel = new Label("Location: " + station.location());
+        locationLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.7);");
+        
+        // Status
+        String statusText = "ONLINE".equalsIgnoreCase(station.status()) ? "Online" : "Offline";
+        String statusColor = "ONLINE".equalsIgnoreCase(station.status()) ? "#10B981" : "#EF4444";
+        Label statusLabel = new Label("Status: " + statusText);
+        statusLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: " + statusColor + ";");
+        
+        info.getChildren().addAll(nameLabel, locationLabel, statusLabel);
+        content.getChildren().addAll(icon, info);
+        card.getChildren().add(content);
+        
+        return card;
+    }
+    
+    private void showError(String message) {
+        System.err.println("Error: " + message);
+        // You can add a dialog here if needed
     }
 
     private void showMyStationView() {
