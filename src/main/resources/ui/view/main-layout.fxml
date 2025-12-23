@@ -177,6 +177,13 @@
                             <!-- Station items will be populated dynamically from API -->
                         </VBox>
                     </ScrollPane>
+                    
+                    <!-- Add Station Button -->
+                    <Button fx:id="addStationButton" 
+                            text="➕ Add Station" 
+                            onAction="#handleAddStation"
+                            maxWidth="Infinity"
+                            style="-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: 600; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;"/>
                 </VBox>
             </AnchorPane>
             

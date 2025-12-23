@@ -1,5 +1,6 @@
 package com.nhom.weatherdesktop.ui.controller;
 
+import com.nhom.weatherdesktop.dto.request.AddStationRequest;
 import com.nhom.weatherdesktop.dto.response.PageResponse;
 import com.nhom.weatherdesktop.dto.response.StationResponse;
 import com.nhom.weatherdesktop.service.StationService;
@@ -8,12 +9,15 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
+import java.math.BigDecimal;
+import java.util.Optional;
 
 public class MainLayoutController {
 
@@ -96,6 +100,9 @@ public class MainLayoutController {
     
     @FXML
     private Button showStationsButton;
+    
+    @FXML
+    private Button addStationButton;
     
     @FXML
     private VBox stationListContainer;
@@ -200,6 +207,92 @@ public class MainLayoutController {
         stationListContainer.setManaged(!isVisible);
     }
     
+    @FXML
+    private void handleAddStation() {
+        // Create custom dialog
+        Dialog<AddStationRequest> dialog = new Dialog<>();
+        dialog.setTitle("Add New Station");
+        dialog.setHeaderText("Enter station details to attach to your account");
+
+        // Set button types
+        ButtonType addButtonType = new ButtonType("Add Station", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
+
+        // Create form fields
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField nameField = new TextField();
+        nameField.setPromptText("Station name");
+        
+        TextField apiKeyField = new TextField();
+        apiKeyField.setPromptText("XXXX-XXXX-XXXX-XXXX");
+        
+        TextField latitudeField = new TextField();
+        latitudeField.setPromptText("10.762622");
+        
+        TextField longitudeField = new TextField();
+        longitudeField.setPromptText("106.660720");
+
+        grid.add(new Label("Name:"), 0, 0);
+        grid.add(nameField, 1, 0);
+        grid.add(new Label("API Key:"), 0, 1);
+        grid.add(apiKeyField, 1, 1);
+        grid.add(new Label("Latitude:"), 0, 2);
+        grid.add(latitudeField, 1, 2);
+        grid.add(new Label("Longitude:"), 0, 3);
+        grid.add(longitudeField, 1, 3);
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Convert result to AddStationRequest when user clicks Add
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == addButtonType) {
+                try {
+                    String name = nameField.getText().trim();
+                    String apiKey = apiKeyField.getText().trim();
+                    BigDecimal latitude = new BigDecimal(latitudeField.getText().trim());
+                    BigDecimal longitude = new BigDecimal(longitudeField.getText().trim());
+                    
+                    if (name.isEmpty() || apiKey.isEmpty()) {
+                        throw new IllegalArgumentException("Name and API Key cannot be empty");
+                    }
+                    
+                    return new AddStationRequest(name, apiKey, latitude, longitude);
+                } catch (Exception e) {
+                    showError("Invalid input: " + e.getMessage());
+                    return null;
+                }
+            }
+            return null;
+        });
+
+        // Show dialog and process result
+        Optional<AddStationRequest> result = dialog.showAndWait();
+        
+        result.ifPresent(request -> {
+            // Call API in background thread
+            new Thread(() -> {
+                try {
+                    StationResponse response = stationService.addStationToUser(request);
+                    
+                    Platform.runLater(() -> {
+                        showSuccess("Station '" + response.name() + "' added successfully!");
+                        // Reload station list
+                        loadStations();
+                    });
+                    
+                } catch (Exception e) {
+                    Platform.runLater(() -> {
+                        showError("Failed to add station: " + e.getMessage());
+                    });
+                }
+            }).start();
+        });
+    }
+    
     private void loadStations() {
         // Run API call in background thread
         new Thread(() -> {
@@ -285,8 +378,19 @@ public class MainLayoutController {
     }
     
     private void showError(String message) {
-        System.err.println("Error: " + message);
-        // You can add a dialog here if needed
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    
+    private void showSuccess(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void showMyStationView() {
