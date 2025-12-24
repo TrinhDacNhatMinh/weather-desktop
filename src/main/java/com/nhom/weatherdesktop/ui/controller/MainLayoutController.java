@@ -1,9 +1,13 @@
 package com.nhom.weatherdesktop.ui.controller;
 
 import com.nhom.weatherdesktop.dto.request.AddStationRequest;
+import com.nhom.weatherdesktop.dto.request.UpdateStationRequest;
+import com.nhom.weatherdesktop.dto.request.UpdateThresholdRequest;
 import com.nhom.weatherdesktop.dto.response.PageResponse;
 import com.nhom.weatherdesktop.dto.response.StationResponse;
+import com.nhom.weatherdesktop.dto.response.ThresholdResponse;
 import com.nhom.weatherdesktop.service.StationService;
+import com.nhom.weatherdesktop.service.ThresholdService;
 import com.nhom.weatherdesktop.ui.component.ToggleSwitch;
 import com.nhom.weatherdesktop.ui.component.MapLocationPicker;
 import javafx.application.Platform;
@@ -24,6 +28,7 @@ import java.util.Optional;
 public class MainLayoutController {
 
     private final StationService stationService = new StationService();
+    private final ThresholdService thresholdService = new ThresholdService();
 
     // Sidebar
     @FXML
@@ -449,6 +454,27 @@ public class MainLayoutController {
     }
     
     private void handleUpdateStation(StationResponse station) {
+        // Load fresh data from server in background
+        new Thread(() -> {
+            try {
+                // Fetch latest station data
+                StationResponse freshStation = stationService.getStationById(station.id());
+                
+                // Fetch threshold data
+                ThresholdResponse threshold = thresholdService.getThresholdByStationId(station.id());
+                
+                // Open dialog on UI thread with fresh data
+                Platform.runLater(() -> openUpdateDialog(freshStation, threshold));
+                
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    showError("Failed to load station data: " + e.getMessage());
+                });
+            }
+        }).start();
+    }
+    
+    private void openUpdateDialog(StationResponse station, ThresholdResponse initialThreshold) {
         // Create dialog
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Update Station");
@@ -487,6 +513,30 @@ public class MainLayoutController {
         // Hidden values to store actual lat/lng
         final double[] selectedLat = {station.latitude() != null ? station.latitude().doubleValue() : 0};
         final double[] selectedLng = {station.longitude() != null ? station.longitude().doubleValue() : 0};
+        
+        // Populate address field with current address from lat/lng in background
+        if (station.latitude() != null && station.longitude() != null) {
+            new Thread(() -> {
+                try {
+                    String address = reverseGeocode(station.latitude().doubleValue(), station.longitude().doubleValue());
+                    Platform.runLater(() -> {
+                        if (!address.isEmpty()) {
+                            addressField.setText(address);
+                        } else {
+                            addressField.setText(String.format("%.6f, %.6f", 
+                                station.latitude().doubleValue(), 
+                                station.longitude().doubleValue()));
+                        }
+                    });
+                } catch (Exception e) {
+                    Platform.runLater(() -> {
+                        addressField.setText(String.format("%.6f, %.6f", 
+                            station.latitude().doubleValue(), 
+                            station.longitude().doubleValue()));
+                    });
+                }
+            }).start();
+        }
         
         Button pickLocationBtn = new Button("🗺️ Pick on Map");
         pickLocationBtn.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 8 16; -fx-cursor: hand;");
@@ -551,7 +601,7 @@ public class MainLayoutController {
         ToggleSwitch rainfallActiveToggle = (ToggleSwitch) ((HBox)rainfallBox.getChildren().get(2)).getChildren().get(1);
         
         // Wind Speed
-        VBox windSpeedBox = createThresholdBox("Wind Speed (km/h)", 
+        VBox windSpeedBox = createThresholdBox("Wind Speed (m/s)", 
             new String[]{"Max", "Active"});
         TextField windSpeedMaxField = (TextField) ((HBox)windSpeedBox.getChildren().get(1)).getChildren().get(1);
         ToggleSwitch windSpeedActiveToggle = (ToggleSwitch) ((HBox)windSpeedBox.getChildren().get(2)).getChildren().get(1);
@@ -561,6 +611,40 @@ public class MainLayoutController {
             new String[]{"Max", "Active"});
         TextField dustMaxField = (TextField) ((HBox)dustBox.getChildren().get(1)).getChildren().get(1);
         ToggleSwitch dustActiveToggle = (ToggleSwitch) ((HBox)dustBox.getChildren().get(2)).getChildren().get(1);
+        
+        // Populate threshold fields with loaded data
+        if (initialThreshold != null) {
+            if (initialThreshold.temperatureMin() != null) {
+                tempMinField.setText(initialThreshold.temperatureMin().toString());
+            }
+            if (initialThreshold.temperatureMax() != null) {
+                tempMaxField.setText(initialThreshold.temperatureMax().toString());
+            }
+            tempActiveToggle.setSwitchedOn(initialThreshold.temperatureActive() != null && initialThreshold.temperatureActive());
+            
+            if (initialThreshold.humidityMin() != null) {
+                humidityMinField.setText(initialThreshold.humidityMin().toString());
+            }
+            if (initialThreshold.humidityMax() != null) {
+                humidityMaxField.setText(initialThreshold.humidityMax().toString());
+            }
+            humidityActiveToggle.setSwitchedOn(initialThreshold.humidityActive() != null && initialThreshold.humidityActive());
+            
+            if (initialThreshold.rainfallMax() != null) {
+                rainfallMaxField.setText(initialThreshold.rainfallMax().toString());
+            }
+            rainfallActiveToggle.setSwitchedOn(initialThreshold.rainfallActive() != null && initialThreshold.rainfallActive());
+            
+            if (initialThreshold.windSpeedMax() != null) {
+                windSpeedMaxField.setText(initialThreshold.windSpeedMax().toString());
+            }
+            windSpeedActiveToggle.setSwitchedOn(initialThreshold.windSpeedActive() != null && initialThreshold.windSpeedActive());
+            
+            if (initialThreshold.dustMax() != null) {
+                dustMaxField.setText(initialThreshold.dustMax().toString());
+            }
+            dustActiveToggle.setSwitchedOn(initialThreshold.dustActive() != null && initialThreshold.dustActive());
+        }
         
         // Add all to main content
         mainContent.getChildren().addAll(
@@ -582,22 +666,119 @@ public class MainLayoutController {
         // Handle save button
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
-                try {
-                    // TODO: Create UpdateStationRequest DTO and call API
-                    
-                    Platform.runLater(() -> {
-                        showError("Update API not implemented yet! Check console for form data.");
-                    });
-                } catch (Exception e) {
-                    Platform.runLater(() -> {
-                        showError("Invalid input: " + e.getMessage());
-                    });
-                }
+                new Thread(() -> {
+                    try {
+                        boolean hasChanges = false;
+                        StringBuilder successMessage = new StringBuilder();
+                        
+                        // Check if station info changed
+                        boolean stationInfoChanged = !nameField.getText().equals(station.name()) ||
+                                                     !locationField.getText().equals(station.location()) ||
+                                                     selectedLat[0] != (station.latitude() != null ? station.latitude().doubleValue() : 0) ||
+                                                     selectedLng[0] != (station.longitude() != null ? station.longitude().doubleValue() : 0);
+                        
+                        if (stationInfoChanged) {
+                            UpdateStationRequest updateRequest = new UpdateStationRequest(
+                                nameField.getText().trim(),
+                                locationField.getText().trim(),
+                                BigDecimal.valueOf(selectedLat[0]),
+                                BigDecimal.valueOf(selectedLng[0])
+                            );
+                            stationService.updateStation(station.id(), updateRequest);
+                            successMessage.append("✓ Station info updated\n");
+                            hasChanges = true;
+                        }
+                        
+                        // Check if public status changed
+                        boolean publicStatusChanged = publicStationToggle.isSwitchedOn() != 
+                                                     (station.isPublic() != null && station.isPublic());
+                        
+                        if (publicStatusChanged) {
+                            stationService.updateStationSharing(station.id());
+                            successMessage.append("✓ Public status updated\n");
+                            hasChanges = true;
+                        }
+                        
+                        // Check if threshold changed (compare with loaded threshold)
+                        if (initialThreshold != null) {
+                            ThresholdResponse current = initialThreshold;
+                            
+                            boolean thresholdChanged = 
+                                !equalValues(parseDecimal(tempMinField.getText()), current.temperatureMin()) ||
+                                !equalValues(parseDecimal(tempMaxField.getText()), current.temperatureMax()) ||
+                                !equalValues(parseDecimal(humidityMinField.getText()), current.humidityMin()) ||
+                                !equalValues(parseDecimal(humidityMaxField.getText()), current.humidityMax()) ||
+                                !equalValues(parseDecimal(rainfallMaxField.getText()), current.rainfallMax()) ||
+                                !equalValues(parseDecimal(windSpeedMaxField.getText()), current.windSpeedMax()) ||
+                                !equalValues(parseDecimal(dustMaxField.getText()), current.dustMax()) ||
+                                tempActiveToggle.isSwitchedOn() != (current.temperatureActive() != null && current.temperatureActive()) ||
+                                humidityActiveToggle.isSwitchedOn() != (current.humidityActive() != null && current.humidityActive()) ||
+                                rainfallActiveToggle.isSwitchedOn() != (current.rainfallActive() != null && current.rainfallActive()) ||
+                                windSpeedActiveToggle.isSwitchedOn() != (current.windSpeedActive() != null && current.windSpeedActive()) ||
+                                dustActiveToggle.isSwitchedOn() != (current.dustActive() != null && current.dustActive());
+                            
+                            if (thresholdChanged) {
+                                UpdateThresholdRequest request = new UpdateThresholdRequest(
+                                    parseDecimal(tempMinField.getText()),
+                                    parseDecimal(tempMaxField.getText()),
+                                    parseDecimal(humidityMinField.getText()),
+                                    parseDecimal(humidityMaxField.getText()),
+                                    parseDecimal(rainfallMaxField.getText()),
+                                    parseDecimal(windSpeedMaxField.getText()),
+                                    parseDecimal(dustMaxField.getText()),
+                                    tempActiveToggle.isSwitchedOn(),
+                                    humidityActiveToggle.isSwitchedOn(),
+                                    rainfallActiveToggle.isSwitchedOn(),
+                                    windSpeedActiveToggle.isSwitchedOn(),
+                                    dustActiveToggle.isSwitchedOn()
+                                );
+                                
+                                thresholdService.updateThreshold(current.id(), request);
+                                successMessage.append("✓ Threshold settings updated\n");
+                                hasChanges = true;
+                            }
+                        }
+                        
+                        if (hasChanges) {
+                            final String message = successMessage.toString();
+                            Platform.runLater(() -> {
+                                showSuccess(message);
+                                loadStations(); // Reload station list
+                            });
+                        } else {
+                            Platform.runLater(() -> {
+                                showSuccess("No changes detected");
+                            });
+                        }
+                        
+                    } catch (Exception e) {
+                        Platform.runLater(() -> {
+                            showError("Update failed: " + e.getMessage());
+                        });
+                    }
+                }).start();
             }
             return dialogButton;
         });
         
         dialog.showAndWait();
+    }
+    
+    private boolean equalValues(BigDecimal v1, BigDecimal v2) {
+        if (v1 == null && v2 == null) return true;
+        if (v1 == null || v2 == null) return false;
+        return v1.compareTo(v2) == 0;
+    }
+    
+    private BigDecimal parseDecimal(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return new BigDecimal(value.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
     
     private VBox createThresholdBox(String title, String[] fields) {
@@ -701,6 +882,39 @@ public class MainLayoutController {
         // Add active class to the clicked button
         if (!activeButton.getStyleClass().contains("active")) {
             activeButton.getStyleClass().add("active");
+        }
+    }
+    
+    private String reverseGeocode(double lat, double lng) {
+        try {
+            String url = String.format(
+                "https://nominatim.openstreetmap.org/reverse?format=json&lat=%.6f&lon=%.6f&zoom=18&addressdetails=1",
+                lat, lng
+            );
+            
+            java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+            java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
+                .uri(java.net.URI.create(url))
+                .header("User-Agent", "WeatherDesktop/1.0")
+                .GET()
+                .build();
+                
+            java.net.http.HttpResponse<String> response = 
+                client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+                
+            if (response.statusCode() == 200) {
+                com.fasterxml.jackson.databind.JsonNode json = 
+                    new com.fasterxml.jackson.databind.ObjectMapper().readTree(response.body());
+                    
+                if (json.has("display_name")) {
+                    return json.get("display_name").asText();
+                }
+            }
+            
+            return "";
+        } catch (Exception e) {
+            System.err.println("Reverse geocoding failed: " + e.getMessage());
+            return "";
         }
     }
 }
