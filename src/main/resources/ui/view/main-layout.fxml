@@ -138,7 +138,7 @@
                             <Label text="Wind" styleClass="stat-label"/>
                             <HBox alignment="BOTTOM_LEFT" spacing="4">
                                 <Label fx:id="windspeedValue" text="13" styleClass="stat-value"/>
-                                <Label text="km/h" styleClass="stat-unit"/>
+                                <Label text="m/s" styleClass="stat-unit"/>
                             </HBox>
                         </VBox>
                         

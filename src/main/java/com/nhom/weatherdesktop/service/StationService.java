@@ -13,7 +13,7 @@ import java.net.http.HttpResponse;
 
 import static com.nhom.weatherdesktop.api.ApiClient.client;
 
-public class StationService {
+public class StationService implements IStationService {
 
     private static final ObjectMapper MAPPER =
             new ObjectMapper().findAndRegisterModules();

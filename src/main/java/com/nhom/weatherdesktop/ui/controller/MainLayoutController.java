@@ -10,8 +10,15 @@ import com.nhom.weatherdesktop.service.ThresholdService;
 import com.nhom.weatherdesktop.ui.component.StationCard;
 import com.nhom.weatherdesktop.ui.controller.dialog.AddStationDialogController;
 import com.nhom.weatherdesktop.ui.controller.dialog.UpdateStationDialogController;
+import com.nhom.weatherdesktop.ui.NavigationManager;
+import com.nhom.weatherdesktop.ui.manager.AlertsManager;
+import com.nhom.weatherdesktop.ui.manager.SidebarManager;
+import com.nhom.weatherdesktop.ui.manager.WeatherDisplayManager;
 import com.nhom.weatherdesktop.util.AlertService;
+import com.nhom.weatherdesktop.util.AsyncTaskRunner;
+import com.nhom.weatherdesktop.util.ErrorHandler;
 import com.nhom.weatherdesktop.websocket.StompClient;
+import static com.nhom.weatherdesktop.config.UIConstants.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -28,6 +35,12 @@ public class MainLayoutController {
     private final ThresholdService thresholdService = new ThresholdService();
     private final com.nhom.weatherdesktop.service.AlertService alertService = new com.nhom.weatherdesktop.service.AlertService();
     private final StompClient stompClient = new StompClient();
+    private final NavigationManager navigationManager = new NavigationManager();
+    
+    // Managers
+    private WeatherDisplayManager weatherDisplayManager;
+    private SidebarManager sidebarManager;
+    private AlertsManager alertsManager;
     
     private List<StationResponse> userStations;
     private Long currentStationId; // Currently subscribed station for weather data
@@ -53,8 +66,6 @@ public class MainLayoutController {
     
     // Sidebar state
     private boolean isSidebarCollapsed = false;
-    private static final double SIDEBAR_EXPANDED_WIDTH = 220.0;
-    private static final double SIDEBAR_COLLAPSED_WIDTH = 60.0;
 
 
     // Sidebar buttons
@@ -125,11 +136,34 @@ public class MainLayoutController {
 
     @FXML
     public void initialize() {
+        // Initialize managers
+        weatherDisplayManager = new WeatherDisplayManager(
+            temperatureValue, humidityValue, windspeedValue,
+            rainfallValue, dustValue
+        );
+        
+        sidebarManager = new SidebarManager(
+            sidebar, toggleSidebarButton,
+            myStationText, publicStationsText, alertsText, settingsText
+        );
+        
+        alertsManager = new AlertsManager(
+            alertsListContainer, unreadCountLabel, emptyAlertsState,
+            alertService
+        );
+        alertsManager.setErrorHandler(this::showError);
+        
+        // Register views with NavigationManager
+        navigationManager.registerView("myStation", myStationView, myStationButton);
+        navigationManager.registerView("publicStations", publicStationsView, publicStationsButton);
+        navigationManager.registerView("alerts", alertsView, alertsButton);
+        navigationManager.registerView("settings", settingsView, settingsButton);
+        
         // Set initial view to MyStation
-        showMyStationView();
+        navigationManager.showView("myStation");
         
         // Set initial weather values
-        resetWeatherValues();
+        weatherDisplayManager.reset();
         
         // Initialize WebSocket connection
         initializeWebSocket();
@@ -146,79 +180,35 @@ public class MainLayoutController {
 
     @FXML
     private void handleMyStations() {
-        showMyStationView();
-        updateActiveButton(myStationButton);
+        // Hide station list when switching views
+        stationListContainer.setVisible(false);
+        stationListContainer.setManaged(false);
+        showStationsButton.setText("📋 Show Station List");
+        
+        navigationManager.showView("myStation");
     }
 
     @FXML
     private void handlePublicStations() {
-        showView(publicStationsView);
-        updateActiveButton(publicStationsButton);
+        navigationManager.showView("publicStations");
     }
 
     @FXML
     private void handleAlerts() {
-        showView(alertsView);
-        updateActiveButton(alertsButton);
-        loadAlerts();
+        navigationManager.showView("alerts");
+        alertsManager.loadAlerts();
     }
 
     @FXML
     private void handleSettings() {
-        showView(settingsView);
-        updateActiveButton(settingsButton);
+        navigationManager.showView("settings");
     }
     
     @FXML
     private void handleToggleSidebar() {
-        isSidebarCollapsed = !isSidebarCollapsed;
-        
-        if (isSidebarCollapsed) {
-            collapseSidebar();
-        } else {
-            expandSidebar();
-        }
+        sidebarManager.toggle();
     }
-    
-    private void collapseSidebar() {
-        // Set sidebar width to collapsed size
-        sidebar.setPrefWidth(SIDEBAR_COLLAPSED_WIDTH);
-        sidebar.setMinWidth(SIDEBAR_COLLAPSED_WIDTH);
-        sidebar.setMaxWidth(SIDEBAR_COLLAPSED_WIDTH);
-        
-        // Hide text labels
-        myStationText.setVisible(false);
-        myStationText.setManaged(false);
-        publicStationsText.setVisible(false);
-        publicStationsText.setManaged(false);
-        alertsText.setVisible(false);
-        alertsText.setManaged(false);
-        settingsText.setVisible(false);
-        settingsText.setManaged(false);
-        
-        // Center the toggle button
-        toggleSidebarButton.setText("☰");
-    }
-    
-    private void expandSidebar() {
-        // Set sidebar width to expanded size
-        sidebar.setPrefWidth(SIDEBAR_EXPANDED_WIDTH);
-        sidebar.setMinWidth(SIDEBAR_EXPANDED_WIDTH);
-        sidebar.setMaxWidth(SIDEBAR_EXPANDED_WIDTH);
-        
-        // Show text labels
-        myStationText.setVisible(true);
-        myStationText.setManaged(true);
-        publicStationsText.setVisible(true);
-        publicStationsText.setManaged(true);
-        alertsText.setVisible(true);
-        alertsText.setManaged(true);
-        settingsText.setVisible(true);
-        settingsText.setManaged(true);
-        
-        // Reset toggle button
-        toggleSidebarButton.setText("☰");
-    }
+
 
     @FXML
     private void handleShowStationList() {
@@ -245,24 +235,25 @@ public class MainLayoutController {
     }
     
     private void loadStations() {
-        // Run API call in background thread
-        new Thread(() -> {
-            try {
-                PageResponse<StationResponse> response = stationService.getMyStations(0, 10);
-                userStations = response.content();
-                
-                // Update UI on JavaFX thread
-                Platform.runLater(() -> {
-                    displayStations(userStations);
-                    subscribeToStations(userStations);
-                });
-                
-            } catch (Exception e) {
-                Platform.runLater(() -> {
-                    showError("Không thể tải danh sách trạm: " + e.getMessage());
-                });
-            }
-        }).start();
+        AsyncTaskRunner.runAsync(
+            // Background task
+            () -> {
+                try {
+                    PageResponse<StationResponse> response = stationService.getMyStations(0, DEFAULT_PAGE_SIZE);
+                    return response.content();
+                } catch (Exception e) {
+                    throw new RuntimeException("Không thể tải danh sách trạm: " + e.getMessage(), e);
+                }
+            },
+            // On success
+            stations -> {
+                userStations = stations;
+                displayStations(userStations);
+                subscribeToStations(userStations);
+            },
+            // On error
+            e -> showError(ErrorHandler.getUserMessage(e))
+        );
     }
     
     /**
@@ -274,10 +265,10 @@ public class MainLayoutController {
         }
         
         new Thread(() -> {
-            int retries = 30;
+            int retries = WEBSOCKET_RETRY_COUNT;
             while (!stompClient.isConnected() && retries > 0) {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(WEBSOCKET_RETRY_DELAY_MS);
                     retries--;
                 } catch (InterruptedException e) {
                     break;
@@ -387,11 +378,7 @@ public class MainLayoutController {
     }
     
     private void resetWeatherValues() {
-        temperatureValue.setText("--");
-        humidityValue.setText("--");
-        windspeedValue.setText("--");
-        rainfallValue.setText("--");
-        dustValue.setText("--");
+        weatherDisplayManager.reset();
     }
     
     private void handleUpdateStation(StationResponse station) {
@@ -426,55 +413,10 @@ public class MainLayoutController {
         AlertService.showSuccess(message);
     }
 
-    private void showMyStationView() {
-        // Hide station list when switching views
-        stationListContainer.setVisible(false);
-        stationListContainer.setManaged(false);
-        showStationsButton.setText("📋 Show Station List");
-        
-        showView(myStationView);
-    }
-
-    private void showView(Node viewToShow) {
-        // Hide all views
-        myStationView.setVisible(false);
-        myStationView.setManaged(false);
-        
-        publicStationsView.setVisible(false);
-        publicStationsView.setManaged(false);
-        
-        alertsView.setVisible(false);
-        alertsView.setManaged(false);
-        
-        settingsView.setVisible(false);
-        settingsView.setManaged(false);
-
-        // Show the selected view
-        viewToShow.setVisible(true);
-        viewToShow.setManaged(true);
-    }
-
-    private void updateActiveButton(Button activeButton) {
-        // Remove active class from all buttons
-        myStationButton.getStyleClass().remove("active");
-        publicStationsButton.getStyleClass().remove("active");
-        alertsButton.getStyleClass().remove("active");
-        settingsButton.getStyleClass().remove("active");
-
-        // Add active class to the clicked button
-        if (!activeButton.getStyleClass().contains("active")) {
-            activeButton.getStyleClass().add("active");
-        }
-    }
-    
     // ========== WebSocket Handlers ==========
     
     private void handleWeatherData(WeatherDataResponse data) {
-        if (data.temperature() != null) temperatureValue.setText(String.format("%.1f", data.temperature()));
-        if (data.humidity() != null) humidityValue.setText(String.format("%.0f", data.humidity()));
-        if (data.windSpeed() != null) windspeedValue.setText(String.format("%.1f", data.windSpeed()));
-        if (data.rainfall() != null) rainfallValue.setText(String.format("%.1f", data.rainfall()));
-        if (data.dust() != null) dustValue.setText(String.format("%.1f", data.dust()));
+        weatherDisplayManager.updateWeatherData(data);
     }
     
     private void handleAlert(AlertResponse alert) {
@@ -498,23 +440,25 @@ public class MainLayoutController {
     // ========== Alert Management ==========
     
     private void loadAlerts() {
-        new Thread(() -> {
-            try {
-                List<com.nhom.weatherdesktop.dto.response.AlertResponse> alertResponses = 
-                    alertService.getAllMyAlerts();
-                
-                List<com.nhom.weatherdesktop.model.Alert> alerts = alertResponses.stream()
-                        .map(com.nhom.weatherdesktop.model.Alert::fromResponse)
-                        .toList();
-                
-                Platform.runLater(() -> displayAlerts(alerts));
-                
-            } catch (Exception e) {
-                Platform.runLater(() -> {
-                    showError("Failed to load alerts: " + e.getMessage());
-                });
-            }
-        }).start();
+        AsyncTaskRunner.runAsync(
+            // Background task
+            () -> {
+                try {
+                    List<com.nhom.weatherdesktop.dto.response.AlertResponse> alertResponses = 
+                        alertService.getAllMyAlerts();
+                    
+                    return alertResponses.stream()
+                            .map(com.nhom.weatherdesktop.model.Alert::fromResponse)
+                            .toList();
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to load alerts: " + e.getMessage(), e);
+                }
+            },
+            // On success
+            this::displayAlerts,
+            // On error
+            e -> showError(ErrorHandler.getUserMessage(e))
+        );
     }
     
     private void displayAlerts(List<com.nhom.weatherdesktop.model.Alert> alerts) {

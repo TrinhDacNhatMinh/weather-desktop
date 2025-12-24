@@ -12,6 +12,8 @@ import javafx.scene.layout.Region;
 import java.time.Duration;
 import java.time.Instant;
 
+import static com.nhom.weatherdesktop.config.TimezoneConfig.*;
+
 public class AlertCard extends HBox {
     
     private final Alert alert;
@@ -82,8 +84,8 @@ public class AlertCard extends HBox {
     
     private String formatTimestamp(Instant instant) {
         // WORKAROUND: Server returns timestamp in +07:00 timezone but marks it as UTC (Z)
-        // We need to subtract 7 hours to get the actual UTC time
-        Instant adjustedInstant = instant.minusSeconds(7 * 3600); // Subtract 7 hours
+        // We need to subtract offset to get the actual UTC time
+        Instant adjustedInstant = instant.minusSeconds(getServerTimezoneOffsetSeconds());
         
         Instant now = Instant.now();
         Duration duration = Duration.between(adjustedInstant, now);

@@ -10,7 +10,7 @@ import com.nhom.weatherdesktop.util.HttpRequestBuilder;
 import java.net.http.HttpResponse;
 import java.util.List;
 
-public class AlertService {
+public class AlertService implements IAlertService {
     
     private static final ObjectMapper MAPPER = new ObjectMapper()
             .registerModule(new JavaTimeModule());

@@ -9,7 +9,7 @@ import java.net.http.HttpResponse;
 
 import static com.nhom.weatherdesktop.api.ApiClient.client;
 
-public class ThresholdService {
+public class ThresholdService implements IThresholdService {
 
     private static final ObjectMapper MAPPER =
             new ObjectMapper().findAndRegisterModules();
