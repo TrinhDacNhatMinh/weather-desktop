@@ -19,6 +19,7 @@ public class StationService {
             new ObjectMapper().findAndRegisterModules();
 
 
+
     public PageResponse<StationResponse> getMyStations(int page, int size) {
         try {
             var httpRequest = HttpRequestBuilder
@@ -27,8 +28,8 @@ public class StationService {
                     .get()
                     .build();
 
-            HttpResponse<String> response =
-                    client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            // Use sendWithRefresh for automatic token refresh on 401
+            HttpResponse<String> response = HttpRequestBuilder.sendWithRefresh(httpRequest);
 
             return switch (response.statusCode()) {
                 case 200 -> MAPPER.readValue(

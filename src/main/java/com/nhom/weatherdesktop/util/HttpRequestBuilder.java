@@ -105,4 +105,14 @@ public class HttpRequestBuilder {
     public HttpRequest build() {
         return builder.build();
     }
+    
+    /**
+     * Send an HTTP request with automatic token refresh on 401
+     * @param request The HTTP request to send
+     * @return The HTTP response
+     * @throws Exception if request fails
+     */
+    public static java.net.http.HttpResponse<String> sendWithRefresh(HttpRequest request) throws Exception {
+        return TokenRefreshInterceptor.sendWithRefresh(request);
+    }
 }
