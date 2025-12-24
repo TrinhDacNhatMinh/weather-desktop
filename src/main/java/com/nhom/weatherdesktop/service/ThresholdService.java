@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhom.weatherdesktop.dto.request.UpdateThresholdRequest;
 import com.nhom.weatherdesktop.dto.response.ThresholdResponse;
 import com.nhom.weatherdesktop.util.HttpRequestBuilder;
+import com.nhom.weatherdesktop.util.ResponseHandler;
+import com.nhom.weatherdesktop.exception.AppException;
 
 import java.net.http.HttpResponse;
 
@@ -25,17 +27,9 @@ public class ThresholdService implements IThresholdService {
             HttpResponse<String> response =
                     client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            return switch (response.statusCode()) {
-                case 200 -> MAPPER.readValue(response.body(), ThresholdResponse.class);
-                case 401 -> throw new RuntimeException("Unauthorized - Please login again");
-                case 403 -> throw new RuntimeException("Forbidden - Access denied");
-                case 404 -> throw new RuntimeException("Station or threshold not found");
-                default -> throw new RuntimeException(
-                        "Server error (status=" + response.statusCode() + "). Response: " + response.body()
-                );
-            };
+            return ResponseHandler.handle(response, ThresholdResponse.class, MAPPER);
 
-        } catch (RuntimeException e) {
+        } catch (AppException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error fetching threshold: " + e.getMessage(), e);
@@ -55,18 +49,9 @@ public class ThresholdService implements IThresholdService {
             HttpResponse<String> response =
                     client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            return switch (response.statusCode()) {
-                case 200 -> MAPPER.readValue(response.body(), ThresholdResponse.class);
-                case 400 -> throw new RuntimeException("Invalid threshold update request");
-                case 401 -> throw new RuntimeException("Unauthorized - Please login again");
-                case 403 -> throw new RuntimeException("Forbidden - You don't have permission to update this threshold");
-                case 404 -> throw new RuntimeException("Threshold not found");
-                default -> throw new RuntimeException(
-                        "Server error (status=" + response.statusCode() + "). Response: " + response.body()
-                );
-            };
+            return ResponseHandler.handle(response, ThresholdResponse.class, MAPPER);
 
-        } catch (RuntimeException e) {
+        } catch (AppException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error updating threshold: " + e.getMessage(), e);

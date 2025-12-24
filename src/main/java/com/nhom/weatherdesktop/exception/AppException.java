@@ -3,8 +3,9 @@ package com.nhom.weatherdesktop.exception;
 /**
  * Custom application exception with categorized error types
  * Enables better error handling and user messaging
+ * Extends RuntimeException to avoid checked exception boilerplate
  */
-public class AppException extends Exception {
+public class AppException extends RuntimeException {
     
     private final ErrorType errorType;
     

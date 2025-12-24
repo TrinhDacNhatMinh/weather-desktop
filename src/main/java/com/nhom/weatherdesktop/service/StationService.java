@@ -8,6 +8,8 @@ import com.nhom.weatherdesktop.dto.request.UpdateStationRequest;
 import com.nhom.weatherdesktop.dto.response.PageResponse;
 import com.nhom.weatherdesktop.dto.response.StationResponse;
 import com.nhom.weatherdesktop.util.HttpRequestBuilder;
+import com.nhom.weatherdesktop.util.ResponseHandler;
+import com.nhom.weatherdesktop.exception.AppException;
 
 import java.net.http.HttpResponse;
 
@@ -31,16 +33,8 @@ public class StationService implements IStationService {
             // Use sendWithRefresh for automatic token refresh on 401
             HttpResponse<String> response = HttpRequestBuilder.sendWithRefresh(httpRequest);
 
-            return switch (response.statusCode()) {
-                case 200 -> MAPPER.readValue(
-                        response.body(),
-                        new TypeReference<PageResponse<StationResponse>>() {});
-                case 401 -> throw new RuntimeException("Unauthorized - Please login again");
-                case 400 -> throw new RuntimeException("Invalid pagination parameters");
-                default -> throw new RuntimeException(
-                        "Server error (status=" + response.statusCode() + ")"
-                );
-            };
+            return ResponseHandler.handle(response, 
+                new TypeReference<PageResponse<StationResponse>>() {}, MAPPER);
 
         } catch (Exception e) {
             throw new RuntimeException("Error fetching stations: " + e.getMessage(), e);
@@ -60,16 +54,7 @@ public class StationService implements IStationService {
             HttpResponse<String> response =
                     client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            return switch (response.statusCode()) {
-                case 200 -> MAPPER.readValue(response.body(), StationResponse.class);
-                case 400 -> throw new RuntimeException("Invalid request data");
-                case 401 -> throw new RuntimeException("Unauthorized - Please login again");
-                case 404 -> throw new RuntimeException("Station not found with this API key");
-                case 409 -> throw new RuntimeException("Station already attached to another user");
-                default -> throw new RuntimeException(
-                        "Server error (status=" + response.statusCode() + ")"
-                );
-            };
+            return ResponseHandler.handle(response, StationResponse.class, MAPPER);
 
         } catch (RuntimeException e) {
             throw e;
@@ -91,18 +76,9 @@ public class StationService implements IStationService {
             HttpResponse<String> response =
                     client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            return switch (response.statusCode()) {
-                case 200 -> MAPPER.readValue(response.body(), StationResponse.class);
-                case 400 -> throw new RuntimeException("Invalid update station request");
-                case 401 -> throw new RuntimeException("Unauthorized - Please login again");
-                case 403 -> throw new RuntimeException("Forbidden - You don't have permission to update this station");
-                case 404 -> throw new RuntimeException("Station not found");
-                default -> throw new RuntimeException(
-                        "Server error (status=" + response.statusCode() + ")"
-                );
-            };
+            return ResponseHandler.handle(response, StationResponse.class, MAPPER);
 
-        } catch (RuntimeException e) {
+        } catch (AppException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error updating station: " + e.getMessage(), e);
@@ -120,17 +96,9 @@ public class StationService implements IStationService {
             HttpResponse<String> response =
                     client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            return switch (response.statusCode()) {
-                case 200 -> MAPPER.readValue(response.body(), StationResponse.class);
-                case 401 -> throw new RuntimeException("Unauthorized - Please login again");
-                case 403 -> throw new RuntimeException("Forbidden - You don't have permission to update this station");
-                case 404 -> throw new RuntimeException("Station not found");
-                default -> throw new RuntimeException(
-                        "Server error (status=" + response.statusCode() + ")"
-                );
-            };
+            return ResponseHandler.handle(response, StationResponse.class, MAPPER);
 
-        } catch (RuntimeException e) {
+        } catch (AppException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error updating station sharing status: " + e.getMessage(), e);
@@ -148,17 +116,9 @@ public class StationService implements IStationService {
             HttpResponse<String> response =
                     client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            return switch (response.statusCode()) {
-                case 200 -> MAPPER.readValue(response.body(), StationResponse.class);
-                case 401 -> throw new RuntimeException("Unauthorized - Please login again");
-                case 403 -> throw new RuntimeException("Forbidden - Access denied");
-                case 404 -> throw new RuntimeException("Station not found");
-                default -> throw new RuntimeException(
-                        "Server error (status=" + response.statusCode() + ")"
-                );
-            };
+            return ResponseHandler.handle(response, StationResponse.class, MAPPER);
 
-        } catch (RuntimeException e) {
+        } catch (AppException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error fetching station: " + e.getMessage(), e);
@@ -176,17 +136,9 @@ public class StationService implements IStationService {
             HttpResponse<String> response =
                     client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            switch (response.statusCode()) {
-                case 204 -> {} // Success - no content
-                case 401 -> throw new RuntimeException("Unauthorized - Please login again");
-                case 403 -> throw new RuntimeException("Forbidden - You don't have permission to detach this station");
-                case 404 -> throw new RuntimeException("Station not found");
-                default -> throw new RuntimeException(
-                        "Server error (status=" + response.statusCode() + ")"
-                );
-            }
+            ResponseHandler.handleVoid(response);
 
-        } catch (RuntimeException e) {
+        } catch (AppException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error detaching station: " + e.getMessage(), e);
