@@ -9,10 +9,10 @@
             styleClass="border-pane"
             prefWidth="1200.0" 
             prefHeight="700.0"
-            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns="http://javafx.com/javafx/17.0.6"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.nhom.weatherdesktop.ui.controller.MainLayoutController"
-            stylesheets="@../css/style.css @../css/main-layout.css">
+            stylesheets="@../css/style.css, @../css/main-layout.css">
 
     <!-- SIDEBAR -->
     <left>
@@ -129,7 +129,7 @@
                             <Label text="Humidity" styleClass="stat-label"/>
                             <HBox alignment="BOTTOM_LEFT" spacing="4">
                                 <Label fx:id="humidityValue" text="83" styleClass="stat-value"/>
-                                <Label text="%%" styleClass="stat-unit"/>
+                                <Label text="\%" styleClass="stat-unit"/>
                             </HBox>
                         </VBox>
                         
