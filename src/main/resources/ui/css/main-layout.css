@@ -1,0 +1,135 @@
+/* ============================================
+   MAIN LAYOUT STYLES
+   Weather Desktop Application
+   ============================================ */
+
+/* Toggle Sidebar Button */
+.toggle-sidebar-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #9CA3AF;
+    -fx-font-size: 20px;
+    -fx-padding: 12;
+    -fx-cursor: hand;
+}
+
+/* Sidebar Separator */
+.sidebar-separator {
+    -fx-padding: 0 0 16 0;
+}
+
+/* Sidebar Icon Labels */
+.sidebar-icon {
+    -fx-font-size: 18px;
+}
+
+.sidebar-text {
+    -fx-font-size: 14px;
+}
+
+/* Show Station List Button */
+.show-stations-btn {
+    -fx-font-size: 14px;
+    -fx-padding: 12 24;
+}
+
+/* Main Temperature Card */
+.temperature-card {
+    -fx-padding: 32;
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 0);
+}
+
+.temperature-icon {
+    -fx-font-size: 64px;
+}
+
+.temperature-value {
+    -fx-font-size: 72px;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+}
+
+.temperature-unit {
+    -fx-font-size: 44px;
+    -fx-text-fill: #333333;
+}
+
+.weather-description {
+    -fx-font-size: 18px;
+    -fx-text-fill: black;
+}
+
+/* Stats Grid */
+.stats-grid {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 20;
+    -fx-padding: 24;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 0);
+}
+
+.stat-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #555555;
+}
+
+.stat-value {
+    -fx-font-size: 24px;
+    -fx-font-weight: 600;
+    -fx-text-fill: black;
+}
+
+.stat-unit {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555555;
+}
+
+.stat-indicator {
+    -fx-font-size: 10px;
+}
+
+/* Station List Container */
+.station-list-container {
+    -fx-background-color: rgba(30, 30, 40, 0.98);
+    -fx-padding: 24;
+    -fx-pref-width: 450;
+}
+
+.station-list-title {
+    -fx-text-fill: white;
+}
+
+.station-list-close-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #9CA3AF;
+    -fx-font-size: 18px;
+    -fx-cursor: hand;
+}
+
+.station-list-separator {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+
+.station-list-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.station-list-content {
+    -fx-background-color: transparent;
+}
+
+/* Add Station Button */
+.add-station-btn {
+    -fx-background-color: #3B82F6;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 12 24;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.add-station-btn:hover {
+    -fx-background-color: #2563EB;
+}

@@ -19,7 +19,8 @@ public class StationCard extends VBox {
     
     public StationCard(StationResponse station) {
         super();
-        this.setStyle("-fx-padding: 16; -fx-background-color: rgba(59, 130, 246, 0.15); -fx-background-radius: 8; -fx-cursor: hand;");
+        // Dark background for better contrast
+        this.setStyle("-fx-padding: 16; -fx-background-color: rgba(30, 41, 59, 0.95); -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: rgba(59, 130, 246, 0.3); -fx-border-width: 1; -fx-border-radius: 8;");
         
         // Main content
         HBox content = new HBox(12);
@@ -32,19 +33,19 @@ public class StationCard extends VBox {
         // Info VBox
         VBox info = new VBox(4);
         
-        // Name
+        // Name - bright white for good contrast
         Label nameLabel = new Label(station.name());
-        nameLabel.setStyle("-fx-font-weight: 600; -fx-text-fill: white; -fx-font-size: 15px;");
+        nameLabel.setStyle("-fx-font-weight: 700; -fx-text-fill: #FFFFFF; -fx-font-size: 16px;");
         
-        // Location
-        Label locationLabel = new Label("Location: " + station.location());
-        locationLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.7);");
+        // Location - light gray for good readability
+        Label locationLabel = new Label("📍 " + station.location());
+        locationLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #D1D5DB; -fx-font-weight: 500;");
         
-        // Status
-        String statusText = "ONLINE".equalsIgnoreCase(station.status()) ? "Online" : "Offline";
-        String statusColor = "ONLINE".equalsIgnoreCase(station.status()) ? "#10B981" : "#EF4444";
-        Label statusLabel = new Label("Status: " + statusText);
-        statusLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: " + statusColor + ";");
+        // Status with better colors
+        String statusText = "ONLINE".equalsIgnoreCase(station.status()) ? "● Online" : "● Offline";
+        String statusColor = "ONLINE".equalsIgnoreCase(station.status()) ? "#10B981" : "#F87171";
+        Label statusLabel = new Label(statusText);
+        statusLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: " + statusColor + "; -fx-font-weight: 600;");
         
         info.getChildren().addAll(nameLabel, locationLabel, statusLabel);
         
@@ -52,26 +53,26 @@ public class StationCard extends VBox {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         
-        // Action buttons container (initially hidden)
+        // Action buttons container - ALWAYS visible but with opacity
         HBox actionButtons = new HBox(8);
         actionButtons.setAlignment(Pos.CENTER_RIGHT);
-        actionButtons.setVisible(false);
-        actionButtons.setManaged(false);
+        actionButtons.setOpacity(0); // Start invisible
+        actionButtons.setStyle("-fx-min-width: 100;"); // Reserve space
         
-        // Update button
+        // Update button - vibrant blue
         Button updateBtn = new Button("✏️");
-        updateBtn.setStyle("-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-font-size: 16px; " +
-                          "-fx-padding: 6 12; -fx-background-radius: 6; -fx-cursor: hand;");
+        updateBtn.setStyle("-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-size: 16px; " +
+                          "-fx-padding: 8 14; -fx-background-radius: 6; -fx-cursor: hand;");
         updateBtn.setOnAction(e -> {
             if (onEdit != null) {
                 onEdit.accept(station);
             }
         });
         
-        // Detach button
+        // Detach button - vibrant red
         Button detachBtn = new Button("🗑️");
-        detachBtn.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-size: 16px; " +
-                          "-fx-padding: 6 12; -fx-background-radius: 6; -fx-cursor: hand;");
+        detachBtn.setStyle("-fx-background-color: #DC2626; -fx-text-fill: white; -fx-font-size: 16px; " +
+                          "-fx-padding: 8 14; -fx-background-radius: 6; -fx-cursor: hand;");
         detachBtn.setOnAction(e -> {
             if (onDetach != null) {
                 onDetach.accept(station);
@@ -83,17 +84,15 @@ public class StationCard extends VBox {
         content.getChildren().addAll(icon, info, spacer, actionButtons);
         this.getChildren().add(content);
         
-        // Hover effect to show/hide action buttons
+        // Hover effect - lighter background with blue glow
         this.setOnMouseEntered(e -> {
-            this.setStyle("-fx-padding: 16; -fx-background-color: rgba(59, 130, 246, 0.25); -fx-background-radius: 8; -fx-cursor: hand;");
-            actionButtons.setVisible(true);
-            actionButtons.setManaged(true);
+            this.setStyle("-fx-padding: 16; -fx-background-color: rgba(51, 65, 85, 1); -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: rgba(59, 130, 246, 0.6); -fx-border-width: 1; -fx-border-radius: 8;");
+            actionButtons.setOpacity(1); // Fade in
         });
         
         this.setOnMouseExited(e -> {
-            this.setStyle("-fx-padding: 16; -fx-background-color: rgba(59, 130, 246, 0.15); -fx-background-radius: 8; -fx-cursor: hand;");
-            actionButtons.setVisible(false);
-            actionButtons.setManaged(false);
+            this.setStyle("-fx-padding: 16; -fx-background-color: rgba(30, 41, 59, 0.95); -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: rgba(59, 130, 246, 0.3); -fx-border-width: 1; -fx-border-radius: 8;");
+            actionButtons.setOpacity(0); // Fade out
         });
     }
     
