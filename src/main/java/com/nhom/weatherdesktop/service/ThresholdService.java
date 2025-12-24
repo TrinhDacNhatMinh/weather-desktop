@@ -1,13 +1,10 @@
 package com.nhom.weatherdesktop.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nhom.weatherdesktop.api.ApiClient;
 import com.nhom.weatherdesktop.dto.request.UpdateThresholdRequest;
 import com.nhom.weatherdesktop.dto.response.ThresholdResponse;
-import com.nhom.weatherdesktop.session.SessionContext;
+import com.nhom.weatherdesktop.util.HttpRequestBuilder;
 
-import java.net.URI;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import static com.nhom.weatherdesktop.api.ApiClient.client;
@@ -19,31 +16,14 @@ public class ThresholdService {
 
     public ThresholdResponse getThresholdByStationId(Long stationId) {
         try {
-            String token = SessionContext.accessToken();
-            if (token == null) {
-                throw new RuntimeException("User not authenticated");
-            }
-
-            String url = ApiClient.baseUrl() + "/stations/" + stationId + "/threshold";
-            
-            // Debug logging
-            System.out.println("=== GET THRESHOLD DEBUG ===");
-            System.out.println("URL: " + url);
-
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", "Bearer " + token)
-                    .header("Content-Type", "application/json")
-                    .GET()
+            var httpRequest = HttpRequestBuilder
+                    .create("/stations/" + stationId + "/threshold")
+                    .withAuth()
+                    .get()
                     .build();
 
             HttpResponse<String> response =
                     client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
-
-            // Debug logging
-            System.out.println("Response Status: " + response.statusCode());
-            System.out.println("Response Body: " + response.body());
-            System.out.println("===========================");
 
             return switch (response.statusCode()) {
                 case 200 -> MAPPER.readValue(response.body(), ThresholdResponse.class);
@@ -64,33 +44,16 @@ public class ThresholdService {
 
     public ThresholdResponse updateThreshold(Long id, UpdateThresholdRequest request) {
         try {
-            String token = SessionContext.accessToken();
-            if (token == null) {
-                throw new RuntimeException("User not authenticated");
-            }
-
-            String url = ApiClient.baseUrl() + "/thresholds/" + id;
             String json = MAPPER.writeValueAsString(request);
-            
-            // Debug logging
-            System.out.println("=== UPDATE THRESHOLD DEBUG ===");
-            System.out.println("URL: " + url);
-            System.out.println("Request JSON: " + json);
 
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", "Bearer " + token)
-                    .header("Content-Type", "application/json")
-                    .PUT(HttpRequest.BodyPublishers.ofString(json))
+            var httpRequest = HttpRequestBuilder
+                    .create("/thresholds/" + id)
+                    .withAuth()
+                    .put(json)
                     .build();
 
             HttpResponse<String> response =
                     client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
-
-            // Debug logging
-            System.out.println("Response Status: " + response.statusCode());
-            System.out.println("Response Body: " + response.body());
-            System.out.println("==============================");
 
             return switch (response.statusCode()) {
                 case 200 -> MAPPER.readValue(response.body(), ThresholdResponse.class);

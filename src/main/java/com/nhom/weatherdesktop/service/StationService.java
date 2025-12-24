@@ -7,10 +7,8 @@ import com.nhom.weatherdesktop.dto.request.AddStationRequest;
 import com.nhom.weatherdesktop.dto.request.UpdateStationRequest;
 import com.nhom.weatherdesktop.dto.response.PageResponse;
 import com.nhom.weatherdesktop.dto.response.StationResponse;
-import com.nhom.weatherdesktop.session.SessionContext;
+import com.nhom.weatherdesktop.util.HttpRequestBuilder;
 
-import java.net.URI;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import static com.nhom.weatherdesktop.api.ApiClient.client;
@@ -20,28 +18,21 @@ public class StationService {
     private static final ObjectMapper MAPPER =
             new ObjectMapper().findAndRegisterModules();
 
+
     public PageResponse<StationResponse> getMyStations(int page, int size) {
         try {
-            String token = SessionContext.accessToken();
-            if (token == null) {
-                throw new RuntimeException("User not authenticated");
-            }
-
-            String url = String.format("%s/stations/user/me/stations?page=%d&size=%d",
-                    ApiClient.baseUrl(), page, size);
-
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", "Bearer " + token)
-                    .header("Content-Type", "application/json")
-                    .GET()
+            var httpRequest = HttpRequestBuilder
+                    .create("/stations/user/me/stations?page=" + page + "&size=" + size)
+                    .withAuth()
+                    .get()
                     .build();
 
             HttpResponse<String> response =
                     client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
             return switch (response.statusCode()) {
-                case 200 -> MAPPER.readValue(response.body(),
+                case 200 -> MAPPER.readValue(
+                        response.body(),
                         new TypeReference<PageResponse<StationResponse>>() {});
                 case 401 -> throw new RuntimeException("Unauthorized - Please login again");
                 case 400 -> throw new RuntimeException("Invalid pagination parameters");
@@ -57,19 +48,12 @@ public class StationService {
     
     public StationResponse addStationToUser(AddStationRequest request) {
         try {
-            String token = SessionContext.accessToken();
-            if (token == null) {
-                throw new RuntimeException("User not authenticated");
-            }
-
-            String url = ApiClient.baseUrl() + "/stations/attach";
             String json = MAPPER.writeValueAsString(request);
 
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", "Bearer " + token)
-                    .header("Content-Type", "application/json")
-                    .PUT(HttpRequest.BodyPublishers.ofString(json))
+            var httpRequest = HttpRequestBuilder
+                    .create("/stations/attach")
+                    .withAuth()
+                    .put(json)
                     .build();
 
             HttpResponse<String> response =
@@ -95,19 +79,12 @@ public class StationService {
 
     public StationResponse updateStation(Long id, UpdateStationRequest request) {
         try {
-            String token = SessionContext.accessToken();
-            if (token == null) {
-                throw new RuntimeException("User not authenticated");
-            }
-
-            String url = ApiClient.baseUrl() + "/stations/" + id;
             String json = MAPPER.writeValueAsString(request);
 
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", "Bearer " + token)
-                    .header("Content-Type", "application/json")
-                    .PUT(HttpRequest.BodyPublishers.ofString(json))
+            var httpRequest = HttpRequestBuilder
+                    .create("/stations/" + id)
+                    .withAuth()
+                    .put(json)
                     .build();
 
             HttpResponse<String> response =
@@ -133,18 +110,10 @@ public class StationService {
 
     public StationResponse updateStationSharing(Long id) {
         try {
-            String token = SessionContext.accessToken();
-            if (token == null) {
-                throw new RuntimeException("User not authenticated");
-            }
-
-            String url = ApiClient.baseUrl() + "/stations/" + id + "/public";
-
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", "Bearer " + token)
-                    .header("Content-Type", "application/json")
-                    .PUT(HttpRequest.BodyPublishers.noBody())
+            var httpRequest = HttpRequestBuilder
+                    .create("/stations/" + id + "/public")
+                    .withAuth()
+                    .put()
                     .build();
 
             HttpResponse<String> response =
@@ -169,18 +138,10 @@ public class StationService {
 
     public StationResponse getStationById(Long id) {
         try {
-            String token = SessionContext.accessToken();
-            if (token == null) {
-                throw new RuntimeException("User not authenticated");
-            }
-
-            String url = ApiClient.baseUrl() + "/stations/" + id;
-
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", "Bearer " + token)
-                    .header("Content-Type", "application/json")
-                    .GET()
+            var httpRequest = HttpRequestBuilder
+                    .create("/stations/" + id)
+                    .withAuth()
+                    .get()
                     .build();
 
             HttpResponse<String> response =

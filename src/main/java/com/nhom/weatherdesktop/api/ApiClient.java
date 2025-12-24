@@ -1,13 +1,14 @@
 package com.nhom.weatherdesktop.api;
 
+import com.nhom.weatherdesktop.config.AppConfig;
+
 import java.net.http.HttpClient;
 import java.time.Duration;
 
 public class ApiClient {
 
-    private static final String BASE_URL = "http://localhost:8080/api";
     private static final HttpClient CLIENT = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(10))
+            .connectTimeout(Duration.ofSeconds(AppConfig.getApiTimeout()))
             .build();
 
     public static HttpClient client() {
@@ -15,6 +16,6 @@ public class ApiClient {
     }
 
     public static String baseUrl() {
-        return BASE_URL;
+        return AppConfig.getApiBaseUrl();
     }
 }

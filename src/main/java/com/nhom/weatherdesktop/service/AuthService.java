@@ -1,13 +1,11 @@
 package com.nhom.weatherdesktop.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nhom.weatherdesktop.api.ApiClient;
 import com.nhom.weatherdesktop.dto.request.LoginRequest;
 import com.nhom.weatherdesktop.dto.response.LoginResponse;
 import com.nhom.weatherdesktop.exception.AuthException;
+import com.nhom.weatherdesktop.util.HttpRequestBuilder;
 
-import java.net.URI;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import static com.nhom.weatherdesktop.api.ApiClient.client;
@@ -22,10 +20,9 @@ public class AuthService {
         try {
             String json = MAPPER.writeValueAsString(request);
 
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(ApiClient.baseUrl() + "/auth/login"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(json))
+            var httpRequest = HttpRequestBuilder
+                    .create("/auth/login")
+                    .post(json)
                     .build();
 
             HttpResponse<String> response =
