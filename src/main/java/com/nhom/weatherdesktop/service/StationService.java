@@ -163,5 +163,33 @@ public class StationService {
             throw new RuntimeException("Error fetching station: " + e.getMessage(), e);
         }
     }
+    
+    public void detachStationFromUser(Long id) {
+        try {
+            var httpRequest = HttpRequestBuilder
+                    .create("/stations/" + id + "/user")
+                    .withAuth()
+                    .delete()
+                    .build();
+
+            HttpResponse<String> response =
+                    client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            switch (response.statusCode()) {
+                case 204 -> {} // Success - no content
+                case 401 -> throw new RuntimeException("Unauthorized - Please login again");
+                case 403 -> throw new RuntimeException("Forbidden - You don't have permission to detach this station");
+                case 404 -> throw new RuntimeException("Station not found");
+                default -> throw new RuntimeException(
+                        "Server error (status=" + response.statusCode() + ")"
+                );
+            }
+
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Error detaching station: " + e.getMessage(), e);
+        }
+    }
 }
 

@@ -269,8 +269,17 @@ public class MainLayoutController {
     
     private void handleDetachStation(StationResponse station) {
         if (AlertService.confirm("Detach Station", 
-            "Do you want to detach station '" + station.name() + "' from your account?")) {
-            AlertService.showSuccess("Station '" + station.name() + "' detached successfully!");
+            "Are you sure you want to detach station '" + station.name() + "' from your account?")) {
+            try {
+                stationService.detachStationFromUser(station.id());
+                AlertService.showSuccess("Station '" + station.name() + "' detached successfully!");
+                
+                // Reload station list
+                loadStations();
+                
+            } catch (Exception e) {
+                AlertService.showError("Failed to detach station: " + e.getMessage());
+            }
         }
     }
     
