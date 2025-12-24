@@ -242,7 +242,7 @@ public class MainLayoutController {
                     PageResponse<StationResponse> response = stationService.getMyStations(0, DEFAULT_PAGE_SIZE);
                     return response.content();
                 } catch (Exception e) {
-                    throw new RuntimeException("Không thể tải danh sách trạm: " + e.getMessage(), e);
+                    throw new RuntimeException("Cannot load station list: " + e.getMessage(), e);
                 }
             },
             // On success
@@ -277,7 +277,7 @@ public class MainLayoutController {
             
             if (!stompClient.isConnected()) {
                 Platform.runLater(() -> 
-                    showError("WebSocket chưa kết nối. Không thể subscribe.")
+                    showError("WebSocket not connected. Cannot subscribe.")
                 );
                 return;
             }

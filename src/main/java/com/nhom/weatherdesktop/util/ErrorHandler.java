@@ -22,19 +22,19 @@ public class ErrorHandler {
             if (message != null) {
                 // Extract common error patterns
                 if (message.contains("Unauthorized")) {
-                    return "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.";
+                    return "Session expired. Please login again.";
                 }
                 if (message.contains("Forbidden") || message.contains("Permission")) {
-                    return "Bạn không có quyền thực hiện thao tác này.";
+                    return "You don't have permission for this operation.";
                 }
                 if (message.contains("not found") || message.contains("404")) {
-                    return "Không tìm thấy dữ liệu yêu cầu.";
+                    return "Requested data not found.";
                 }
                 if (message.contains("Server error") || message.contains("500")) {
-                    return "Lỗi máy chủ. Vui lòng thử lại sau.";
+                    return "Server error. Please try again later.";
                 }
                 if (message.contains("Network") || message.contains("Connection")) {
-                    return "Lỗi kết nối mạng. Kiểm tra kết nối internet.";
+                    return "Network connection error. Check internet connection.";
                 }
                 
                 // Return original message if no pattern matched
@@ -42,7 +42,7 @@ public class ErrorHandler {
             }
         }
         
-        return "Đã xảy ra lỗi: " + e.getClass().getSimpleName();
+        return "An error occurred: " + e.getClass().getSimpleName();
     }
     
     /**
@@ -50,13 +50,13 @@ public class ErrorHandler {
      */
     private static String formatMessage(AppException.ErrorType errorType, String details) {
        return switch (errorType) {
-            case NETWORK_ERROR -> "Lỗi kết nối mạng: " + details;
-            case AUTHENTICATION_ERROR -> "Lỗi xác thực: " + details;
-            case DATA_NOT_FOUND -> "Không tìm thấy: " + details;
-            case VALIDATION_ERROR -> "Dữ liệu không hợp lệ: " + details;
-            case PERMISSION_ERROR -> "Không có quyền: " + details;
-            case SERVER_ERROR -> "Lỗi máy chủ: " + details;
-            case UNKNOWN_ERROR -> "Lỗi không xác định: " + details;
+            case NETWORK_ERROR -> "Network connection error: " + details;
+            case AUTHENTICATION_ERROR -> "Authentication error: " + details;
+            case DATA_NOT_FOUND -> "Not found: " + details;
+            case VALIDATION_ERROR -> "Invalid data: " + details;
+            case PERMISSION_ERROR -> "Permission denied: " + details;
+            case SERVER_ERROR -> "Server error: " + details;
+            case UNKNOWN_ERROR -> "Unknown error: " + details;
         };
     }
     
