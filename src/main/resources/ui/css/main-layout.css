@@ -32,6 +32,22 @@
     -fx-padding: 12 24;
 }
 
+/* Station Info */
+.station-info {
+    -fx-padding: 16 0 8 0;
+}
+
+.station-name {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1a1a;
+}
+
+.station-location {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666666;
+}
+
 /* Main Temperature Card */
 .temperature-card {
     -fx-padding: 32;

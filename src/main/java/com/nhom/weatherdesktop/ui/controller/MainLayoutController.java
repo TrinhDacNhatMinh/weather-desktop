@@ -98,6 +98,12 @@ public class MainLayoutController {
     @FXML
     private Label dustValue;
     
+    @FXML
+    private Label stationNameLabel;
+    
+    @FXML
+    private Label stationLocationLabel;
+    
 
     
 
@@ -119,6 +125,9 @@ public class MainLayoutController {
     public void initialize() {
         // Set initial view to MyStation
         showMyStationView();
+        
+        // Set initial weather values
+        resetWeatherValues();
         
         // Initialize WebSocket connection
         initializeWebSocket();
@@ -280,16 +289,37 @@ public class MainLayoutController {
             }
             
             Platform.runLater(() -> {
+                // Subscribe to all alert topics
                 for (StationResponse station : stations) {
                     String alertTopic = "/topic/stations/" + station.id() + "/alerts";
                     stompClient.subscribe(alertTopic, "alert");
                 }
                 
-                if (!stations.isEmpty()) {
-                    StationResponse firstStation = stations.get(0);
-                    currentStationId = firstStation.id();
+                // Subscribe to saved station or first station
+                Long savedStationId = com.nhom.weatherdesktop.session.SessionContext.selectedStationId();
+                StationResponse stationToSubscribe = null;
+                
+                if (savedStationId != null) {
+                    // Find saved station in list
+                    stationToSubscribe = stations.stream()
+                            .filter(s -> s.id().equals(savedStationId))
+                            .findFirst()
+                            .orElse(null);
+                }
+                
+                // Fallback to first station if saved station not found
+                if (stationToSubscribe == null && !stations.isEmpty()) {
+                    stationToSubscribe = stations.get(0);
+                }
+                
+                if (stationToSubscribe != null) {
+                    currentStationId = stationToSubscribe.id();
                     String weatherTopic = "/topic/stations/" + currentStationId + "/weather";
                     stompClient.subscribe(weatherTopic, "weather");
+                    
+                    // Update station info display
+                    stationNameLabel.setText(stationToSubscribe.name());
+                    stationLocationLabel.setText(stationToSubscribe.location());
                 }
             });
         }).start();
@@ -331,13 +361,41 @@ public class MainLayoutController {
         if (currentStationId != null) {
             stompClient.unsubscribe("/topic/stations/" + currentStationId + "/weather");
         }
+        
+        // Reset weather values when switching
+        resetWeatherValues();
+        
         stompClient.subscribe("/topic/stations/" + newStationId + "/weather", "weather");
         currentStationId = newStationId;
+        
+        // Update station info display
+        if (userStations != null) {
+            userStations.stream()
+                    .filter(s -> s.id().equals(newStationId))
+                    .findFirst()
+                    .ifPresent(station -> {
+                        stationNameLabel.setText(station.name());
+                        stationLocationLabel.setText(station.location());
+                    });
+        }
+        
+        // Save selected station for next time
+        com.nhom.weatherdesktop.session.SessionContext.setSelectedStationId(newStationId);
+    }
+    
+    private void resetWeatherValues() {
+        temperatureValue.setText("--");
+        humidityValue.setText("--");
+        windspeedValue.setText("--");
+        rainfallValue.setText("--");
+        dustValue.setText("--");
     }
     
     private void handleUpdateStation(StationResponse station) {
         new UpdateStationDialogController(stationService, thresholdService)
-            .setOnSuccess(this::loadStations)
+            .setOnSuccess(() -> {
+                loadStations(); // Refresh station list to get updated name
+            })
             .showDialog(station.id());
     }
     

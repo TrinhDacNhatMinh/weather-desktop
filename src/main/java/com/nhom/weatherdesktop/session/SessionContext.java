@@ -8,6 +8,7 @@ public class SessionContext {
     private static String refreshToken;
     private static String userName;
     private static String userEmail;
+    private static Long selectedStationId; // Remember last selected station
     
     public static void set(LoginResponse response) {
         accessToken = response.accessToken();
@@ -37,11 +38,20 @@ public class SessionContext {
         return userEmail;
     }
     
+    public static Long selectedStationId() {
+        return selectedStationId;
+    }
+    
+    public static void setSelectedStationId(Long stationId) {
+        selectedStationId = stationId;
+    }
+    
     public static void clear() {
         accessToken = null;
         refreshToken = null;
         userName = null;
         userEmail = null;
+        selectedStationId = null;
     }
     
     public static boolean isAuthenticated() {

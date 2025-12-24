@@ -102,6 +102,12 @@
                                 styleClass="show-stations-btn"/>
                     </HBox>
                     
+                    <!-- Station Info -->
+                    <VBox styleClass="station-info" spacing="5" alignment="CENTER">
+                        <Label fx:id="stationNameLabel" text="Select a Station" styleClass="station-name" style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+                        <Label fx:id="stationLocationLabel" text="" styleClass="station-location"/>
+                    </VBox>
+                    
                     <!-- Large Temperature Display -->
                     <VBox styleClass="temperature-card" spacing="16" alignment="CENTER">
                         <HBox alignment="CENTER" spacing="24">
