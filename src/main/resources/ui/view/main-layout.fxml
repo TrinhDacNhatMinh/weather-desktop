@@ -202,9 +202,24 @@
             
             <!-- Alerts View (Hidden by default) -->
             <VBox fx:id="alertsView" spacing="24" alignment="TOP_CENTER" managed="false" visible="false">
-                <Label text="🔔 Alerts Notifications" styleClass="card-header"/>
-                <VBox styleClass="card empty-state" prefWidth="400" prefHeight="200">
-                    <Label text="No active alerts" styleClass="empty-state-text"/>
+                <!-- Header with unread count -->
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <Label text="🔔 Alerts" styleClass="card-header"/>
+                    <Label fx:id="unreadCountLabel" text="0" styleClass="unread-badge" visible="false"/>
+                </HBox>
+                
+                <!-- Alerts List Container -->
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="alerts-scroll" prefHeight="600">
+                    <VBox fx:id="alertsListContainer" spacing="12" styleClass="alerts-list"/>
+                </ScrollPane>
+                
+                <!-- Empty State -->
+                <VBox fx:id="emptyAlertsState" alignment="CENTER" spacing="16" VBox.vgrow="ALWAYS" 
+                      styleClass="empty-state" prefWidth="500" prefHeight="400" visible="true">
+                    <Label text="🔔" styleClass="empty-icon"/>
+                    <Label text="No alerts yet" styleClass="empty-title"/>
+                    <Label text="You'll see notifications here when weather conditions trigger alerts" 
+                           styleClass="empty-subtitle" wrapText="true" textAlignment="CENTER" maxWidth="400"/>
                 </VBox>
             </VBox>
             

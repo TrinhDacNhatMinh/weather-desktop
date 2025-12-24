@@ -26,6 +26,7 @@ public class MainLayoutController {
 
     private final StationService stationService = new StationService();
     private final ThresholdService thresholdService = new ThresholdService();
+    private final com.nhom.weatherdesktop.service.AlertService alertService = new com.nhom.weatherdesktop.service.AlertService();
     private final StompClient stompClient = new StompClient();
     
     private List<StationResponse> userStations;
@@ -104,13 +105,14 @@ public class MainLayoutController {
     @FXML
     private Label stationLocationLabel;
     
-
+    @FXML
+    private VBox alertsListContainer;
     
-
+    @FXML
+    private Label unreadCountLabel;
     
-
-    
-
+    @FXML
+    private VBox emptyAlertsState;
     
     @FXML
     private Button showStationsButton;
@@ -158,6 +160,7 @@ public class MainLayoutController {
     private void handleAlerts() {
         showView(alertsView);
         updateActiveButton(alertsButton);
+        loadAlerts();
     }
 
     @FXML
@@ -484,11 +487,61 @@ public class MainLayoutController {
                 .orElse("Station #" + alert.stationId());
         
         String title = "⚠️ Alert from " + stationName;
-        String message = alert.message() + "\nType: " + alert.type() + "\nSeverity: " + alert.severity();
-        AlertService.showWarning(title, message);
+        String message = alert.message();
+        com.nhom.weatherdesktop.util.AlertService.showWarning(title, message);
     }
     
     private void handleConnectionStatus(Boolean connected) {
         // TODO: Update connection indicator in UI
+    }
+    
+    // ========== Alert Management ==========
+    
+    private void loadAlerts() {
+        new Thread(() -> {
+            try {
+                List<com.nhom.weatherdesktop.dto.response.AlertResponse> alertResponses = 
+                    alertService.getAllMyAlerts();
+                
+                List<com.nhom.weatherdesktop.model.Alert> alerts = alertResponses.stream()
+                        .map(com.nhom.weatherdesktop.model.Alert::fromResponse)
+                        .toList();
+                
+                Platform.runLater(() -> displayAlerts(alerts));
+                
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    showError("Failed to load alerts: " + e.getMessage());
+                });
+            }
+        }).start();
+    }
+    
+    private void displayAlerts(List<com.nhom.weatherdesktop.model.Alert> alerts) {
+        alertsListContainer.getChildren().clear();
+        
+        if (alerts == null || alerts.isEmpty()) {
+            emptyAlertsState.setVisible(true);
+            unreadCountLabel.setVisible(false);
+            return;
+        }
+        
+        emptyAlertsState.setVisible(false);
+        
+        // Count unread alerts
+        long unreadCount = alerts.stream().filter(com.nhom.weatherdesktop.model.Alert::isNew).count();
+        if (unreadCount > 0) {
+            unreadCountLabel.setText(String.valueOf(unreadCount));
+            unreadCountLabel.setVisible(true);
+        } else {
+            unreadCountLabel.setVisible(false);
+        }
+        
+        // Display alerts
+        for (com.nhom.weatherdesktop.model.Alert alert : alerts) {
+            com.nhom.weatherdesktop.ui.component.AlertCard card = 
+                new com.nhom.weatherdesktop.ui.component.AlertCard(alert);
+            alertsListContainer.getChildren().add(card);
+        }
     }
 }

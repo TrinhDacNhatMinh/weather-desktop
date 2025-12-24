@@ -1,13 +1,14 @@
 package com.nhom.weatherdesktop.dto.response;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record AlertResponse(
     Long id,
-    Long stationId,
-    String type,
     String message,
-    String severity,
-    LocalDateTime timestamp
+    String status,
+    Instant createdAt,
+    Long weatherDataId,
+    Long stationId,
+    String stationName
 ) {
 }
