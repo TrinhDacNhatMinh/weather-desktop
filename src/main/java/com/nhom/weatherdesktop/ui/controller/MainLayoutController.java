@@ -1,13 +1,17 @@
 package com.nhom.weatherdesktop.ui.controller;
 
+import com.nhom.weatherdesktop.config.AppConfig;
+import com.nhom.weatherdesktop.dto.response.AlertResponse;
 import com.nhom.weatherdesktop.dto.response.PageResponse;
 import com.nhom.weatherdesktop.dto.response.StationResponse;
+import com.nhom.weatherdesktop.dto.response.WeatherDataResponse;
 import com.nhom.weatherdesktop.service.StationService;
 import com.nhom.weatherdesktop.service.ThresholdService;
 import com.nhom.weatherdesktop.ui.component.StationCard;
 import com.nhom.weatherdesktop.ui.controller.dialog.AddStationDialogController;
 import com.nhom.weatherdesktop.ui.controller.dialog.UpdateStationDialogController;
 import com.nhom.weatherdesktop.util.AlertService;
+import com.nhom.weatherdesktop.websocket.StompClient;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -16,10 +20,16 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.util.List;
+
 public class MainLayoutController {
 
     private final StationService stationService = new StationService();
     private final ThresholdService thresholdService = new ThresholdService();
+    private final StompClient stompClient = new StompClient();
+    
+    private List<StationResponse> userStations;
+    private Long currentStationId; // Currently subscribed station for weather data
 
     // Sidebar
     @FXML
@@ -110,7 +120,17 @@ public class MainLayoutController {
         // Set initial view to MyStation
         showMyStationView();
         
-
+        // Initialize WebSocket connection
+        initializeWebSocket();
+    }
+    
+    private void initializeWebSocket() {
+        stompClient.setWeatherDataHandler(this::handleWeatherData);
+        stompClient.setAlertHandler(this::handleAlert);
+        stompClient.setConnectionStatusHandler(this::handleConnectionStatus);
+        
+        String wsUrl = AppConfig.getWebSocketUrl();
+        stompClient.connect(wsUrl);
     }
 
     @FXML
@@ -217,10 +237,12 @@ public class MainLayoutController {
         new Thread(() -> {
             try {
                 PageResponse<StationResponse> response = stationService.getMyStations(0, 10);
+                userStations = response.content();
                 
                 // Update UI on JavaFX thread
                 Platform.runLater(() -> {
-                    displayStations(response.content());
+                    displayStations(userStations);
+                    subscribeToStations(userStations);
                 });
                 
             } catch (Exception e) {
@@ -228,6 +250,48 @@ public class MainLayoutController {
                     showError("Không thể tải danh sách trạm: " + e.getMessage());
                 });
             }
+        }).start();
+    }
+    
+    /**
+     * Subscribe to all alert topics and first station's weather topic
+     */
+    private void subscribeToStations(List<StationResponse> stations) {
+        if (stations == null || stations.isEmpty()) {
+            return;
+        }
+        
+        new Thread(() -> {
+            int retries = 30;
+            while (!stompClient.isConnected() && retries > 0) {
+                try {
+                    Thread.sleep(100);
+                    retries--;
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+            
+            if (!stompClient.isConnected()) {
+                Platform.runLater(() -> 
+                    showError("WebSocket chưa kết nối. Không thể subscribe.")
+                );
+                return;
+            }
+            
+            Platform.runLater(() -> {
+                for (StationResponse station : stations) {
+                    String alertTopic = "/topic/stations/" + station.id() + "/alerts";
+                    stompClient.subscribe(alertTopic, "alert");
+                }
+                
+                if (!stations.isEmpty()) {
+                    StationResponse firstStation = stations.get(0);
+                    currentStationId = firstStation.id();
+                    String weatherTopic = "/topic/stations/" + currentStationId + "/weather";
+                    stompClient.subscribe(weatherTopic, "weather");
+                }
+            });
         }).start();
     }
     
@@ -255,10 +319,20 @@ public class MainLayoutController {
         // Add stations dynamically
         for (StationResponse station : stations) {
             StationCard stationCard = new StationCard(station);
+            stationCard.setOnMouseClicked(event -> switchWeatherStation(station.id()));
             stationCard.setOnEdit(this::handleUpdateStation);
             stationCard.setOnDetach(this::handleDetachStation);
             stationList.getChildren().add(stationCard);
         }
+    }
+    
+    private void switchWeatherStation(Long newStationId) {
+        if (newStationId.equals(currentStationId)) return;
+        if (currentStationId != null) {
+            stompClient.unsubscribe("/topic/stations/" + currentStationId + "/weather");
+        }
+        stompClient.subscribe("/topic/stations/" + newStationId + "/weather", "weather");
+        currentStationId = newStationId;
     }
     
     private void handleUpdateStation(StationResponse station) {
@@ -330,5 +404,33 @@ public class MainLayoutController {
         if (!activeButton.getStyleClass().contains("active")) {
             activeButton.getStyleClass().add("active");
         }
+    }
+    
+    // ========== WebSocket Handlers ==========
+    
+    private void handleWeatherData(WeatherDataResponse data) {
+        if (data.temperature() != null) temperatureValue.setText(String.format("%.1f", data.temperature()));
+        if (data.humidity() != null) humidityValue.setText(String.format("%.0f", data.humidity()));
+        if (data.windSpeed() != null) windspeedValue.setText(String.format("%.1f", data.windSpeed()));
+        if (data.rainfall() != null) rainfallValue.setText(String.format("%.1f", data.rainfall()));
+        if (data.dust() != null) dustValue.setText(String.format("%.1f", data.dust()));
+    }
+    
+    private void handleAlert(AlertResponse alert) {
+        if (userStations == null) return;
+        
+        String stationName = userStations.stream()
+                .filter(s -> s.id().equals(alert.stationId()))
+                .map(StationResponse::name)
+                .findFirst()
+                .orElse("Station #" + alert.stationId());
+        
+        String title = "⚠️ Alert from " + stationName;
+        String message = alert.message() + "\nType: " + alert.type() + "\nSeverity: " + alert.severity();
+        AlertService.showWarning(title, message);
+    }
+    
+    private void handleConnectionStatus(Boolean connected) {
+        // TODO: Update connection indicator in UI
     }
 }

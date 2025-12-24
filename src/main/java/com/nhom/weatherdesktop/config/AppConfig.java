@@ -35,6 +35,10 @@ public class AppConfig {
         return PROPS.getProperty("app.version", "1.0.0");
     }
     
+    public static String getWebSocketUrl() {
+        return PROPS.getProperty("websocket.url", "ws://localhost:8080/ws");
+    }
+    
     public static String getProperty(String key, String defaultValue) {
         return PROPS.getProperty(key, defaultValue);
     }
