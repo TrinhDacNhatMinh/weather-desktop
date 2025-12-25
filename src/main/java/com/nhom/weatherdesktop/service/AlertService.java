@@ -94,4 +94,23 @@ public class AlertService implements IAlertService {
             throw new RuntimeException("Failed to delete alert: " + response.statusCode());
         }
     }
+    
+    /**
+     * Delete all alerts of current user
+     */
+    public void deleteAllMyAlerts() throws Exception {
+        String url = baseUrl + "/me";
+        
+        var httpRequest = HttpRequestBuilder
+                .createWithFullUrl(url)
+                .withAuth()
+                .delete()
+                .build();
+        
+        HttpResponse<String> response = HttpRequestBuilder.sendWithRefresh(httpRequest);
+        
+        if (response.statusCode() != 204 && response.statusCode() != 200) {
+            throw new RuntimeException("Failed to delete all alerts: " + response.statusCode());
+        }
+    }
 }

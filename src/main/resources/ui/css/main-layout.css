@@ -26,6 +26,19 @@
     -fx-font-size: 14px;
 }
 
+/* Sidebar Alert Badge */
+.sidebar-alert-badge {
+    -fx-background-color: #DC2626;
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 2 6;
+    -fx-background-radius: 10;
+    -fx-min-width: 18px;
+    -fx-alignment: center;
+}
+
+
 /* Show Station List Button */
 .show-stations-btn {
     -fx-font-size: 14px;
@@ -247,4 +260,19 @@
     -fx-font-size: 12px;
     -fx-text-fill: #9CA3AF;
     -fx-font-style: italic;
+}
+
+/* Delete All Button */
+.delete-all-btn {
+    -fx-background-color: #EF4444;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-padding: 8 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.delete-all-btn:hover {
+    -fx-background-color: #DC2626;
 }

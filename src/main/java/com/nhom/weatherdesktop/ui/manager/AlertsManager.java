@@ -21,6 +21,7 @@ public class AlertsManager {
     private final Label unreadCountLabel;
     private final VBox emptyAlertsState;
     private final IAlertService alertService;
+    private final Label sidebarAlertBadge;
     
     private Consumer<String> errorHandler;
     
@@ -28,12 +29,14 @@ public class AlertsManager {
         VBox alertsListContainer,
         Label unreadCountLabel,
         VBox emptyAlertsState,
-        IAlertService alertService
+        IAlertService alertService,
+        Label sidebarAlertBadge
     ) {
         this.alertsListContainer = alertsListContainer;
         this.unreadCountLabel = unreadCountLabel;
         this.emptyAlertsState = emptyAlertsState;
         this.alertService = alertService;
+        this.sidebarAlertBadge = sidebarAlertBadge;
     }
     
     public void setErrorHandler(Consumer<String> errorHandler) {
@@ -76,6 +79,7 @@ public class AlertsManager {
         if (alerts == null || alerts.isEmpty()) {
             emptyAlertsState.setVisible(true);
             unreadCountLabel.setVisible(false);
+            sidebarAlertBadge.setVisible(false);
             return;
         }
         
@@ -86,8 +90,13 @@ public class AlertsManager {
         if (unreadCount > 0) {
             unreadCountLabel.setText(String.valueOf(unreadCount));
             unreadCountLabel.setVisible(true);
+            
+            // Update sidebar badge
+            sidebarAlertBadge.setText(String.valueOf(unreadCount));
+            sidebarAlertBadge.setVisible(true);
         } else {
             unreadCountLabel.setVisible(false);
+            sidebarAlertBadge.setVisible(false);
         }
         
         // Display alerts

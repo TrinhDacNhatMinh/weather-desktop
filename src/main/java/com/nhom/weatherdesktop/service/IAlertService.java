@@ -30,4 +30,9 @@ public interface IAlertService {
      * Delete an alert by ID
      */
     void deleteAlert(Long alertId) throws Exception;
+    
+    /**
+     * Delete all alerts of current user
+     */
+    void deleteAllMyAlerts() throws Exception;
 }

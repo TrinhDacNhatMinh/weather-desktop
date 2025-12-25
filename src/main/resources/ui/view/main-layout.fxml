@@ -61,7 +61,9 @@
                     <graphic>
                         <HBox alignment="CENTER_LEFT" spacing="12">
                             <Label text="🔔" styleClass="sidebar-icon"/>
-                            <Label fx:id="alertsText" text="Alert" styleClass="sidebar-text"/>
+                            <Label fx:id="alertsText" text="Alerts" styleClass="sidebar-text"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="sidebarAlertBadge" text="0" styleClass="sidebar-alert-badge" visible="false"/>
                         </HBox>
                     </graphic>
                 </Button>
@@ -202,6 +204,15 @@
             
             <!-- Alerts View (Hidden by default) -->
             <VBox fx:id="alertsView" spacing="24" alignment="TOP_CENTER" managed="false" visible="false">
+                <!-- Delete All Button - Top Right -->
+                <HBox alignment="TOP_RIGHT">
+                    <Button fx:id="deleteAllAlertsButton" 
+                            text="🗑️ Delete All" 
+                            onAction="#handleDeleteAllAlerts"
+                            styleClass="delete-all-btn"
+                            visible="true"/>
+                </HBox>
+                
                 <!-- Header with unread count -->
                 <HBox alignment="CENTER_LEFT" spacing="16">
                     <Label text="🔔 Alerts" styleClass="card-header"/>

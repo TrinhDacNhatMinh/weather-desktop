@@ -93,8 +93,8 @@ public class AlertCard extends HBox {
     
     private String formatTimestamp(Instant instant) {
         // WORKAROUND: Server returns timestamp in +07:00 timezone but marks it as UTC (Z)
-        // We need to subtract offset to get the actual UTC time
-        Instant adjustedInstant = instant.minusSeconds(getServerTimezoneOffsetSeconds());
+        // We need to ADD offset to get the actual local time for comparison
+        Instant adjustedInstant = instant.plusSeconds(getServerTimezoneOffsetSeconds());
         
         Instant now = Instant.now();
         Duration duration = Duration.between(adjustedInstant, now);
@@ -149,9 +149,9 @@ public class AlertCard extends HBox {
                         onAlertUpdated.run();
                     }
                 },
-                // On error: just log, don't show error to user
+                // On error: silently ignore, don't show to user
                 error -> {
-                    System.err.println("Failed to mark alert as seen: " + error.getMessage());
+                    // Silently ignore errors (alert may have been deleted)
                 }
             );
         }

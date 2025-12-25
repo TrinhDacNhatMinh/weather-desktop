@@ -133,6 +133,12 @@ public class MainLayoutController {
     
     @FXML
     private VBox stationListContainer;
+    
+    @FXML
+    private Button deleteAllAlertsButton;
+    
+    @FXML
+    private Label sidebarAlertBadge;
 
     @FXML
     public void initialize() {
@@ -149,7 +155,7 @@ public class MainLayoutController {
         
         alertsManager = new AlertsManager(
             alertsListContainer, unreadCountLabel, emptyAlertsState,
-            alertService
+            alertService, sidebarAlertBadge
         );
         alertsManager.setErrorHandler(this::showError);
         
@@ -422,15 +428,13 @@ public class MainLayoutController {
     private void handleAlert(AlertResponse alert) {
         if (userStations == null) return;
         
-        String stationName = userStations.stream()
-                .filter(s -> s.id().equals(alert.stationId()))
-                .map(StationResponse::name)
-                .findFirst()
-                .orElse("Station #" + alert.stationId());
+        // Check if alerts for this station are snoozed
+        if (com.nhom.weatherdesktop.util.AlertSnoozeManager.getInstance().isSnoozed(alert.stationId())) {
+            return;
+        }
         
-        String title = "⚠️ Alert from " + stationName;
-        String message = alert.message();
-        com.nhom.weatherdesktop.util.AlertService.showWarning(title, message);
+        // No popup dialog - reload alerts list to update badge and show in list
+        loadAlerts();
     }
     
     private void handleConnectionStatus(Boolean connected) {
@@ -467,18 +471,26 @@ public class MainLayoutController {
         if (alerts == null || alerts.isEmpty()) {
             emptyAlertsState.setVisible(true);
             unreadCountLabel.setVisible(false);
+            deleteAllAlertsButton.setVisible(false);
+            sidebarAlertBadge.setVisible(false);
             return;
         }
         
         emptyAlertsState.setVisible(false);
+        deleteAllAlertsButton.setVisible(true); // Show Delete All button when there are alerts
         
         // Count unread alerts
         long unreadCount = alerts.stream().filter(com.nhom.weatherdesktop.model.Alert::isNew).count();
         if (unreadCount > 0) {
             unreadCountLabel.setText(String.valueOf(unreadCount));
             unreadCountLabel.setVisible(true);
+            
+            // Update sidebar badge
+            sidebarAlertBadge.setText(String.valueOf(unreadCount));
+            sidebarAlertBadge.setVisible(true);
         } else {
             unreadCountLabel.setVisible(false);
+            sidebarAlertBadge.setVisible(false);
         }
         
         // Display alerts
@@ -487,5 +499,38 @@ public class MainLayoutController {
                 new com.nhom.weatherdesktop.ui.component.AlertCard(alert, alertService, this::loadAlerts);
             alertsListContainer.getChildren().add(card);
         }
+    }
+    
+    @FXML
+    private void handleDeleteAllAlerts() {
+        // Show confirmation
+        boolean confirmed = AlertService.confirm(
+            "Delete All Alerts",
+            "Are you sure you want to delete ALL alerts? This action cannot be undone."
+        );
+        
+        if (!confirmed) {
+            return;
+        }
+        
+        // Call API to delete all alerts
+        AsyncTaskRunner.runAsync(
+            // Background task
+            () -> {
+                try {
+                    alertService.deleteAllMyAlerts();
+                    return null;
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to delete all alerts: " + e.getMessage(), e);
+                }
+            },
+            // On success
+            result -> {
+                AlertService.showSuccess("All alerts deleted successfully!");
+                loadAlerts(); // Refresh alerts list
+            },
+            // On error
+            e -> showError(ErrorHandler.getUserMessage(e))
+        );
     }
 }
