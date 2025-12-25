@@ -9,6 +9,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2OutlinedAL;
+import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 
 import java.util.function.Consumer;
 
@@ -27,8 +30,9 @@ public class StationCard extends VBox {
         content.setAlignment(Pos.CENTER_LEFT);
         
         // Icon
-        Label icon = new Label("📍");
-        icon.setStyle("-fx-font-size: 24px;");
+        FontIcon icon = new FontIcon(Material2OutlinedAL.LOCATION_ON);
+        icon.setIconSize(24);
+        icon.setStyle("-fx-icon-color: #3B82F6;");
         
         // Info VBox
         VBox info = new VBox(4);
@@ -38,8 +42,14 @@ public class StationCard extends VBox {
         nameLabel.setStyle("-fx-font-weight: 700; -fx-text-fill: #FFFFFF; -fx-font-size: 16px;");
         
         // Location - light gray for good readability
-        Label locationLabel = new Label("📍 " + station.location());
-        locationLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #D1D5DB; -fx-font-weight: 500;");
+        HBox locationBox = new HBox(6);
+        locationBox.setAlignment(Pos.CENTER_LEFT);
+        FontIcon locationIcon = new FontIcon(Material2OutlinedAL.LOCATION_ON);
+        locationIcon.setIconSize(13);
+        locationIcon.setStyle("-fx-icon-color: #9CA3AF;");
+        Label locationText = new Label(station.location());
+        locationText.setStyle("-fx-font-size: 13px; -fx-text-fill: #D1D5DB; -fx-font-weight: 500;");
+        locationBox.getChildren().addAll(locationIcon, locationText);
         
         // Status with better colors
         String statusText = "ONLINE".equalsIgnoreCase(station.status()) ? "● Online" : "● Offline";
@@ -47,7 +57,7 @@ public class StationCard extends VBox {
         Label statusLabel = new Label(statusText);
         statusLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: " + statusColor + "; -fx-font-weight: 600;");
         
-        info.getChildren().addAll(nameLabel, locationLabel, statusLabel);
+        info.getChildren().addAll(nameLabel, locationBox, statusLabel);
         
         // Spacer
         Region spacer = new Region();
@@ -60,8 +70,11 @@ public class StationCard extends VBox {
         actionButtons.setStyle("-fx-min-width: 100;"); // Reserve space
         
         // Update button - vibrant blue
-        Button updateBtn = new Button("✏️");
-        updateBtn.setStyle("-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-size: 16px; " +
+        Button updateBtn = new Button();
+        FontIcon editIcon = new FontIcon(Material2OutlinedAL.EDIT);
+        editIcon.setIconSize(16);
+        updateBtn.setGraphic(editIcon);
+        updateBtn.setStyle("-fx-background-color: #2563EB; -fx-text-fill: white; " +
                           "-fx-padding: 8 14; -fx-background-radius: 6; -fx-cursor: hand;");
         updateBtn.setOnAction(e -> {
             if (onEdit != null) {
@@ -70,8 +83,11 @@ public class StationCard extends VBox {
         });
         
         // Detach button - vibrant red
-        Button detachBtn = new Button("🗑️");
-        detachBtn.setStyle("-fx-background-color: #DC2626; -fx-text-fill: white; -fx-font-size: 16px; " +
+        Button detachBtn = new Button();
+        FontIcon deleteIcon = new FontIcon(Material2OutlinedAL.DELETE);
+        deleteIcon.setIconSize(16);
+        detachBtn.setGraphic(deleteIcon);
+        detachBtn.setStyle("-fx-background-color: #DC2626; -fx-text-fill: white; " +
                           "-fx-padding: 8 14; -fx-background-radius: 6; -fx-cursor: hand;");
         detachBtn.setOnAction(e -> {
             if (onDetach != null) {

@@ -19,7 +19,6 @@
         <VBox fx:id="sidebar" styleClass="sidebar">
             <children>
                 <Button fx:id="toggleSidebarButton" 
-                        text="☰" 
                         onAction="#handleToggleSidebar"
                         styleClass="toggle-sidebar-btn"
                         maxWidth="Infinity"/>
@@ -34,24 +33,13 @@
                         maxWidth="Infinity">
                     <graphic>
                         <HBox alignment="CENTER_LEFT" spacing="12">
-                            <Label text="📍" styleClass="sidebar-icon"/>
+                            <Label fx:id="myStationIcon" text="📍" styleClass="sidebar-icon"/>
                             <Label fx:id="myStationText" text="My Station" styleClass="sidebar-text"/>
                         </HBox>
                     </graphic>
                 </Button>
                         
-                <Button fx:id="publicStationsButton" 
-                        styleClass="sidebar-button"
-                        onAction="#handlePublicStations"
-                        mnemonicParsing="false"
-                        maxWidth="Infinity">
-                    <graphic>
-                        <HBox alignment="CENTER_LEFT" spacing="12">
-                            <Label text="🌐" styleClass="sidebar-icon"/>
-                            <Label fx:id="publicStationsText" text="Station Public" styleClass="sidebar-text"/>
-                        </HBox>
-                    </graphic>
-                </Button>
+
                         
                 <Button fx:id="alertsButton" 
                         styleClass="sidebar-button"
@@ -60,7 +48,7 @@
                         maxWidth="Infinity">
                     <graphic>
                         <HBox alignment="CENTER_LEFT" spacing="12">
-                            <Label text="🔔" styleClass="sidebar-icon"/>
+                            <Label fx:id="alertsIcon" text="🔔" styleClass="sidebar-icon"/>
                             <Label fx:id="alertsText" text="Alerts" styleClass="sidebar-text"/>
                             <Region HBox.hgrow="ALWAYS"/>
                             <Label fx:id="sidebarAlertBadge" text="0" styleClass="sidebar-alert-badge" visible="false"/>
@@ -75,7 +63,7 @@
                         maxWidth="Infinity">
                     <graphic>
                         <HBox alignment="CENTER_LEFT" spacing="12">
-                            <Label text="⚙️" styleClass="sidebar-icon"/>
+                            <Label fx:id="settingsIcon" text="⚙️" styleClass="sidebar-icon"/>
                             <Label fx:id="settingsText" text="Setting" styleClass="sidebar-text"/>
                         </HBox>
                     </graphic>
@@ -99,7 +87,7 @@
                         <Label text="My Weather Station" styleClass="card-header"/>
                         <Region HBox.hgrow="ALWAYS"/>
                         <Button fx:id="showStationsButton" 
-                                text="📋 Show Station List" 
+                                text="Show Station List" 
                                 onAction="#handleShowStationList"
                                 styleClass="show-stations-btn"/>
                     </HBox>
@@ -113,7 +101,7 @@
                     <!-- Large Temperature Display -->
                     <VBox styleClass="temperature-card" spacing="16" alignment="CENTER">
                         <HBox alignment="CENTER" spacing="24">
-                            <Label text="🌤️" styleClass="temperature-icon"/>
+                            <Label fx:id="weatherIcon" text="🌤️" styleClass="temperature-icon"/>
                             <VBox alignment="CENTER_LEFT" spacing="4">
                                 <HBox alignment="BOTTOM_LEFT" spacing="8">
                                     <Label fx:id="temperatureValue" text="24" styleClass="temperature-value"/>
@@ -157,7 +145,7 @@
                         <VBox spacing="4" GridPane.columnIndex="3" GridPane.rowIndex="0" alignment="CENTER_LEFT">
                             <Label text="Air Quality (Dust)" styleClass="stat-label"/>
                             <HBox alignment="BOTTOM_LEFT" spacing="6">
-                                <Label text="🔴" styleClass="stat-indicator"/>
+                                <Label fx:id="dustIndicator" text="🔴" styleClass="stat-indicator"/>
                                 <Label fx:id="dustValue" text="111" styleClass="stat-value"/>
                             </HBox>
                         </VBox>
@@ -187,37 +175,32 @@
                     
                     <!-- Add Station Button -->
                     <Button fx:id="addStationButton" 
-                            text="➕ Add Station" 
+                            text="Add Station" 
                             onAction="#handleAddStation"
                             maxWidth="Infinity"
                             styleClass="add-station-btn"/>
                 </VBox>
             </AnchorPane>
             
-            <!-- Public Stations View (Hidden by default) -->
-            <VBox fx:id="publicStationsView" spacing="24" alignment="TOP_CENTER" managed="false" visible="false">
-                <Label text="🌐 Public Stations" styleClass="card-header"/>
-                <VBox styleClass="card empty-state" prefWidth="400" prefHeight="200">
-                    <Label text="Public stations will be displayed here" styleClass="empty-state-text"/>
-                </VBox>
-            </VBox>
+
             
             <!-- Alerts View (Hidden by default) -->
             <VBox fx:id="alertsView" spacing="24" alignment="TOP_CENTER" managed="false" visible="false">
                 <!-- Delete All Button - Top Right -->
                 <HBox alignment="TOP_RIGHT">
                     <Button fx:id="deleteAllAlertsButton" 
-                            text="🗑️ Delete All" 
+                            text="Delete All" 
                             onAction="#handleDeleteAllAlerts"
                             styleClass="delete-all-btn"
-                            visible="true"/>
+                            visible="false"/>
                 </HBox>
                 
                 <!-- Header with unread count -->
-                <HBox alignment="CENTER_LEFT" spacing="16">
-                    <Label text="🔔 Alerts" styleClass="card-header"/>
-                    <Label fx:id="unreadCountLabel" text="0" styleClass="unread-badge" visible="false"/>
-                </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="16">
+                        <Label fx:id="alertsHeaderIcon" text="🔔" styleClass="card-header-icon"/>
+                        <Label text="Alerts" styleClass="card-header"/>
+                        <Label fx:id="unreadCountLabel" text="0" styleClass="unread-badge" visible="false"/>
+                    </HBox>
                 
                 <!-- Alerts List Container -->
                 <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="alerts-scroll" prefHeight="600">
@@ -227,7 +210,7 @@
                 <!-- Empty State -->
                 <VBox fx:id="emptyAlertsState" alignment="CENTER" spacing="16" VBox.vgrow="ALWAYS" 
                       styleClass="empty-state" prefWidth="500" prefHeight="400" visible="true">
-                    <Label text="🔔" styleClass="empty-icon"/>
+                    <Label fx:id="emptyAlertsIcon" text="🔔" styleClass="empty-icon"/>
                     <Label text="No alerts yet" styleClass="empty-title"/>
                     <Label text="You'll see notifications here when weather conditions trigger alerts" 
                            styleClass="empty-subtitle" wrapText="true" textAlignment="CENTER" maxWidth="400"/>
@@ -236,7 +219,10 @@
             
             <!-- Settings View (Hidden by default) -->
             <VBox fx:id="settingsView" spacing="24" alignment="TOP_CENTER" managed="false" visible="false">
-                <Label text="⚙️ Settings" styleClass="card-header"/>
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <Label fx:id="settingsHeaderIcon" text="⚙️" styleClass="card-header-icon"/>
+                    <Label text="Settings" styleClass="card-header"/>
+                </HBox>
                 <VBox styleClass="card" spacing="16" prefWidth="500">
                     <Label text="Application Settings" styleClass="card-title"/>
                     <Separator/>

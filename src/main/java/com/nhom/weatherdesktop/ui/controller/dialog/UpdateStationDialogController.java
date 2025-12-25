@@ -117,7 +117,7 @@ public class UpdateStationDialogController {
             }).start();
         }
         
-        Button pickLocationBtn = new Button("🗺️ Pick on Map");
+        Button pickLocationBtn = new Button(" Pick on Map");
         pickLocationBtn.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 8 16; -fx-cursor: hand;");
         pickLocationBtn.setOnAction(e -> {
             MapLocationPicker mapPicker = new MapLocationPicker();

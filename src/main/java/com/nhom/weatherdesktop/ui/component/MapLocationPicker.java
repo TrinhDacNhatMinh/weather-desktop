@@ -137,7 +137,7 @@ public class MapLocationPicker {
                 
                 // Update label on JavaFX thread
                 javafx.application.Platform.runLater(() -> {
-                    coordsLabel.setText(String.format("📍 %s", address));
+                    coordsLabel.setText(address);
                 });
             }
         }).start();

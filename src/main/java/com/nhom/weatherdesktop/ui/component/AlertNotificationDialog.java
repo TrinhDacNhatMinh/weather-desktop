@@ -143,7 +143,6 @@ public class AlertNotificationDialog {
         
         // Event handlers
         snoozeBtn.setOnAction(e -> {
-            System.out.println("DEBUG: Snooze button clicked!");
             String selected = snoozeCombo.getValue();
             int minutes = parseMinutes(selected);
             if (minutes > 0) {
@@ -160,12 +159,10 @@ public class AlertNotificationDialog {
         });
         
         disableBtn.setOnAction(e -> {
-            System.out.println("DEBUG: Disable button clicked!");
             handleDisableAlert(dialog);
         });
         
         closeBtn.setOnAction(e -> {
-            System.out.println("DEBUG: Close button clicked!");
             dialog.close();
         });
         
@@ -197,33 +194,23 @@ public class AlertNotificationDialog {
     }
     
     private void handleDisableAlert(Stage dialog) {
-        System.out.println("DEBUG: handleDisableAlert called");
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Disable Alerts");
         confirm.setHeaderText("Disable all alerts for " + stationName + "?");
         confirm.setContentText("This will turn off all threshold monitoring.");
         
-        System.out.println("DEBUG: Showing confirmation dialog");
         confirm.showAndWait().ifPresent(response -> {
-            System.out.println("DEBUG: Response received: " + response);
             if (response == ButtonType.OK) {
-                System.out.println("DEBUG: User confirmed, calling disableAlertsAsync");
                 disableAlertsAsync(dialog);
-            } else {
-                System.out.println("DEBUG: User cancelled");
             }
         });
-        System.out.println("DEBUG: handleDisableAlert finished");
     }
     
     private void disableAlertsAsync(Stage dialog) {
-        System.out.println("DEBUG: disableAlertsAsync started");
         AsyncTaskRunner.runAsync(
             () -> {
-                System.out.println("DEBUG: Background task running");
                 try {
                     ThresholdResponse current = thresholdService.getThresholdByStationId(stationId);
-                    System.out.println("DEBUG: Got threshold: " + current);
                     UpdateThresholdRequest request = new UpdateThresholdRequest(
                         current.temperatureMin(), current.temperatureMax(),
                         current.humidityMin(), current.humidityMax(),
@@ -232,16 +219,12 @@ public class AlertNotificationDialog {
                         false, false, false, false, false
                     );
                     thresholdService.updateThreshold(current.id(), request);
-                    System.out.println("DEBUG: Threshold updated successfully");
                     return null;
                 } catch (Exception e) {
-                    System.err.println("DEBUG: Exception in background task: " + e.getMessage());
-                    e.printStackTrace();
                     throw new RuntimeException("Failed: " + e.getMessage(), e);
                 }
             },
             result -> {
-                System.out.println("DEBUG: Success callback");
                 dialog.close();
                 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -251,8 +234,6 @@ public class AlertNotificationDialog {
                 alert.showAndWait();
             },
             error -> {
-                System.err.println("DEBUG: Error callback: " + error.getMessage());
-                error.printStackTrace();
                 
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");

@@ -37,7 +37,6 @@ public class GeocodingUtil {
             
             return "";
         } catch (Exception e) {
-            System.err.println("Reverse geocoding failed: " + e.getMessage());
             return "";
         }
     }

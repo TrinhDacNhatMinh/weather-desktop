@@ -16,7 +16,6 @@ public class SidebarManager {
     private final VBox sidebar;
     private final Button toggleButton;
     private final Label myStationText;
-    private final Label publicStationsText;
     private final Label alertsText;
     private final Label settingsText;
     
@@ -26,14 +25,12 @@ public class SidebarManager {
         VBox sidebar,
         Button toggleButton,
         Label myStationText,
-        Label publicStationsText,
         Label alertsText,
         Label settingsText
     ) {
         this.sidebar = sidebar;
         this.toggleButton = toggleButton;
         this.myStationText = myStationText;
-        this.publicStationsText = publicStationsText;
         this.alertsText = alertsText;
         this.settingsText = settingsText;
     }
@@ -58,14 +55,10 @@ public class SidebarManager {
         // Hide text labels
         myStationText.setVisible(false);
         myStationText.setManaged(false);
-        publicStationsText.setVisible(false);
-        publicStationsText.setManaged(false);
         alertsText.setVisible(false);
         alertsText.setManaged(false);
         settingsText.setVisible(false);
         settingsText.setManaged(false);
-        
-        toggleButton.setText("☰");
     }
     
     private void expand() {
@@ -75,14 +68,10 @@ public class SidebarManager {
         // Show text labels
         myStationText.setVisible(true);
         myStationText.setManaged(true);
-        publicStationsText.setVisible(true);
-        publicStationsText.setManaged(true);
         alertsText.setVisible(true);
         alertsText.setManaged(true);
         settingsText.setVisible(true);
         settingsText.setManaged(true);
-        
-        toggleButton.setText("☰");
     }
     
     public boolean isCollapsed() {

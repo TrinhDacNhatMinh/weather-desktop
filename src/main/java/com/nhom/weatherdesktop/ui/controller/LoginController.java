@@ -11,6 +11,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2OutlinedAL;
+import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +33,32 @@ public class LoginController {
 
     @FXML
     private Label errorLabel;
+    
+    @FXML
+    private Label usernameIcon;
+    
+    @FXML
+    private Label passwordIcon;
+    
+    @FXML
+    private Button loginButton;
+    
+    @FXML
+    public void initialize() {
+        // Set Material icons for form fields
+        FontIcon userIcon = new FontIcon(Material2OutlinedMZ.PERSON);
+        userIcon.setIconSize(20);
+        usernameIcon.setGraphic(userIcon);
+        usernameIcon.setText("");
+        
+        FontIcon lockIcon = new FontIcon(Material2OutlinedAL.LOCK);
+        lockIcon.setIconSize(20);
+        passwordIcon.setGraphic(lockIcon);
+        passwordIcon.setText("");
+        
+        // Handle Enter key on password field
+        passwordField.setOnAction(e -> handleLogin());
+    }
 
     @FXML
     private void handleLogin() {
@@ -85,7 +115,15 @@ public class LoginController {
             showError("Cannot open main screen");
         }
     }
-      private void showError(String message) {
+    private void showError(String message) {
         errorLabel.setText(message);
+        errorLabel.setVisible(true);
+        errorLabel.setManaged(true);
+    }
+    
+    private void clearError() {
+        errorLabel.setText("");
+        errorLabel.setVisible(false);
+        errorLabel.setManaged(false);
     }
 }

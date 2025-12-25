@@ -91,12 +91,8 @@ public class AuthService {
             HttpResponse<String> response =
                     client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            if (response.statusCode() != 204) {
-                System.err.println("Logout failed with status: " + response.statusCode());
-            }
-
         } catch (Exception e) {
-            System.err.println("Logout error: " + e.getMessage());
+            // Logout errors are silently handled
         } finally {
             // Always clear session locally
             SessionContext.clear();

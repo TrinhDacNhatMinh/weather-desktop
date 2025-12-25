@@ -61,15 +61,14 @@ public class StompClient {
                 
                 @Override
                 public void onError(Exception ex) {
-                    ex.printStackTrace();
+                    // Error is silently handled
                 }
             };
             
             webSocketClient.connect();
             
         } catch (Exception e) {
-            System.err.println("Failed to connect: " + e.getMessage());
-            e.printStackTrace();
+            // Connection error is silently handled
         }
     }
     
@@ -172,7 +171,7 @@ public class StompClient {
             }
             
         } catch (Exception e) {
-            e.printStackTrace();
+            // Message parsing error is silently handled
         }
     }
     

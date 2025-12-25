@@ -6,10 +6,15 @@
 /* Toggle Sidebar Button */
 .toggle-sidebar-btn {
     -fx-background-color: transparent;
-    -fx-text-fill: #9CA3AF;
+    -fx-text-fill: #CBD5E1;
     -fx-font-size: 20px;
     -fx-padding: 12;
     -fx-cursor: hand;
+}
+
+.toggle-sidebar-btn:hover {
+    -fx-background-color: rgba(59, 130, 246, 0.1);
+    -fx-text-fill: #FFFFFF;
 }
 
 /* Sidebar Separator */
@@ -20,10 +25,12 @@
 /* Sidebar Icon Labels */
 .sidebar-icon {
     -fx-font-size: 18px;
+    -fx-text-fill: #CBD5E1;
 }
 
 .sidebar-text {
     -fx-font-size: 14px;
+    -fx-text-fill: #CBD5E1;
 }
 
 /* Sidebar Alert Badge */

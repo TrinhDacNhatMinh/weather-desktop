@@ -5,9 +5,13 @@ import com.nhom.weatherdesktop.dto.response.AlertResponse;
 import com.nhom.weatherdesktop.dto.response.PageResponse;
 import com.nhom.weatherdesktop.dto.response.StationResponse;
 import com.nhom.weatherdesktop.dto.response.WeatherDataResponse;
+import com.nhom.weatherdesktop.dto.response.DailyWeatherSummaryResponse;
 import com.nhom.weatherdesktop.service.StationService;
 import com.nhom.weatherdesktop.service.ThresholdService;
+import com.nhom.weatherdesktop.service.WeatherDataService;
+import com.nhom.weatherdesktop.service.IWeatherDataService;
 import com.nhom.weatherdesktop.ui.component.StationCard;
+import com.nhom.weatherdesktop.ui.component.WeatherChartComponent;
 import com.nhom.weatherdesktop.ui.controller.dialog.AddStationDialogController;
 import com.nhom.weatherdesktop.ui.controller.dialog.UpdateStationDialogController;
 import com.nhom.weatherdesktop.ui.NavigationManager;
@@ -26,6 +30,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2OutlinedAL;
+import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 
 import java.util.List;
 
@@ -34,6 +41,7 @@ public class MainLayoutController {
     private final StationService stationService = new StationService();
     private final ThresholdService thresholdService = new ThresholdService();
     private final com.nhom.weatherdesktop.service.AlertService alertService = new com.nhom.weatherdesktop.service.AlertService();
+    private final IWeatherDataService weatherDataService = new WeatherDataService();
     private final StompClient stompClient = new StompClient();
     private final NavigationManager navigationManager = new NavigationManager();
     
@@ -41,6 +49,9 @@ public class MainLayoutController {
     private WeatherDisplayManager weatherDisplayManager;
     private SidebarManager sidebarManager;
     private AlertsManager alertsManager;
+    
+    // Weather Chart
+    private WeatherChartComponent weatherChart;
     
     private List<StationResponse> userStations;
     private Long currentStationId; // Currently subscribed station for weather data
@@ -56,13 +67,19 @@ public class MainLayoutController {
     private Label myStationText;
     
     @FXML
-    private Label publicStationsText;
+    private Label myStationIcon;
     
     @FXML
     private Label alertsText;
     
     @FXML
+    private Label alertsIcon;
+    
+    @FXML
     private Label settingsText;
+    
+    @FXML
+    private Label settingsIcon;
     
     // Sidebar state
     private boolean isSidebarCollapsed = false;
@@ -72,8 +89,7 @@ public class MainLayoutController {
     @FXML
     private Button myStationButton;
     
-    @FXML
-    private Button publicStationsButton;
+
     
     @FXML
     private Button alertsButton;
@@ -85,8 +101,7 @@ public class MainLayoutController {
     @FXML
     private AnchorPane myStationView;
     
-    @FXML
-    private VBox publicStationsView;
+
     
     @FXML
     private VBox alertsView;
@@ -150,7 +165,7 @@ public class MainLayoutController {
         
         sidebarManager = new SidebarManager(
             sidebar, toggleSidebarButton,
-            myStationText, publicStationsText, alertsText, settingsText
+            myStationText, alertsText, settingsText
         );
         
         alertsManager = new AlertsManager(
@@ -161,7 +176,6 @@ public class MainLayoutController {
         
         // Register views with NavigationManager
         navigationManager.registerView("myStation", myStationView, myStationButton);
-        navigationManager.registerView("publicStations", publicStationsView, publicStationsButton);
         navigationManager.registerView("alerts", alertsView, alertsButton);
         navigationManager.registerView("settings", settingsView, settingsButton);
         
@@ -171,8 +185,51 @@ public class MainLayoutController {
         // Set initial weather values
         weatherDisplayManager.reset();
         
+        // Initialize weather chart
+        weatherChart = new WeatherChartComponent();
+        
+        // Add chart to myStationView (below weather stats)
+        Platform.runLater(() -> {
+            if (myStationView != null) {
+                for (javafx.scene.Node node : myStationView.getChildren()) {
+                    if (node instanceof VBox) {
+                        VBox container = (VBox) node;
+                        container.getChildren().add(weatherChart);
+                        break;
+                    }
+                }
+            }
+        });
+        
         // Initialize WebSocket connection
         initializeWebSocket();
+        
+        // Set Material Design Icons
+        setMaterialIcons();
+    }
+    
+    private void setMaterialIcons() {
+        // Toggle button icon
+        FontIcon menuIcon = new FontIcon(Material2OutlinedMZ.MENU);
+        menuIcon.setIconSize(20);
+        toggleSidebarButton.setGraphic(menuIcon);
+        toggleSidebarButton.setText("");
+        
+        // Sidebar icons
+        FontIcon locationIcon = new FontIcon(Material2OutlinedAL.LOCATION_ON);
+        locationIcon.setIconSize(20);
+        myStationIcon.setGraphic(locationIcon);
+        myStationIcon.setText("");
+        
+        FontIcon notificationsIcon = new FontIcon(Material2OutlinedMZ.NOTIFICATIONS);
+        notificationsIcon.setIconSize(20);
+        alertsIcon.setGraphic(notificationsIcon);
+        alertsIcon.setText("");
+        
+        FontIcon settingsIconGfx = new FontIcon(Material2OutlinedMZ.SETTINGS);
+        settingsIconGfx.setIconSize(20);
+        settingsIcon.setGraphic(settingsIconGfx);
+        settingsIcon.setText("");
     }
     
     private void initializeWebSocket() {
@@ -189,15 +246,12 @@ public class MainLayoutController {
         // Hide station list when switching views
         stationListContainer.setVisible(false);
         stationListContainer.setManaged(false);
-        showStationsButton.setText("📋 Show Station List");
+        showStationsButton.setText("Show Station List");
         
         navigationManager.showView("myStation");
     }
 
-    @FXML
-    private void handlePublicStations() {
-        navigationManager.showView("publicStations");
-    }
+
 
     @FXML
     private void handleAlerts() {
@@ -226,7 +280,7 @@ public class MainLayoutController {
             loadStations();
             showStationsButton.setText("🔼 Hide Station List");
         } else {
-            showStationsButton.setText("📋 Show Station List");
+            showStationsButton.setText("Show Station List");
         }
         
         stationListContainer.setVisible(!isVisible);
@@ -320,6 +374,9 @@ public class MainLayoutController {
                     // Update station info display
                     stationNameLabel.setText(stationToSubscribe.name());
                     stationLocationLabel.setText(stationToSubscribe.location());
+                    
+                    // Load weather chart for initial station
+                    loadWeatherChart(currentStationId);
                 }
             });
         }).start();
@@ -362,8 +419,13 @@ public class MainLayoutController {
             stompClient.unsubscribe("/topic/stations/" + currentStationId + "/weather");
         }
         
-        // Reset weather values when switching
+        // Reset weather values and chart when switching
         resetWeatherValues();
+        
+        // Clear chart immediately to avoid showing old station data
+        if (weatherChart != null) {
+            weatherChart.clear();
+        }
         
         stompClient.subscribe("/topic/stations/" + newStationId + "/weather", "weather");
         currentStationId = newStationId;
@@ -378,6 +440,9 @@ public class MainLayoutController {
                         stationLocationLabel.setText(station.location());
                     });
         }
+        
+        // Load 7-day weather chart
+        loadWeatherChart(newStationId);
         
         // Save selected station for next time
         com.nhom.weatherdesktop.session.SessionContext.setSelectedStationId(newStationId);
@@ -531,6 +596,36 @@ public class MainLayoutController {
             },
             // On error
             e -> showError(ErrorHandler.getUserMessage(e))
+        );
+    }
+    
+    /**
+     * Load weather chart data for station
+     */
+    private void loadWeatherChart(Long stationId) {
+        if (stationId == null || weatherChart == null) return;
+        
+        AsyncTaskRunner.runAsync(
+            () -> {
+                try {
+                    return weatherDataService.getDailySummary(stationId, 7);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to load chart data: " + e.getMessage(), e);
+                }
+            },
+            data -> {
+                // Only update chart if we have valid data
+                if (data != null && !data.isEmpty()) {
+                    weatherChart.updateChart(data);
+                } else {
+                    // Clear chart if no data available
+                    weatherChart.clear();
+                }
+            },
+            error -> {
+                // Error loading chart - clear it
+                weatherChart.clear();
+            }
         );
     }
 }

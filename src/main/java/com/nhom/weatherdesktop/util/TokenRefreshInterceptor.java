@@ -128,7 +128,7 @@ public class TokenRefreshInterceptor {
                     NavigationService.navigateToLogin(stage.getScene().getRoot());
                 }
             } catch (Exception e) {
-                System.err.println("Failed to navigate to login: " + e.getMessage());
+                // Navigation error is silently handled
             }
         });
     }

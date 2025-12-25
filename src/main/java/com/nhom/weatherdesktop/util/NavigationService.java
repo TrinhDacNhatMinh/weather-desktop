@@ -28,7 +28,6 @@ public class NavigationService {
             }
             
         } catch (Exception e) {
-            e.printStackTrace(); // Print full stack trace
             throw new RuntimeException("Failed to navigate to " + fxmlPath + ": " + e.getMessage(), e);
         }
     }

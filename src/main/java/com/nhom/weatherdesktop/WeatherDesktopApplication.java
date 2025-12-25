@@ -11,9 +11,10 @@ public class WeatherDesktopApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(WeatherDesktopApplication.class.getResource("/ui/view/login.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        Scene scene = new Scene(fxmlLoader.load(), 1200, 800);
         stage.setTitle("Weather Desktop");
         stage.setScene(scene);
+        stage.setMaximized(true); // Start maximized for full screen effect
         stage.show();
     }
 
