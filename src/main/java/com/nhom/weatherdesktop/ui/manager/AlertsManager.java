@@ -92,7 +92,7 @@ public class AlertsManager {
         
         // Display alerts
         for (Alert alert : alerts) {
-            AlertCard card = new AlertCard(alert);
+            AlertCard card = new AlertCard(alert, alertService, this::loadAlerts);
             alertsListContainer.getChildren().add(card);
         }
     }

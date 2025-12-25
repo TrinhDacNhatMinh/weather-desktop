@@ -1,6 +1,10 @@
 package com.nhom.weatherdesktop.ui.component;
 
 import com.nhom.weatherdesktop.model.Alert;
+import com.nhom.weatherdesktop.service.IAlertService;
+import com.nhom.weatherdesktop.ui.controller.dialog.AlertDetailDialogController;
+import com.nhom.weatherdesktop.util.AsyncTaskRunner;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -8,6 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.stage.Window;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -19,9 +24,13 @@ public class AlertCard extends HBox {
     private final Alert alert;
     private final Label iconLabel;
     private final Label newBadge;
+    private final IAlertService alertService;
+    private final Runnable onAlertUpdated;
     
-    public AlertCard(Alert alert) {
+    public AlertCard(Alert alert, IAlertService alertService, Runnable onAlertUpdated) {
         this.alert = alert;
+        this.alertService = alertService;
+        this.onAlertUpdated = onAlertUpdated;
         
         // Style the card
         getStyleClass().add("alert-card");
@@ -78,8 +87,8 @@ public class AlertCard extends HBox {
         
         getChildren().addAll(iconLabel, content);
         
-        // Click to mark as seen
-        setOnMouseClicked(event -> markAsSeen());
+        // Click to show dialog and mark as seen
+        setOnMouseClicked(event -> showDetailAndMarkAsSeen());
     }
     
     private String formatTimestamp(Instant instant) {
@@ -110,15 +119,50 @@ public class AlertCard extends HBox {
         }
     }
     
-    private void markAsSeen() {
-        if (alert.isNew()) {
-            alert.markAsSeen();
-            getStyleClass().remove("alert-unread");
-            iconLabel.getStyleClass().remove("alert-icon-new");
-            iconLabel.getStyleClass().add("alert-icon-seen");
-            newBadge.setVisible(false);
-            newBadge.setManaged(false);
+    private void showDetailAndMarkAsSeen() {
+        // Show detail dialog immediately
+        Window window = getScene().getWindow();
+        AlertDetailDialogController dialogController = new AlertDetailDialogController(
+            alert, 
+            alertService, 
+            onAlertUpdated
+        );
+        dialogController.showDialog(window);
+        
+        // Mark as seen if it's new
+        if (alert.isNew() && alertService != null) {
+            AsyncTaskRunner.runAsync(
+                // Background task: call API
+                () -> {
+                    try {
+                        alertService.markAlertAsSeen(alert.getId());
+                        return null;
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to mark alert as seen: " + e.getMessage(), e);
+                    }
+                },
+                // On success: update UI
+                result -> {
+                    alert.markAsSeen();
+                    updateUIToSeen();
+                    if (onAlertUpdated != null) {
+                        onAlertUpdated.run();
+                    }
+                },
+                // On error: just log, don't show error to user
+                error -> {
+                    System.err.println("Failed to mark alert as seen: " + error.getMessage());
+                }
+            );
         }
+    }
+    
+    private void updateUIToSeen() {
+        getStyleClass().remove("alert-unread");
+        iconLabel.getStyleClass().remove("alert-icon-new");
+        iconLabel.getStyleClass().add("alert-icon-seen");
+        newBadge.setVisible(false);
+        newBadge.setManaged(false);
     }
     
     public Alert getAlert() {

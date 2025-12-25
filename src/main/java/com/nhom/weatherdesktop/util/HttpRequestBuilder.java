@@ -100,6 +100,22 @@ public class HttpRequestBuilder {
     }
     
     /**
+     * Set PATCH method with JSON body
+     */
+    public HttpRequestBuilder patch(String json) {
+        builder.method("PATCH", HttpRequest.BodyPublishers.ofString(json));
+        return this;
+    }
+    
+    /**
+     * Set PATCH method with no body
+     */
+    public HttpRequestBuilder patch() {
+        builder.method("PATCH", HttpRequest.BodyPublishers.noBody());
+        return this;
+    }
+    
+    /**
      * Build the final HttpRequest
      */
     public HttpRequest build() {

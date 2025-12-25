@@ -484,7 +484,7 @@ public class MainLayoutController {
         // Display alerts
         for (com.nhom.weatherdesktop.model.Alert alert : alerts) {
             com.nhom.weatherdesktop.ui.component.AlertCard card = 
-                new com.nhom.weatherdesktop.ui.component.AlertCard(alert);
+                new com.nhom.weatherdesktop.ui.component.AlertCard(alert, alertService, this::loadAlerts);
             alertsListContainer.getChildren().add(card);
         }
     }

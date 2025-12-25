@@ -45,10 +45,25 @@ public class AlertService {
     }
     
     private static void show(Alert.AlertType type, String title, String message) {
+        // Ensure alert is shown on JavaFX Application Thread
+        if (javafx.application.Platform.isFxApplicationThread()) {
+            showAlertNow(type, title, message);
+        } else {
+            javafx.application.Platform.runLater(() -> showAlertNow(type, title, message));
+        }
+    }
+    
+    private static void showAlertNow(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+        
+        // Explicitly ensure OK button is present
+        if (!alert.getButtonTypes().contains(ButtonType.OK)) {
+            alert.getButtonTypes().setAll(ButtonType.OK);
+        }
+        
         alert.showAndWait();
     }
 }

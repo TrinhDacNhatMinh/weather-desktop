@@ -54,4 +54,44 @@ public class AlertService implements IAlertService {
         PageResponse<AlertResponse> firstPage = getMyAlerts(0, 100);
         return firstPage.content();
     }
+    
+    /**
+     * Mark an alert as seen
+     */
+    public AlertResponse markAlertAsSeen(Long alertId) throws Exception {
+        String url = baseUrl + "/" + alertId + "/seen";
+        
+        var httpRequest = HttpRequestBuilder
+                .createWithFullUrl(url)
+                .withAuth()
+                .patch("")
+                .build();
+        
+        HttpResponse<String> response = HttpRequestBuilder.sendWithRefresh(httpRequest);
+        
+        if (response.statusCode() == 200) {
+            return MAPPER.readValue(response.body(), AlertResponse.class);
+        } else {
+            throw new RuntimeException("Failed to mark alert as seen: " + response.statusCode());
+        }
+    }
+    
+    /**
+     * Delete an alert by ID
+     */
+    public void deleteAlert(Long alertId) throws Exception {
+        String url = baseUrl + "/" + alertId;
+        
+        var httpRequest = HttpRequestBuilder
+                .createWithFullUrl(url)
+                .withAuth()
+                .delete()
+                .build();
+        
+        HttpResponse<String> response = HttpRequestBuilder.sendWithRefresh(httpRequest);
+        
+        if (response.statusCode() != 204 && response.statusCode() != 200) {
+            throw new RuntimeException("Failed to delete alert: " + response.statusCode());
+        }
+    }
 }

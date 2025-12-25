@@ -20,4 +20,14 @@ public interface IAlertService {
      * Get all alerts for current user (multiple pages if needed)
      */
     List<AlertResponse> getAllMyAlerts() throws Exception;
+    
+    /**
+     * Mark an alert as seen
+     */
+    AlertResponse markAlertAsSeen(Long alertId) throws Exception;
+    
+    /**
+     * Delete an alert by ID
+     */
+    void deleteAlert(Long alertId) throws Exception;
 }
