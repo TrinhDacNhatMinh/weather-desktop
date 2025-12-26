@@ -22,42 +22,50 @@ public class StationCard extends VBox {
     
     public StationCard(StationResponse station) {
         super();
-        // Dark background for better contrast
-        this.setStyle("-fx-padding: 16; -fx-background-color: rgba(30, 41, 59, 0.95); -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: rgba(59, 130, 246, 0.3); -fx-border-width: 1; -fx-border-radius: 8;");
+        // Light background for modern clean look
+        this.setStyle("-fx-padding: 16; -fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 8;");
         
         // Main content
         HBox content = new HBox(12);
         content.setAlignment(Pos.CENTER_LEFT);
         
-        // Icon
-        FontIcon icon = new FontIcon(Material2OutlinedAL.LOCATION_ON);
-        icon.setIconSize(24);
-        icon.setStyle("-fx-icon-color: #3B82F6;");
         
         // Info VBox
         VBox info = new VBox(4);
         
-        // Name - bright white for good contrast
+        // Name - dark for good contrast on light background
         Label nameLabel = new Label(station.name());
-        nameLabel.setStyle("-fx-font-weight: 700; -fx-text-fill: #FFFFFF; -fx-font-size: 16px;");
+        nameLabel.setStyle("-fx-font-weight: 700; -fx-text-fill: #1E293B; -fx-font-size: 16px;");
         
         // Location - light gray for good readability
         HBox locationBox = new HBox(6);
         locationBox.setAlignment(Pos.CENTER_LEFT);
         FontIcon locationIcon = new FontIcon(Material2OutlinedAL.LOCATION_ON);
         locationIcon.setIconSize(13);
-        locationIcon.setStyle("-fx-icon-color: #9CA3AF;");
+        locationIcon.setIconColor(javafx.scene.paint.Color.web("#9CA3AF"));
         Label locationText = new Label(station.location());
-        locationText.setStyle("-fx-font-size: 13px; -fx-text-fill: #D1D5DB; -fx-font-weight: 500;");
+        locationText.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748B; -fx-font-weight: 500;");
         locationBox.getChildren().addAll(locationIcon, locationText);
         
-        // Status with better colors
-        String statusText = "ONLINE".equalsIgnoreCase(station.status()) ? "● Online" : "● Offline";
-        String statusColor = "ONLINE".equalsIgnoreCase(station.status()) ? "#10B981" : "#F87171";
-        Label statusLabel = new Label(statusText);
-        statusLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: " + statusColor + "; -fx-font-weight: 600;");
         
-        info.getChildren().addAll(nameLabel, locationBox, statusLabel);
+        // Status with Material dot icon
+        HBox statusBox = new HBox(6);
+        statusBox.setAlignment(Pos.CENTER_LEFT);
+        
+        boolean isOnline = "ONLINE".equalsIgnoreCase(station.status());
+        
+        // Using simple text dot for status
+        Label statusDot = new Label("●");
+        statusDot.setStyle("-fx-font-size: 14px; -fx-text-fill: " +
+            (isOnline ? "#10B981" : "#EF4444") + ";");
+        
+        Label statusLabel = new Label(isOnline ? "Online" : "Offline");
+        statusLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: " + 
+            (isOnline ? "#10B981" : "#EF4444") + "; -fx-font-weight: 600;");
+        
+        statusBox.getChildren().addAll(statusDot, statusLabel);
+        
+        info.getChildren().addAll(nameLabel, locationBox, statusBox);
         
         // Spacer
         Region spacer = new Region();
@@ -97,17 +105,17 @@ public class StationCard extends VBox {
         
         actionButtons.getChildren().addAll(updateBtn, detachBtn);
         
-        content.getChildren().addAll(icon, info, spacer, actionButtons);
+        content.getChildren().addAll(info, spacer, actionButtons);
         this.getChildren().add(content);
         
-        // Hover effect - lighter background with blue glow
+        // Hover effect - lighter background with blue border
         this.setOnMouseEntered(e -> {
-            this.setStyle("-fx-padding: 16; -fx-background-color: rgba(51, 65, 85, 1); -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: rgba(59, 130, 246, 0.6); -fx-border-width: 1; -fx-border-radius: 8;");
+            this.setStyle("-fx-padding: 16; -fx-background-color: #F8FAFC; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #3B82F6; -fx-border-width: 1; -fx-border-radius: 8;");
             actionButtons.setOpacity(1); // Fade in
         });
         
         this.setOnMouseExited(e -> {
-            this.setStyle("-fx-padding: 16; -fx-background-color: rgba(30, 41, 59, 0.95); -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: rgba(59, 130, 246, 0.3); -fx-border-width: 1; -fx-border-radius: 8;");
+            this.setStyle("-fx-padding: 16; -fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 8;");
             actionButtons.setOpacity(0); // Fade out
         });
     }

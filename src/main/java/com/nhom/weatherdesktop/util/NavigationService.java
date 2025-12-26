@@ -18,13 +18,19 @@ public class NavigationService {
             }
             
             FXMLLoader loader = new FXMLLoader(url);
-            Scene scene = new Scene(loader.load());
+            Scene scene = new Scene(loader.load(), 1200, 800);
             
             Stage stage = (Stage) currentNode.getScene().getWindow();
             stage.setScene(scene);
             
+            // Apply custom stage configuration first
             if (stageConfig != null) {
                 stageConfig.accept(stage);
+            }
+            
+            // Force show to apply changes
+            if (!stage.isShowing()) {
+                stage.show();
             }
             
         } catch (Exception e) {
@@ -35,7 +41,10 @@ public class NavigationService {
     public static void navigateToMainLayout(Node currentNode) {
         navigateTo("/ui/view/main-layout.fxml", currentNode, stage -> {
             stage.setTitle(AppConfig.getAppTitle());
-            stage.setMaximized(true);
+            // Use Platform.runLater to ensure maximize happens after scene is rendered
+            javafx.application.Platform.runLater(() -> {
+                stage.setMaximized(true);
+            });
         });
     }
     

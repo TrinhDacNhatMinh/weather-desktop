@@ -3,8 +3,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.Insets?>
 
+<?import javafx.scene.image.ImageView?>
 <VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.nhom.weatherdesktop.ui.controller.LoginController"
@@ -19,7 +19,7 @@
     <VBox styleClass="login-card" spacing="24" alignment="CENTER">
 
         <!-- Logo/Icon -->
-        <Label styleClass="login-logo" text="🌤️"/>
+        <Label fx:id="loginLogo" styleClass="login-logo"/>
 
         <!-- Title Section -->
         <VBox spacing="8" alignment="CENTER">
@@ -31,7 +31,7 @@
         <VBox styleClass="login-form" spacing="20" alignment="CENTER">
             <!-- Username Field -->
             <HBox spacing="12" alignment="CENTER_LEFT">
-                <Label fx:id="usernameIcon" styleClass="field-icon" text="👤"/>
+                <Label fx:id="usernameIcon" styleClass="field-icon"/>
                 <TextField fx:id="usernameField"
                            styleClass="login-field"
                            promptText="Username"/>
@@ -39,7 +39,7 @@
 
             <!-- Password Field -->
             <HBox spacing="12" alignment="CENTER_LEFT">
-                <Label fx:id="passwordIcon" styleClass="field-icon" text="🔒"/>
+                <Label fx:id="passwordIcon" styleClass="field-icon"/>
                 <PasswordField fx:id="passwordField"
                                styleClass="login-field"
                                promptText="Password"/>

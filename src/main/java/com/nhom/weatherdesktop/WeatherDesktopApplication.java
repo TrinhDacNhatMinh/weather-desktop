@@ -13,6 +13,7 @@ public class WeatherDesktopApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(WeatherDesktopApplication.class.getResource("/ui/view/login.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 800);
         stage.setTitle("Weather Desktop");
+        stage.setResizable(true); // Ensure window is resizable
         stage.setScene(scene);
         stage.setMaximized(true); // Start maximized for full screen effect
         stage.show();

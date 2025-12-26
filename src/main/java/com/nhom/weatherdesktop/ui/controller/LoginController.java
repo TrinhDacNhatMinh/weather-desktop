@@ -35,26 +35,35 @@ public class LoginController {
     private Label errorLabel;
     
     @FXML
+    private Button loginButton;
+    
+    @FXML
+    private Label loginLogo;
+    
+    @FXML
     private Label usernameIcon;
     
     @FXML
     private Label passwordIcon;
     
     @FXML
-    private Button loginButton;
-    
-    @FXML
     public void initialize() {
+        // Set logo icon
+        FontIcon logoIcon = new FontIcon(Material2OutlinedAL.CLOUD);
+        logoIcon.setIconSize(48);
+        logoIcon.setIconColor(javafx.scene.paint.Color.WHITE);
+        loginLogo.setGraphic(logoIcon);
+        
         // Set Material icons for form fields
         FontIcon userIcon = new FontIcon(Material2OutlinedMZ.PERSON);
         userIcon.setIconSize(20);
+        userIcon.setIconColor(javafx.scene.paint.Color.web("rgba(255, 255, 255, 0.7)"));
         usernameIcon.setGraphic(userIcon);
-        usernameIcon.setText("");
         
         FontIcon lockIcon = new FontIcon(Material2OutlinedAL.LOCK);
         lockIcon.setIconSize(20);
+        lockIcon.setIconColor(javafx.scene.paint.Color.web("rgba(255, 255, 255, 0.7)"));
         passwordIcon.setGraphic(lockIcon);
-        passwordIcon.setText("");
         
         // Handle Enter key on password field
         passwordField.setOnAction(e -> handleLogin());

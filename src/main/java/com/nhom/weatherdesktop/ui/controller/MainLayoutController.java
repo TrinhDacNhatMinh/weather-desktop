@@ -154,6 +154,15 @@ public class MainLayoutController {
     
     @FXML
     private Label sidebarAlertBadge;
+    
+    @FXML
+    private Label alertsHeaderIcon;
+    
+    @FXML
+    private Label emptyAlertsIcon;
+    
+    @FXML
+    private Label settingsHeaderIcon;
 
     @FXML
     public void initialize() {
@@ -212,24 +221,49 @@ public class MainLayoutController {
         // Toggle button icon
         FontIcon menuIcon = new FontIcon(Material2OutlinedMZ.MENU);
         menuIcon.setIconSize(20);
+        menuIcon.setIconColor(javafx.scene.paint.Color.web("#475569"));
         toggleSidebarButton.setGraphic(menuIcon);
         toggleSidebarButton.setText("");
         
-        // Sidebar icons
+        // Sidebar icons - using FontIcon directly on labels
         FontIcon locationIcon = new FontIcon(Material2OutlinedAL.LOCATION_ON);
-        locationIcon.setIconSize(20);
+        locationIcon.setIconSize(18);
+        locationIcon.setIconColor(javafx.scene.paint.Color.web("#475569"));
         myStationIcon.setGraphic(locationIcon);
-        myStationIcon.setText("");
         
         FontIcon notificationsIcon = new FontIcon(Material2OutlinedMZ.NOTIFICATIONS);
-        notificationsIcon.setIconSize(20);
+        notificationsIcon.setIconSize(18);
+        notificationsIcon.setIconColor(javafx.scene.paint.Color.web("#475569"));
         alertsIcon.setGraphic(notificationsIcon);
-        alertsIcon.setText("");
         
         FontIcon settingsIconGfx = new FontIcon(Material2OutlinedMZ.SETTINGS);
-        settingsIconGfx.setIconSize(20);
+        settingsIconGfx.setIconSize(18);
+        settingsIconGfx.setIconColor(javafx.scene.paint.Color.web("#475569"));
         settingsIcon.setGraphic(settingsIconGfx);
-        settingsIcon.setText("");
+        
+        // Alerts header icon
+        if (alertsHeaderIcon != null) {
+            FontIcon alertHeaderIcon = new FontIcon(Material2OutlinedMZ.NOTIFICATIONS);
+            alertHeaderIcon.setIconSize(24);
+            alertHeaderIcon.setIconColor(javafx.scene.paint.Color.web("#1E293B"));
+            alertsHeaderIcon.setGraphic(alertHeaderIcon);
+        }
+        
+        // Empty alerts icon
+        if (emptyAlertsIcon != null) {
+            FontIcon emptyIcon = new FontIcon(Material2OutlinedMZ.NOTIFICATIONS_NONE);
+            emptyIcon.setIconSize(48);
+            emptyIcon.setIconColor(javafx.scene.paint.Color.web("#9CA3AF"));
+            emptyAlertsIcon.setGraphic(emptyIcon);
+        }
+        
+        // Settings header icon
+        if (settingsHeaderIcon != null) {
+            FontIcon settingsHeader = new FontIcon(Material2OutlinedMZ.SETTINGS);
+            settingsHeader.setIconSize(24);
+            settingsHeader.setIconColor(javafx.scene.paint.Color.web("#1E293B"));
+            settingsHeaderIcon.setGraphic(settingsHeader);
+        }
     }
     
     private void initializeWebSocket() {

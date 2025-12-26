@@ -6,15 +6,18 @@
 /* Toggle Sidebar Button */
 .toggle-sidebar-btn {
     -fx-background-color: transparent;
-    -fx-text-fill: #CBD5E1;
+    -fx-text-fill: #475569;
+    /* Dark slate text */
     -fx-font-size: 20px;
     -fx-padding: 12;
     -fx-cursor: hand;
 }
 
 .toggle-sidebar-btn:hover {
-    -fx-background-color: rgba(59, 130, 246, 0.1);
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: rgba(59, 130, 246, 0.08);
+    /* Subtle blue */
+    -fx-text-fill: #1E293B;
+    /* Dark text */
 }
 
 /* Sidebar Separator */
@@ -25,12 +28,14 @@
 /* Sidebar Icon Labels */
 .sidebar-icon {
     -fx-font-size: 18px;
-    -fx-text-fill: #CBD5E1;
+    -fx-text-fill: #475569;
+    /* Dark slate */
 }
 
 .sidebar-text {
     -fx-font-size: 14px;
-    -fx-text-fill: #CBD5E1;
+    -fx-text-fill: #475569;
+    /* Dark slate */
 }
 
 /* Sidebar Alert Badge */
@@ -60,20 +65,27 @@
 .station-name {
     -fx-font-size: 26px;
     -fx-font-weight: bold;
-    -fx-text-fill: #1a1a1a;
+    -fx-text-fill: #1E293B;
+    /* Dark text for light background */
 }
 
 .station-location {
     -fx-font-size: 14px;
-    -fx-text-fill: #666666;
+    -fx-text-fill: #64748B;
+    /* Slate gray */
 }
 
 /* Main Temperature Card */
 .temperature-card {
-    -fx-padding: 32;
-    -fx-background-color: rgba(255, 255, 255, 0.9);
-    -fx-background-radius: 20;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 0);
+    -fx-padding: 32px;
+    -fx-background-color: #FFFFFF;
+    /* White card */
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.08), 10, 0, 0, 2);
+    -fx-border-color: #E2E8F0;
+    /* Light border */
+    -fx-border-width: 1px;
+    -fx-border-radius: 20px;
 }
 
 .temperature-icon {
@@ -83,41 +95,52 @@
 .temperature-value {
     -fx-font-size: 72px;
     -fx-font-weight: bold;
-    -fx-text-fill: black;
+    -fx-text-fill: #1E293B;
+    /* Dark text */
 }
 
 .temperature-unit {
     -fx-font-size: 44px;
-    -fx-text-fill: #333333;
+    -fx-text-fill: #64748B;
+    /* Slate gray */
 }
 
 .weather-description {
     -fx-font-size: 18px;
-    -fx-text-fill: black;
+    -fx-text-fill: #64748B;
+    /* Slate gray */
 }
 
 /* Stats Grid */
 .stats-grid {
-    -fx-background-color: rgba(255, 255, 255, 0.9);
-    -fx-background-radius: 20;
-    -fx-padding: 24;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 0);
+    -fx-background-color: #FFFFFF;
+    /* White background */
+    -fx-background-radius: 20px;
+    -fx-padding: 24px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.08), 10, 0, 0, 2);
+    -fx-border-color: #E2E8F0;
+    /* Light border */
+    -fx-border-width: 1px;
+    -fx-border-radius: 20px;
 }
 
 .stat-label {
     -fx-font-size: 12px;
-    -fx-text-fill: #555555;
+    -fx-text-fill: #64748B;
+    /* Muted slate gray */
 }
 
 .stat-value {
     -fx-font-size: 24px;
     -fx-font-weight: 600;
-    -fx-text-fill: black;
+    -fx-text-fill: #1E293B;
+    /* Dark text for light background */
 }
 
 .stat-unit {
     -fx-font-size: 14px;
-    -fx-text-fill: #555555;
+    -fx-text-fill: #64748B;
+    /* Muted slate gray */
 }
 
 .stat-indicator {
