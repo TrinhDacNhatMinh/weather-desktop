@@ -27,10 +27,13 @@ public class WeatherChartComponent extends VBox {
     
     private List<DailyWeatherSummaryResponse> currentData;
     private ChartType currentChartType = ChartType.TEMPERATURE;
+    private double zoomLevel = 1.0; // 1.0 = normal, <1.0 = zoomed in, >1.0 = zoomed out
     
     private final Label titleLabel;
     private final Button prevButton;
     private final Button nextButton;
+    private final Button zoomInButton;
+    private final Button zoomOutButton;
     
     public enum ChartType {
         TEMPERATURE("Temperature (°C)", "°C"),
@@ -61,12 +64,38 @@ public class WeatherChartComponent extends VBox {
         prevButton.setStyle(
             "-fx-font-size: 18px; " +
             "-fx-padding: 5 15; " +
-            "-fx-background-color: #3B82F6; " +
-            "-fx-text-fill: white; " +
+            "-fx-background-color: transparent; " +
+            "-fx-text-fill: #3B82F6; " +
+            "-fx-border-color: #3B82F6; " +
+            "-fx-border-width: 2; " +
             "-fx-background-radius: 5; " +
+            "-fx-border-radius: 5; " +
             "-fx-cursor: hand;"
         );
         prevButton.setOnAction(e -> navigatePrevious());
+        // Hover effects
+        prevButton.setOnMouseEntered(e -> prevButton.setStyle(
+            "-fx-font-size: 18px; " +
+            "-fx-padding: 5 15; " +
+            "-fx-background-color: rgba(59, 130, 246, 0.08); " +
+            "-fx-text-fill: #2563EB; " +
+            "-fx-border-color: #2563EB; " +
+            "-fx-border-width: 2; " +
+            "-fx-background-radius: 5; " +
+            "-fx-border-radius: 5; " +
+            "-fx-cursor: hand;"
+        ));
+        prevButton.setOnMouseExited(e -> prevButton.setStyle(
+            "-fx-font-size: 18px; " +
+            "-fx-padding: 5 15; " +
+            "-fx-background-color: transparent; " +
+            "-fx-text-fill: #3B82F6; " +
+            "-fx-border-color: #3B82F6; " +
+            "-fx-border-width: 2; " +
+            "-fx-background-radius: 5; " +
+            "-fx-border-radius: 5; " +
+            "-fx-cursor: hand;"
+        ));
         
         titleLabel = new Label(currentChartType.title);
         titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
@@ -75,14 +104,115 @@ public class WeatherChartComponent extends VBox {
         nextButton.setStyle(
             "-fx-font-size: 18px; " +
             "-fx-padding: 5 15; " +
-            "-fx-background-color: #3B82F6; " +
-            "-fx-text-fill: white; " +
+            "-fx-background-color: transparent; " +
+            "-fx-text-fill: #3B82F6; " +
+            "-fx-border-color: #3B82F6; " +
+            "-fx-border-width: 2; " +
             "-fx-background-radius: 5; " +
+            "-fx-border-radius: 5; " +
             "-fx-cursor: hand;"
         );
         nextButton.setOnAction(e -> navigateNext());
+        // Hover effects
+        nextButton.setOnMouseEntered(e -> nextButton.setStyle(
+            "-fx-font-size: 18px; " +
+            "-fx-padding: 5 15; " +
+            "-fx-background-color: rgba(59, 130, 246, 0.08); " +
+            "-fx-text-fill: #2563EB; " +
+            "-fx-border-color: #2563EB; " +
+            "-fx-border-width: 2; " +
+            "-fx-background-radius: 5; " +
+            "-fx-border-radius: 5; " +
+            "-fx-cursor: hand;"
+        ));
+        nextButton.setOnMouseExited(e -> nextButton.setStyle(
+            "-fx-font-size: 18px; " +
+            "-fx-padding: 5 15; " +
+            "-fx-background-color: transparent; " +
+            "-fx-text-fill: #3B82F6; " +
+            "-fx-border-color: #3B82F6; " +
+            "-fx-border-width: 2; " +
+            "-fx-background-radius: 5; " +
+            "-fx-border-radius: 5; " +
+            "-fx-cursor: hand;"
+        ));
         
-        header.getChildren().addAll(prevButton, titleLabel, nextButton);
+        // Zoom buttons
+        zoomInButton = new Button("+");
+        zoomInButton.setStyle(
+            "-fx-font-size: 18px; " +
+            "-fx-padding: 5 15; " +
+            "-fx-background-color: transparent; " +
+            "-fx-text-fill: #10B981; " +
+            "-fx-border-color: #10B981; " +
+            "-fx-border-width: 2; " +
+            "-fx-background-radius: 5; " +
+            "-fx-border-radius: 5; " +
+            "-fx-cursor: hand;"
+        );
+        zoomInButton.setOnAction(e -> zoomIn());
+        // Hover effects
+        zoomInButton.setOnMouseEntered(e -> zoomInButton.setStyle(
+            "-fx-font-size: 18px; " +
+            "-fx-padding: 5 15; " +
+            "-fx-background-color: rgba(16, 185, 129, 0.08); " +
+            "-fx-text-fill: #059669; " +
+            "-fx-border-color: #059669; " +
+            "-fx-border-width: 2; " +
+            "-fx-background-radius: 5; " +
+            "-fx-border-radius: 5; " +
+            "-fx-cursor: hand;"
+        ));
+        zoomInButton.setOnMouseExited(e -> zoomInButton.setStyle(
+            "-fx-font-size: 18px; " +
+            "-fx-padding: 5 15; " +
+            "-fx-background-color: transparent; " +
+            "-fx-text-fill: #10B981; " +
+            "-fx-border-color: #10B981; " +
+            "-fx-border-width: 2; " +
+            "-fx-background-radius: 5; " +
+            "-fx-border-radius: 5; " +
+            "-fx-cursor: hand;"
+        ));
+        
+        zoomOutButton = new Button("-");
+        zoomOutButton.setStyle(
+            "-fx-font-size: 18px; " +
+            "-fx-padding: 5 15; " +
+            "-fx-background-color: transparent; " +
+            "-fx-text-fill: #10B981; " +
+            "-fx-border-color: #10B981; " +
+            "-fx-border-width: 2; " +
+            "-fx-background-radius: 5; " +
+            "-fx-border-radius: 5; " +
+            "-fx-cursor: hand;"
+        );
+        zoomOutButton.setOnAction(e -> zoomOut());
+        // Hover effects
+        zoomOutButton.setOnMouseEntered(e -> zoomOutButton.setStyle(
+            "-fx-font-size: 18px; " +
+            "-fx-padding: 5 15; " +
+            "-fx-background-color: rgba(16, 185, 129, 0.08); " +
+            "-fx-text-fill: #059669; " +
+            "-fx-border-color: #059669; " +
+            "-fx-border-width: 2; " +
+            "-fx-background-radius: 5; " +
+            "-fx-border-radius: 5; " +
+            "-fx-cursor: hand;"
+        ));
+        zoomOutButton.setOnMouseExited(e -> zoomOutButton.setStyle(
+            "-fx-font-size: 18px; " +
+            "-fx-padding: 5 15; " +
+            "-fx-background-color: transparent; " +
+            "-fx-text-fill: #10B981; " +
+            "-fx-border-color: #10B981; " +
+            "-fx-border-width: 2; " +
+            "-fx-background-radius: 5; " +
+            "-fx-border-radius: 5; " +
+            "-fx-cursor: hand;"
+        ));
+        
+        header.getChildren().addAll(prevButton, titleLabel, nextButton, zoomInButton, zoomOutButton);
         
         // Create axes
         CategoryAxis xAxis = new CategoryAxis();
@@ -90,7 +220,7 @@ public class WeatherChartComponent extends VBox {
         
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel(currentChartType.unit);
-        yAxis.setAutoRanging(true);
+        yAxis.setAutoRanging(false); // Disable auto-ranging for manual zoom control
         
         // Create chart
         chart = new LineChart<>(xAxis, yAxis);
@@ -209,6 +339,9 @@ public class WeatherChartComponent extends VBox {
                 chart.getData().get(2).getNode().getStyleClass().add("max-series");
             }
         }
+        
+        // Update Y-axis bounds based on zoom level
+        updateYAxisBounds();
     }
     
     private void addDataPoint(XYChart.Series<String, Number> series, String label, BigDecimal value) {
@@ -224,5 +357,86 @@ public class WeatherChartComponent extends VBox {
         } catch (Exception e) {
             return dateStr;
         }
+    }
+    
+    /**
+     * Zoom in - decrease range to see more detail
+     */
+    private void zoomIn() {
+        if (zoomLevel > 0.2) { // Minimum zoom level
+            zoomLevel *= 0.8; // Reduce range by 20%
+            updateYAxisBounds();
+        }
+    }
+    
+    /**
+     * Zoom out - increase range to see more overview
+     */
+    private void zoomOut() {
+        if (zoomLevel < 3.0) { // Maximum zoom level
+            zoomLevel *= 1.25; // Increase range by 25%
+            updateYAxisBounds();
+        }
+    }
+    
+    /**
+     * Update Y-axis bounds based on current zoom level
+     */
+    private void updateYAxisBounds() {
+        if (currentData == null || currentData.isEmpty()) {
+            return;
+        }
+        
+        // Calculate min and max values from current data
+        double minValue = Double.MAX_VALUE;
+        double maxValue = Double.MIN_VALUE;
+        
+        for (DailyWeatherSummaryResponse day : currentData) {
+            BigDecimal min = null, max = null;
+            
+            switch (currentChartType) {
+                case TEMPERATURE:
+                    min = day.minTemperature();
+                    max = day.maxTemperature();
+                    break;
+                case HUMIDITY:
+                    min = day.minHumidity();
+                    max = day.maxHumidity();
+                    break;
+                case RAINFALL:
+                    min = day.totalRainfall();
+                    max = day.totalRainfall();
+                    break;
+                case WIND_SPEED:
+                    min = day.minWindSpeed();
+                    max = day.maxWindSpeed();
+                    break;
+                case DUST:
+                    min = day.minDust();
+                    max = day.maxDust();
+                    break;
+            }
+            
+            if (min != null && min.doubleValue() < minValue) {
+                minValue = min.doubleValue();
+            }
+            if (max != null && max.doubleValue() > maxValue) {
+                maxValue = max.doubleValue();
+            }
+        }
+        
+        // Calculate center and range
+        double center = (minValue + maxValue) / 2;
+        double range = (maxValue - minValue) * zoomLevel;
+        
+        // Add padding (10% of range)
+        double padding = range * 0.1;
+        range += padding * 2;
+        
+        // Set bounds
+        NumberAxis yAxis = (NumberAxis) chart.getYAxis();
+        yAxis.setLowerBound(center - range / 2);
+        yAxis.setUpperBound(center + range / 2);
+        yAxis.setTickUnit(range / 10); // Approximately 10 ticks
     }
 }

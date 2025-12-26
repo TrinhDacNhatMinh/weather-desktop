@@ -3,6 +3,15 @@
    Weather Desktop Application
    ============================================ */
 
+/* Root Background */
+.root {
+    -fx-background-image: url('/images/background.png');
+    -fx-background-size: cover;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+}
+
+
 /* Toggle Sidebar Button */
 .toggle-sidebar-btn {
     -fx-background-color: transparent;
@@ -51,10 +60,30 @@
 }
 
 
-/* Show Station List Button */
+/* Show Station List Button - Outline Style */
 .show-stations-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #3B82F6;
     -fx-font-size: 14px;
-    -fx-padding: 12 24;
+    -fx-font-weight: 600;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-border-color: #3B82F6;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-alignment: CENTER;
+    -fx-graphic-text-gap: 8;
+}
+
+.show-stations-btn:hover {
+    -fx-background-color: rgba(59, 130, 246, 0.08);
+    -fx-border-color: #2563EB;
+    -fx-text-fill: #2563EB;
+}
+
+.show-stations-btn:pressed {
+    -fx-background-color: rgba(59, 130, 246, 0.15);
 }
 
 /* Station Info */
@@ -149,29 +178,66 @@
 
 /* Station List Container */
 .station-list-container {
-    -fx-background-color: rgba(30, 30, 40, 0.98);
-    -fx-padding: 24;
-    -fx-pref-width: 450;
+    -fx-background-color: rgba(255, 255, 255, 0.98);
+    -fx-padding: 24px;
+    -fx-pref-width: 420px;
+    -fx-min-width: 420px;
+    -fx-max-width: 420px;
+    -fx-background-radius: 16px 0 0 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 24, 0, -4, 0);
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px 0 1px 1px;
+    -fx-border-radius: 16px 0 0 16px;
 }
 
 .station-list-title {
-    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
 }
 
 .station-list-close-btn {
-    -fx-background-color: transparent;
-    -fx-text-fill: #9CA3AF;
-    -fx-font-size: 18px;
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #64748B;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
     -fx-cursor: hand;
+    -fx-padding: 6px 10px;
+    -fx-background-radius: 6px;
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+}
+
+.station-list-close-btn:hover {
+    -fx-background-color: #E2E8F0;
+    -fx-text-fill: #1E293B;
 }
 
 .station-list-separator {
-    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-color: #E2E8F0;
+    -fx-pref-height: 1px;
 }
 
 .station-list-scroll {
     -fx-background-color: transparent;
     -fx-background: transparent;
+}
+
+.station-list-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.station-list-scroll .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.station-list-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #CBD5E1;
+    -fx-background-radius: 4px;
+}
+
+.station-list-scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94A3B8;
 }
 
 .station-list-content {
@@ -180,17 +246,26 @@
 
 /* Add Station Button */
 .add-station-btn {
-    -fx-background-color: #3B82F6;
-    -fx-text-fill: white;
+    -fx-background-color: transparent;
+    -fx-text-fill: #3B82F6;
     -fx-font-size: 14px;
     -fx-font-weight: 600;
-    -fx-padding: 12 24;
-    -fx-background-radius: 8;
+    -fx-padding: 12px 24px;
+    -fx-background-radius: 8px;
     -fx-cursor: hand;
+    -fx-border-color: #3B82F6;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
 }
 
 .add-station-btn:hover {
-    -fx-background-color: #2563EB;
+    -fx-background-color: rgba(59, 130, 246, 0.08);
+    -fx-border-color: #2563EB;
+    -fx-text-fill: #2563EB;
+}
+
+.add-station-btn:pressed {
+    -fx-background-color: rgba(59, 130, 246, 0.15);
 }
 
 /* ================================
@@ -292,17 +367,26 @@
     -fx-font-style: italic;
 }
 
-/* Delete All Button */
+/* Delete All Button - Outline Style */
 .delete-all-btn {
-    -fx-background-color: #EF4444;
-    -fx-text-fill: white;
+    -fx-background-color: transparent;
+    -fx-text-fill: #EF4444;
     -fx-font-size: 13px;
     -fx-font-weight: 600;
-    -fx-padding: 8 16;
-    -fx-background-radius: 8;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 8px;
     -fx-cursor: hand;
+    -fx-border-color: #EF4444;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
 }
 
 .delete-all-btn:hover {
-    -fx-background-color: #DC2626;
+    -fx-background-color: rgba(239, 68, 68, 0.08);
+    -fx-border-color: #DC2626;
+    -fx-text-fill: #DC2626;
+}
+
+.delete-all-btn:pressed {
+    -fx-background-color: rgba(239, 68, 68, 0.15);
 }

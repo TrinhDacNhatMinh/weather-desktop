@@ -23,14 +23,14 @@ public class NavigationService {
             Stage stage = (Stage) currentNode.getScene().getWindow();
             stage.setScene(scene);
             
-            // Apply custom stage configuration first
-            if (stageConfig != null) {
-                stageConfig.accept(stage);
-            }
-            
-            // Force show to apply changes
+            // Force show first to ensure scene is rendered
             if (!stage.isShowing()) {
                 stage.show();
+            }
+            
+            // Apply custom stage configuration AFTER stage is shown
+            if (stageConfig != null) {
+                stageConfig.accept(stage);
             }
             
         } catch (Exception e) {
@@ -41,9 +41,14 @@ public class NavigationService {
     public static void navigateToMainLayout(Node currentNode) {
         navigateTo("/ui/view/main-layout.fxml", currentNode, stage -> {
             stage.setTitle(AppConfig.getAppTitle());
-            // Use Platform.runLater to ensure maximize happens after scene is rendered
+            
+            // Force reset maximize state - set to false first, then true
+            // This fixes JavaFX bug where setScene() loses actual maximize but property stays true
             javafx.application.Platform.runLater(() -> {
-                stage.setMaximized(true);
+                stage.setMaximized(false);
+                javafx.application.Platform.runLater(() -> {
+                    stage.setMaximized(true);
+                });
             });
         });
     }

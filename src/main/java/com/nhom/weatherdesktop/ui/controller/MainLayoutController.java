@@ -56,6 +56,10 @@ public class MainLayoutController {
     private List<StationResponse> userStations;
     private Long currentStationId; // Currently subscribed station for weather data
 
+    // Main Layout
+    @FXML
+    private javafx.scene.layout.BorderPane mainBorderPane;
+
     // Sidebar
     @FXML
     private VBox sidebar;
@@ -163,9 +167,40 @@ public class MainLayoutController {
     
     @FXML
     private Label settingsHeaderIcon;
+    
+    @FXML
+    private Label topBarTitle;
 
     @FXML
     public void initialize() {
+        initializeManagers();
+        setMaterialIcons();
+        initializeWebSocket();
+        
+        // Set background image programmatically
+        try {
+            String imagePath = getClass().getResource("/images/background.png").toExternalForm();
+            javafx.scene.image.Image bgImage = new javafx.scene.image.Image(imagePath);
+            javafx.scene.layout.BackgroundImage backgroundImage = new javafx.scene.layout.BackgroundImage(
+                bgImage,
+                javafx.scene.layout.BackgroundRepeat.NO_REPEAT,
+                javafx.scene.layout.BackgroundRepeat.NO_REPEAT,
+                javafx.scene.layout.BackgroundPosition.CENTER,
+                new javafx.scene.layout.BackgroundSize(
+                    javafx.scene.layout.BackgroundSize.AUTO,
+                    javafx.scene.layout.BackgroundSize.AUTO,
+                    false, false, false, true  // cover
+                )
+            );
+            mainBorderPane.setBackground(new javafx.scene.layout.Background(backgroundImage));
+            System.out.println("Background image loaded successfully!");
+        } catch (Exception e) {
+            System.err.println("Failed to load background image: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    private void initializeManagers() {
         // Initialize managers
         weatherDisplayManager = new WeatherDisplayManager(
             temperatureValue, humidityValue, windspeedValue,
@@ -264,6 +299,14 @@ public class MainLayoutController {
             settingsHeader.setIconColor(javafx.scene.paint.Color.web("#1E293B"));
             settingsHeaderIcon.setGraphic(settingsHeader);
         }
+        
+        // Show Stations Button icon
+        if (showStationsButton != null) {
+            FontIcon listIcon = new FontIcon(Material2OutlinedAL.LIST);
+            listIcon.setIconSize(16);
+            listIcon.setIconColor(javafx.scene.paint.Color.WHITE);
+            showStationsButton.setGraphic(listIcon);
+        }
     }
     
     private void initializeWebSocket() {
@@ -278,11 +321,11 @@ public class MainLayoutController {
     @FXML
     private void handleMyStations() {
         // Hide station list when switching views
-        stationListContainer.setVisible(false);
-        stationListContainer.setManaged(false);
+        closeStationList();
         showStationsButton.setText("Show Station List");
         
         navigationManager.showView("myStation");
+        updateTopBarTitle("My Station");
     }
 
 
@@ -291,11 +334,13 @@ public class MainLayoutController {
     private void handleAlerts() {
         navigationManager.showView("alerts");
         alertsManager.loadAlerts();
+        updateTopBarTitle("Alerts");
     }
 
     @FXML
     private void handleSettings() {
         navigationManager.showView("settings");
+        updateTopBarTitle("Settings");
     }
     
     @FXML
@@ -312,13 +357,36 @@ public class MainLayoutController {
         if (!isVisible) {
             // Load stations when showing the list
             loadStations();
-            showStationsButton.setText("🔼 Hide Station List");
+            
+            // Hide the show/hide button
+            showStationsButton.setVisible(false);
+            showStationsButton.setManaged(false);
+            
+            // Add click-outside-to-close handler
+            myStationView.setOnMouseClicked(event -> {
+                // Check if click is outside station list container
+                if (!stationListContainer.getBoundsInParent().contains(event.getX(), event.getY())) {
+                    closeStationList();
+                }
+            });
         } else {
-            showStationsButton.setText("Show Station List");
+            closeStationList();
         }
         
         stationListContainer.setVisible(!isVisible);
         stationListContainer.setManaged(!isVisible);
+    }
+    
+    private void closeStationList() {
+        stationListContainer.setVisible(false);
+        stationListContainer.setManaged(false);
+        
+        // Show the button again
+        showStationsButton.setVisible(true);
+        showStationsButton.setManaged(true);
+        
+        // Remove click handler
+        myStationView.setOnMouseClicked(null);
     }
     
     @FXML    
@@ -661,5 +729,14 @@ public class MainLayoutController {
                 weatherChart.clear();
             }
         );
+    }
+    
+    /**
+     * Update top bar title
+     */
+    private void updateTopBarTitle(String title) {
+        if (topBarTitle != null) {
+            topBarTitle.setText(title);
+        }
     }
 }

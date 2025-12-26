@@ -3,19 +3,30 @@
    Weather Desktop Application
    ============================================ */
 
+/* Root Background */
+.border-pane {
+    -fx-background-image: url('/images/background.png');
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+}
+
+
+
 /* Root Container */
 .main-container {
-    -fx-background-color: #F8FAFC;
+    /* Background removed - using BorderPane background image instead */
     -fx-padding: 0;
 }
 
-/* ===== SIDEBAR ===== */
+/* ===== SIDEBAR - Glass Effect ===== */
 .sidebar {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E2E8F0;
+    -fx-background-color: rgba(255, 255, 255, 0.85);
+    -fx-border-color: rgba(226, 232, 240, 0.5);
     -fx-border-width: 0 1px 0 0;
     -fx-padding: 0;
     -fx-pref-width: 220px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 20, 0, 0, 0);
 }
 
 /* Toggle Sidebar Button */
@@ -38,6 +49,18 @@
     -fx-pref-height: 1px;
     -fx-min-height: 1px;
     -fx-max-height: 1px;
+}
+
+/* ===== TOP BAR ===== */
+.top-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 24px 32px 16px 32px;
+}
+
+.top-bar-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
 }
 
 /* Sidebar Buttons */
@@ -67,8 +90,12 @@
 
 /* ===== CENTER CONTENT ===== */
 .center-content {
-    -fx-background-color: #F8FAFC;
-    -fx-padding: 24px 32px;
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.view-content {
+    -fx-padding: 76px 32px 24px 32px;
 }
 
 /* Station Info */
@@ -83,13 +110,13 @@
     -fx-text-fill: #64748B;
 }
 
-/* Temperature Card */
+/* Temperature Card - Glass Effect */
 .temperature-card {
     -fx-padding: 32px;
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: rgba(255, 255, 255, 0.6);
     -fx-background-radius: 20px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 12, 0, 0, 2);
-    -fx-border-color: #E2E8F0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 20, 0, 0, 4);
+    -fx-border-color: rgba(226, 232, 240, 0.5);
     -fx-border-width: 1px;
     -fx-border-radius: 20px;
 }
@@ -114,13 +141,13 @@
     -fx-text-fill: #64748B;
 }
 
-/* Stats Grid */
+/* Stats Grid - Glass Effect */
 .stats-grid {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: rgba(255, 255, 255, 0.6);
     -fx-background-radius: 20px;
     -fx-padding: 24px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 12, 0, 0, 2);
-    -fx-border-color: #E2E8F0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 20, 0, 0, 4);
+    -fx-border-color: rgba(226, 232, 240, 0.5);
     -fx-border-width: 1px;
     -fx-border-radius: 20px;
 }
@@ -141,24 +168,30 @@
     -fx-text-fill: #64748B;
 }
 
-/* Primary Button */
+/* Primary Button - Outline Style */
 .show-stations-btn {
-    -fx-background-color: #3B82F6;
-    -fx-text-fill: white;
+    -fx-background-color: transparent;
+    -fx-text-fill: #3B82F6;
     -fx-font-size: 14px;
     -fx-font-weight: 600;
-    -fx-padding: 12px 24px;
+    -fx-padding: 10px 20px;
     -fx-background-radius: 8px;
     -fx-cursor: hand;
-    -fx-border-width: 0;
+    -fx-border-color: #3B82F6;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-alignment: CENTER;
+    -fx-graphic-text-gap: 8;
 }
 
 .show-stations-btn:hover {
-    -fx-background-color: #2563EB;
+    -fx-background-color: rgba(59, 130, 246, 0.08);
+    -fx-border-color: #2563EB;
+    -fx-text-fill: #2563EB;
 }
 
 .show-stations-btn:pressed {
-    -fx-background-color: #1D4ED8;
+    -fx-background-color: rgba(59, 130, 246, 0.15);
 }
 
 /* Card Header */
@@ -167,6 +200,31 @@
     -fx-font-weight: bold;
     -fx-text-fill: #1E293B;
 }
+
+/* Add Station Button - Outline Style */
+.add-station-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #3B82F6;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 12px 24px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-border-color: #3B82F6;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+}
+
+.add-station-btn:hover {
+    -fx-background-color: rgba(59, 130, 246, 0.08);
+    -fx-border-color: #2563EB;
+    -fx-text-fill: #2563EB;
+}
+
+.add-station-btn:pressed {
+    -fx-background-color: rgba(59, 130, 246, 0.15);
+}
+
 
 /* ===== STATION LIST DIALOG ===== */
 .dialog-pane {

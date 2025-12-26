@@ -69,12 +69,19 @@
     <!-- CENTER CONTENT -->
     <center>
         <StackPane fx:id="contentArea" styleClass="center-content" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+            <!-- TOP BAR -->
+            <VBox fx:id="topBarContainer" PickOnBounds="false" alignment="TOP_LEFT" managed="true" visible="true" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+                <HBox alignment="CENTER_LEFT" spacing="16" styleClass="top-bar">
+                    <Label fx:id="topBarTitle" styleClass="top-bar-title" text="My Station" />
+                </HBox>
+            </VBox>
+            
             <!-- MyStation View (Default) -->
             <AnchorPane fx:id="myStationView">
-                <VBox alignment="TOP_CENTER" spacing="24" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+                <VBox alignment="TOP_CENTER" spacing="24" styleClass="view-content" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
                     <!-- Header with Button -->
                     <HBox alignment="CENTER_LEFT" spacing="16">
-                        <Label styleClass="card-header" text="My Weather Station" />
+                        <Label styleClass="card-header" />
                         <Region HBox.hgrow="ALWAYS" />
                         <Button fx:id="showStationsButton" onAction="#handleShowStationList" styleClass="show-stations-btn" text="Show Station List" />
                     </HBox>
@@ -148,7 +155,7 @@
                 </VBox>
                 
                 <!-- Station List Panel (Initially Hidden) - Positioned on right side -->
-                <VBox fx:id="stationListContainer" managed="false" spacing="12" styleClass="card,station-list-container" visible="false" AnchorPane.bottomAnchor="20" AnchorPane.rightAnchor="20" AnchorPane.topAnchor="20">
+                <VBox fx:id="stationListContainer" managed="true" spacing="12" styleClass="card,station-list-container" visible="false" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                     <HBox alignment="CENTER_LEFT" spacing="12">
                         <Label styleClass="card-title,station-list-title" text="Available Stations" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -169,7 +176,7 @@
 
             
             <!-- Alerts View (Hidden by default) -->
-            <VBox fx:id="alertsView" alignment="TOP_CENTER" managed="false" spacing="24" visible="false">
+            <VBox fx:id="alertsView" alignment="TOP_CENTER" managed="false" spacing="24" styleClass="view-content" visible="false">
                 <!-- Delete All Button - Top Right -->
                 <HBox alignment="TOP_RIGHT">
                     <Button fx:id="deleteAllAlertsButton" onAction="#handleDeleteAllAlerts" styleClass="delete-all-btn" text="Delete All" visible="false" />
@@ -196,7 +203,7 @@
             </VBox>
             
             <!-- Settings View (Hidden by default) -->
-            <VBox fx:id="settingsView" alignment="TOP_CENTER" managed="false" spacing="24" visible="false">
+            <VBox fx:id="settingsView" alignment="TOP_CENTER" managed="false" spacing="24" styleClass="view-content" visible="false">
                 <HBox alignment="CENTER_LEFT" spacing="16">
                     <Label fx:id="settingsHeaderIcon" styleClass="card-header-icon" />
                     <Label styleClass="card-header" text="Settings" />
