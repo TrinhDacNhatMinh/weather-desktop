@@ -11,6 +11,9 @@
     -fx-primary-blue-dark: #005A9E;
 
     /* Accent Colors */
+    -fx-accent-yellow: #FFB900;
+    -fx-accent-yellow-light: #FFCA28;
+    -fx-accent-yellow-dark: #F9A825;
     -fx-accent-peach: #FFD4B2;
     -fx-accent-blue-light: #B8E6F5;
     -fx-accent-cream: #FFF5E1;
@@ -25,6 +28,8 @@
     -fx-bg-white: #FFFFFF;
     -fx-bg-light: #F5F5F5;
     -fx-bg-glass: rgba(255, 255, 255, 0.65);
+    -fx-bg-sidebar: #E8F4F8;
+    -fx-bg-cream: #FFF9F0;
 
     /* Border Colors */
     -fx-border-light: rgba(0, 0, 0, 0.12);

@@ -172,3 +172,153 @@
 .bg-gradient-pastel {
     -fx-background-color: linear-gradient(to bottom right, #FFD4B2 0%, #FFF5E1 25%, #B8E6F5 60%, #E3F2FD 85%, #FFFFFF 100%);
 }
+
+/* ===== SIDEBAR COMPONENTS (Windows Weather App Style) ===== */
+
+/* Sidebar Container */
+.sidebar {
+    -fx-background-color: #E8F4F8;
+    -fx-pref-width: 80px;
+    -fx-padding: 8px 0;
+}
+
+/* Sidebar Button */
+.sidebar-btn {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-pref-width: 80px;
+    -fx-pref-height: 64px;
+    -fx-cursor: hand;
+}
+
+.sidebar-btn:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-btn.active {
+    -fx-border-color: #FFB900;
+    -fx-border-width: 0 0 0 3px;
+    -fx-background-color: rgba(255, 185, 0, 0.1);
+}
+
+/* Sidebar Icon */
+.sidebar-icon {
+    -fx-fill: #666666;
+}
+
+.sidebar-btn.active .sidebar-icon {
+    -fx-fill: #FFB900;
+}
+
+/* Sidebar Label */
+.sidebar-label {
+    -fx-font-size: 10px;
+    -fx-fill: #666666;
+}
+
+.sidebar-btn.active .sidebar-label {
+    -fx-fill: #000000;
+    -fx-font-weight: 600;
+}
+
+/* ===== TOP BAR COMPONENTS ===== */
+
+/* Top Bar */
+.top-bar {
+    -fx-background-color: white;
+    -fx-padding: 12px 24px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, 0, 2);
+}
+
+/* Page Title */
+.page-title {
+    -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: 600;
+    -fx-fill: #1a1a1a;
+}
+
+/* Icon Button */
+.icon-btn {
+    -fx-background-color: transparent;
+    -fx-background-radius: 4px;
+    -fx-padding: 8px;
+    -fx-cursor: hand;
+}
+
+.icon-btn:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ===== WEATHER COMPONENTS ===== */
+
+/* Weather Card */
+.weather-card {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 12px;
+    -fx-padding: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 12, 0, 0, 4);
+}
+
+/* Weather Data Label */
+.weather-data-label {
+    -fx-font-size: 12px;
+    -fx-fill: #666666;
+}
+
+/* Weather Data Value */
+.weather-data-value {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-fill: #1a1a1a;
+}
+
+/* Temperature Text */
+.temperature-large {
+    -fx-font-size: 48px;
+    -fx-font-weight: 300;
+    -fx-fill: #1a1a1a;
+}
+
+/* ===== TAB COMPONENTS (Yellow Active State) ===== */
+
+/* Tab Button */
+.tab-btn {
+    -fx-background-color: transparent;
+    -fx-background-radius: 18px;
+    -fx-padding: 8px 20px;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-cursor: hand;
+}
+
+.tab-btn:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+}
+
+.tab-btn.active {
+    -fx-background-color: #FFB900;
+    -fx-text-fill: #000000;
+    -fx-font-weight: 600;
+}
+
+/* ===== SEARCH BAR ===== */
+
+/* Search Input */
+.search-input {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+    -fx-background-radius: 8px;
+    -fx-border-color: transparent;
+    -fx-padding: 8px 16px;
+    -fx-pref-width: 300px;
+    -fx-prompt-text-fill: #999999;
+}
+
+.search-input:focused {
+    -fx-background-color: white;
+    -fx-border-color: #0067C0;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 103, 192, 0.2), 8, 0, 0, 2);
+}

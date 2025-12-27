@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.6"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.nhom.weatherdesktop.controller.ForestCardController"
+      styleClass="weather-card" 
+      spacing="16">
+    
+    <!-- Card Title -->
+    <Text text="Forest Information" styleClass="card-title"/>
+    
+    <!-- Data Grid -->
+    <GridPane hgap="32" vgap="16">
+        <VBox GridPane.rowIndex="0" GridPane.columnIndex="0">
+            <Text text="Forest Fire Risk" styleClass="weather-data-label"/>
+            <Text fx:id="fireRiskValue" text="Low" styleClass="weather-data-value"/>
+        </VBox>
+        
+        <VBox GridPane.rowIndex="0" GridPane.columnIndex="1">
+            <Text text="Vegetation Index" styleClass="weather-data-label"/>
+            <Text fx:id="vegetationValue" text="0.75" styleClass="weather-data-value"/>
+        </VBox>
+        
+        <VBox GridPane.rowIndex="1" GridPane.columnIndex="0">
+            <Text text="Soil Moisture" styleClass="weather-data-label"/>
+            <Text fx:id="soilMoistureValue" text="45%" styleClass="weather-data-value"/>
+        </VBox>
+        
+        <VBox GridPane.rowIndex="1" GridPane.columnIndex="1">
+            <Text text="Canopy Cover" styleClass="weather-data-label"/>
+            <Text fx:id="canopyCoverValue" text="82%" styleClass="weather-data-value"/>
+        </VBox>
+    </GridPane>
+    
+</VBox>

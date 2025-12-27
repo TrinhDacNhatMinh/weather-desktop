@@ -1,21 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx/17.0.6" 
-           xmlns:fx="http://javafx.com/fxml/1"
-           prefHeight="600.0" prefWidth="800.0"
-           style="-fx-background-color: #f5f5f5;">
+<BorderPane xmlns="http://javafx.com/javafx/17.0.6" 
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.nhom.weatherdesktop.controller.MainController"
+            stylesheets="@../../styles/base.css, @../../styles/components.css, @../../styles/pages/dashboard.css">
     
-    <!-- Centered content -->
-    <VBox alignment="CENTER" spacing="20">
-        <Text text="Welcome to Weather Desktop!" 
-              style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-fill: #0067C0;" />
-        
-        <Text text="Dashboard coming soon..." 
-              style="-fx-font-size: 16px; -fx-fill: #666666;" />
-    </VBox>
+    <!-- Sidebar (Left) -->
+    <left>
+        <fx:include source="sidebar.fxml" fx:id="sidebar"/>
+    </left>
     
-</StackPane>
+    <!-- Top Bar + Content (Center) -->
+    <center>
+        <VBox>
+            <!-- Top Bar -->
+            <fx:include source="topbar.fxml" fx:id="topBar"/>
+            
+            <!-- Main Content (Scrollable) -->
+            <ScrollPane fx:id="contentScrollPane" fitToWidth="true" styleClass="content-scroll">
+                <VBox styleClass="bg-gradient-pastel, dashboard-content" alignment="TOP_CENTER">
+                    <!-- Weather Card -->
+                    <fx:include source="../components/weather_card.fxml" fx:id="weatherCard"/>
+                    
+                    <!-- Forest Card -->
+                    <fx:include source="../components/forest_card.fxml" fx:id="forestCard"/>
+                    
+                    <!-- Temperature Chart -->
+                    <fx:include source="../components/temperature_chart.fxml" fx:id="chart"/>
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </center>
+    
+</BorderPane>

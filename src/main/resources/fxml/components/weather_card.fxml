@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.6"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.nhom.weatherdesktop.controller.WeatherCardController"
+      styleClass="weather-card" 
+      spacing="20">
+    
+    <!-- Card Title -->
+    <Text text="Current Weather" styleClass="card-title"/>
+    
+    <!-- Metrics Grid -->
+    <GridPane hgap="32" vgap="24">
+        <!-- Row 1: Temperature & Humidity -->
+        <VBox GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="metric-item">
+            <Text text="Temperature" styleClass="weather-data-label"/>
+            <HBox alignment="BASELINE_LEFT" spacing="4">
+                <Text fx:id="temperatureValue" text="25" styleClass="metric-value"/>
+                <Text text="°C" styleClass="metric-unit"/>
+            </HBox>
+        </VBox>
+        
+        <VBox GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="metric-item">
+            <Text text="Humidity" styleClass="weather-data-label"/>
+            <HBox alignment="BASELINE_LEFT" spacing="4">
+                <Text fx:id="humidityValue" text="65" styleClass="metric-value"/>
+                <Text text="\%" styleClass="metric-unit"/>
+            </HBox>
+        </VBox>
+        
+        <!-- Row 2: Wind Speed & Rainfall -->
+        <VBox GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="metric-item">
+            <Text text="Wind Speed" styleClass="weather-data-label"/>
+            <HBox alignment="BASELINE_LEFT" spacing="4">
+                <Text fx:id="windSpeedValue" text="12" styleClass="metric-value"/>
+                <Text text="km/h" styleClass="metric-unit"/>
+            </HBox>
+        </VBox>
+        
+        <VBox GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="metric-item">
+            <Text text="Rainfall" styleClass="weather-data-label"/>
+            <HBox alignment="BASELINE_LEFT" spacing="4">
+                <Text fx:id="rainfallValue" text="0.5" styleClass="metric-value"/>
+                <Text text="mm" styleClass="metric-unit"/>
+            </HBox>
+        </VBox>
+        
+        <!-- Row 3: Dust (Centered, spans 2 columns) -->
+        <VBox GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="2" 
+              styleClass="metric-item" alignment="CENTER">
+            <Text text="Dust (PM2.5" styleClass="weather-data-label"/>
+            <HBox alignment="BASELINE_LEFT" spacing="4">
+                <Text fx:id="dustValue" text="35" styleClass="metric-value"/>
+                <Text text="μg/m³" styleClass="metric-unit"/>
+            </HBox>
+        </VBox>
+    </GridPane>
+    
+</VBox>

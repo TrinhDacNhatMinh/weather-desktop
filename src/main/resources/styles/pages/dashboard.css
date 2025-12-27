@@ -1,0 +1,98 @@
+/* ============================================
+   DASHBOARD PAGE STYLES
+   Weather Desktop Application
+   ============================================ */
+
+/* Content Area */
+.content-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.content-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.content-scroll .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+/* Main Content Padding */
+.dashboard-content {
+    -fx-spacing: 24px;
+    -fx-padding: 32px;
+}
+
+/* Card Container */
+.weather-card {
+    -fx-max-width: 900px;
+}
+
+/* Card Title */
+.card-title {
+    -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', sans-serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: 600;
+    -fx-fill: #1a1a1a;
+}
+
+/* Metric Item */
+.metric-item {
+    -fx-spacing: 8px;
+}
+
+/* Metric Value (Large Numbers) */
+.metric-value {
+    -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', sans-serif;
+    -fx-font-size: 32px;
+    -fx-font-weight: 600;
+    -fx-fill: #0067C0;
+}
+
+/* Metric Unit */
+.metric-unit {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', sans-serif;
+    -fx-font-size: 16px;
+    -fx-font-weight: 400;
+    -fx-fill: #666666;
+}
+
+/* Chart Styling */
+.chart {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.chart-plot-background {
+    -fx-background-color: rgba(255, 255, 255, 0.5);
+}
+
+.chart-series-line {
+    -fx-stroke: #0067C0;
+    -fx-stroke-width: 2px;
+}
+
+.chart-line-symbol {
+    -fx-background-color: #0067C0, white;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 5px;
+    -fx-padding: 4px;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: rgba(0, 0, 0, 0.1);
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: rgba(0, 0, 0, 0.1);
+}
+
+.axis {
+    -fx-font-size: 12px;
+    -fx-tick-label-fill: #666666;
+}
+
+.axis-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #333333;
+}
