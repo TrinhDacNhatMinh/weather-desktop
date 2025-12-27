@@ -57,6 +57,22 @@
     -fx-fill: #666666;
 }
 
+/* Large Temperature Display (Centered) */
+.temperature-large {
+    -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', sans-serif;
+    -fx-font-size: 72px;
+    -fx-font-weight: 300;
+    -fx-fill: #0067C0;
+}
+
+.temperature-large-unit {
+    -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', sans-serif;
+    -fx-font-size: 36px;
+    -fx-font-weight: 300;
+    -fx-fill: #666666;
+}
+
+
 /* Chart Styling */
 .chart {
     -fx-padding: 0;
