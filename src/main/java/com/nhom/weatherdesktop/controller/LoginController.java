@@ -122,12 +122,18 @@ public class LoginController {
             Parent root = loader.load();
             
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            Scene scene = new Scene(root);
+            
+            // Get current window size
+            double width = stage.getWidth();
+            double height = stage.getHeight();
+            
+            // Create scene with current window size
+            Scene scene = new Scene(root, width, height);
             
             AppConfig config = AppConfig.getInstance();
             stage.setScene(scene);
             stage.setTitle(config.getAppTitle());
-            stage.setMaximized(true);
+            stage.setMaximized(true);  // Maximize window (keeps title bar with minimize/maximize/close)
             
             logger.info("Successfully navigated to main screen");
             
