@@ -82,6 +82,11 @@ public class StationListPopupController {
         }
     }
 
+    @FXML
+    private void handleAddStation() {
+        showInfo("Add Station", "Add station functionality will be implemented soon!");
+    }
+
     private void showError(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);

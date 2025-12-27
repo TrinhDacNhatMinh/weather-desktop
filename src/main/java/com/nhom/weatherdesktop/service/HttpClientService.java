@@ -96,6 +96,66 @@ public class HttpClientService {
         }
     }
     
+    public <T, R> R put(String endpoint, T requestBody, Class<R> responseType, boolean includeAuth) 
+            throws IOException, HttpException {
+        
+        String fullUrl = config.getApiBaseUrl() + endpoint;
+        URL url = new URL(fullUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        
+        try {
+            connection.setRequestMethod("PUT");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setDoOutput(true);
+            connection.setConnectTimeout(config.getApiTimeout() * 1000);
+            connection.setReadTimeout(config.getApiTimeout() * 1000);
+            
+            if (includeAuth && tokenManager.isAuthenticated()) {
+                connection.setRequestProperty("Authorization", tokenManager.getAuthorizationHeader());
+            }
+            
+            if (requestBody != null) {
+                String jsonBody = objectMapper.writeValueAsString(requestBody);
+                try (OutputStream os = connection.getOutputStream()) {
+                    byte[] input = jsonBody.getBytes(StandardCharsets.UTF_8);
+                    os.write(input, 0, input.length);
+                }
+            }
+            
+            int responseCode = connection.getResponseCode();
+            logger.debug("PUT {} - Response code: {}", endpoint, responseCode);
+            
+            if (responseCode >= 200 && responseCode < 300) {
+                if (responseType != null && responseType != Void.class) {
+                    return objectMapper.readValue(connection.getInputStream(), responseType);
+                }
+                return null;
+            } else if (responseCode == 401) {
+                throw new HttpException(401, "Unauthorized - Invalid credentials");
+            } else if (responseCode == 403) {
+                throw new HttpException(403, "Forbidden - Access denied");
+            } else if (responseCode == 404) {
+                throw new HttpException(404, "Station not found");
+            } else if (responseCode == 409) {
+                throw new HttpException(409, "Station already attached to another user");
+            } else if (responseCode >= 500) {
+                throw new HttpException(responseCode, "Server error - Please try again later");
+            } else {
+                String errorMessage = "HTTP Error " + responseCode;
+                try {
+                    String errorBody = new String(connection.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
+                    errorMessage = errorBody;
+                } catch (Exception ignored) {
+                }
+                throw new HttpException(responseCode, errorMessage);
+            }
+            
+        } finally {
+            connection.disconnect();
+        }
+    }
+    
     public <R> R get(String endpoint, com.fasterxml.jackson.core.type.TypeReference<R> typeRef, boolean includeAuth) 
             throws IOException, HttpException {
         

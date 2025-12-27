@@ -14,6 +14,9 @@ public class StationItemController {
 
     @FXML
     private Text statusIcon;
+    
+    @FXML
+    private Text statusText;
 
     private StationResponse station;
 
@@ -26,13 +29,15 @@ public class StationItemController {
         // Set location
         stationLocation.setText(station.location());
         
-        // Set status icon with color based on status field
+        // Set status icon and text based on status field
         if ("ON".equalsIgnoreCase(station.status())) {
             // Green circle for ON status
-            statusIcon.setStyle("-fx-fill: #10B981; -fx-font-size: 16px;");
+            statusIcon.setStyle("-fx-fill: #10B981; -fx-font-size: 12px;");
+            statusText.setText("on");
         } else {
             // Red circle for OFF status
-            statusIcon.setStyle("-fx-fill: #EF4444; -fx-font-size: 16px;");
+            statusIcon.setStyle("-fx-fill: #EF4444; -fx-font-size: 12px;");
+            statusText.setText("off");
         }
     }
 

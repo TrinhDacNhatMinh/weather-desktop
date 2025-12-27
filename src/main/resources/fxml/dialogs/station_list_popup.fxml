@@ -3,8 +3,11 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 
 <VBox xmlns="http://javafx.com/javafx/17.0.6"
       xmlns:fx="http://javafx.com/fxml/1"
@@ -26,9 +29,25 @@
               styleClass="station-list"
               VBox.vgrow="ALWAYS"/>
     
+    <!-- Add Station Button -->
+    <Button onAction="#handleAddStation"
+            styleClass="btn-secondary"
+            maxWidth="Infinity">
+        <graphic>
+            <HBox spacing="8" alignment="CENTER">
+                <ImageView fitWidth="16" fitHeight="16" preserveRatio="true">
+                    <image>
+                        <Image url="@../../icons/add.png"/>
+                    </image>
+                </ImageView>
+                <Text text="Add Station" style="-fx-fill: #0078D4; -fx-font-size: 14px; -fx-font-weight: 600;"/>
+            </HBox>
+        </graphic>
+    </Button>
+    
     <!-- Close Button -->
     <Button text="Close" 
-            styleClass="primary-btn"
+            styleClass="btn-secondary"
             onAction="#handleClose"
             maxWidth="Infinity"/>
     

@@ -50,36 +50,36 @@
     <!-- Other Metrics Grid (1 row x 4 columns) -->
     <GridPane hgap="24" alignment="CENTER">
         <!-- Humidity -->
-        <VBox GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="metric-item">
+        <VBox GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="metric-item" alignment="CENTER">
             <Text text="Humidity" styleClass="weather-data-label"/>
-            <HBox alignment="BASELINE_LEFT" spacing="4">
+            <HBox alignment="CENTER" spacing="4">
                 <Text fx:id="humidityValue" text="65" styleClass="metric-value"/>
                 <Text text="\%" styleClass="metric-unit"/>
             </HBox>
         </VBox>
         
         <!-- Wind Speed -->
-        <VBox GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="metric-item">
+        <VBox GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="metric-item" alignment="CENTER">
             <Text text="Wind Speed" styleClass="weather-data-label"/>
-            <HBox alignment="BASELINE_LEFT" spacing="4">
+            <HBox alignment="CENTER" spacing="4">
                 <Text fx:id="windSpeedValue" text="12" styleClass="metric-value"/>
                 <Text text="m/s" styleClass="metric-unit"/>
             </HBox>
         </VBox>
         
         <!-- Rainfall -->
-        <VBox GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="metric-item">
+        <VBox GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="metric-item" alignment="CENTER">
             <Text text="Rainfall" styleClass="weather-data-label"/>
-            <HBox alignment="BASELINE_LEFT" spacing="4">
+            <HBox alignment="CENTER" spacing="4">
                 <Text fx:id="rainfallValue" text="0.5" styleClass="metric-value"/>
                 <Text text="mm" styleClass="metric-unit"/>
             </HBox>
         </VBox>
         
         <!-- Dust -->
-        <VBox GridPane.rowIndex="0" GridPane.columnIndex="3" styleClass="metric-item">
+        <VBox GridPane.rowIndex="0" GridPane.columnIndex="3" styleClass="metric-item" alignment="CENTER">
             <Text text="Dust" styleClass="weather-data-label"/>
-            <HBox alignment="BASELINE_LEFT" spacing="4">
+            <HBox alignment="CENTER" spacing="4">
                 <Text fx:id="dustValue" text="35" styleClass="metric-value"/>
                 <Text text="μg/m³" styleClass="metric-unit"/>
             </HBox>

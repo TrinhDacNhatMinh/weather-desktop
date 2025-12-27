@@ -389,3 +389,14 @@
     -fx-background-radius: 8px;
 }
 
+/* Station Status Icon */
+.status-icon {
+    -fx-font-size: 12px;
+}
+
+/* Field Labels (for forms) */
+.field-label {
+    -fx-fill: #666666;
+    -fx-font-size: 13px;
+}
+

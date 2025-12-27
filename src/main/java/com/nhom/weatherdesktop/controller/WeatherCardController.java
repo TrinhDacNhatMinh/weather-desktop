@@ -105,9 +105,61 @@ public class WeatherCardController {
                         }
                     }
                     
-                    // Show menu below button
+                    // Add separator and "Add Station" button at the bottom
+                    if (!response.content().isEmpty()) {
+                        stationMenu.getItems().add(new javafx.scene.control.SeparatorMenuItem());
+                    }
+                    
+                    // Create Add Station button
+                    try {
+                        HBox addButtonContent = new HBox(8);
+                        addButtonContent.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                        addButtonContent.setPadding(new javafx.geometry.Insets(12, 16, 12, 16));
+                        addButtonContent.setStyle("-fx-cursor: hand;");
+                        
+                        // Add icon
+                        javafx.scene.image.ImageView addIcon = new javafx.scene.image.ImageView(
+                            new javafx.scene.image.Image(getClass().getResourceAsStream("/icons/add.png"))
+                        );
+                        addIcon.setFitWidth(16);
+                        addIcon.setFitHeight(16);
+                        addIcon.setPreserveRatio(true);
+                        
+                        // Add text
+                        Text addText = new Text("Add Station");
+                        addText.setStyle("-fx-fill: #0078D4; -fx-font-size: 14px; -fx-font-weight: 600;");
+                        
+                        addButtonContent.getChildren().addAll(addIcon, addText);
+                        
+                        // Hover effect
+                        addButtonContent.setOnMouseEntered(e -> 
+                            addButtonContent.setStyle("-fx-cursor: hand; -fx-background-color: rgba(0, 120, 212, 0.05);")
+                        );
+                        addButtonContent.setOnMouseExited(e -> 
+                            addButtonContent.setStyle("-fx-cursor: hand; -fx-background-color: transparent;")
+                        );
+                        
+                        // Click handler
+                        addButtonContent.setOnMouseClicked(e -> handleAddStation());
+                        
+                        CustomMenuItem addMenuItem = new CustomMenuItem(addButtonContent);
+                        addMenuItem.setHideOnClick(true);
+                        stationMenu.getItems().add(addMenuItem);
+                        
+                    } catch (Exception e) {
+                        logger.error("Failed to create Add Station button: {}", e.getMessage(), e);
+                    }
+                    
+                    // Show menu below button, centered
                     logger.debug("Showing context menu");
-                    stationMenu.show(menuButton, Side.BOTTOM, 0, 5);
+                    
+                    // Calculate offset to center menu relative to button
+                    // Menu width is approximately 300px (station item width)
+                    double menuWidth = 300;
+                    double buttonWidth = menuButton.getWidth();
+                    double offsetX = (buttonWidth - menuWidth) / 2;
+                    
+                    stationMenu.show(menuButton, Side.BOTTOM, offsetX, 5);
                 });
                 
             } catch (Exception e) {
@@ -133,5 +185,49 @@ public class WeatherCardController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void handleAddStation() {
+        Platform.runLater(() -> {
+            try {
+                // Load Add Station Dialog
+                FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/fxml/dialogs/add_station_dialog.fxml")
+                );
+                VBox dialogRoot = loader.load();
+                
+                // Get controller
+                AddStationDialogController controller = loader.getController();
+                
+                // Create and configure stage
+                javafx.stage.Stage dialogStage = new javafx.stage.Stage();
+                dialogStage.setTitle("Add Station");
+                dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+                dialogStage.setScene(new javafx.scene.Scene(dialogRoot));
+                dialogStage.setResizable(false);
+                
+                // Set stage reference
+                controller.setStage(dialogStage);
+                
+                // Show dialog and wait
+                dialogStage.showAndWait();
+                
+                // Refresh station list if successful
+                if (controller.isSuccess()) {
+                    logger.info("Station added, refreshing menu");
+                    // Close and reopen menu with new data
+                    stationMenu.hide();
+                    handleMenuClick();
+                }
+                
+            } catch (Exception e) {
+                logger.error("Failed to open Add Station dialog: {}", e.getMessage(), e);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Failed to open Add Station dialog: " + e.getMessage());
+                alert.showAndWait();
+            }
+        });
     }
 }

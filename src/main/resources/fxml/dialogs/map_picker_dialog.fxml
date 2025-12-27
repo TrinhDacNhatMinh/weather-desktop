@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.web.WebView?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.6"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.nhom.weatherdesktop.controller.MapPickerController"
+      spacing="0"
+      prefWidth="800"
+      prefHeight="600">
+    
+    <!-- Map WebView -->
+    <WebView fx:id="mapWebView" VBox.vgrow="ALWAYS"/>
+    
+    <!-- Bottom Button Bar -->
+    <HBox spacing="12" style="-fx-background-color: white; -fx-padding: 16px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, -2);">
+        <Button text="Cancel" 
+                styleClass="btn-secondary"
+                onAction="#handleCancel"
+                HBox.hgrow="ALWAYS"
+                maxWidth="Infinity"/>
+        <Button text="Confirm Location" 
+                styleClass="btn-primary"
+                onAction="#handleConfirm"
+                HBox.hgrow="ALWAYS"
+                maxWidth="Infinity"/>
+    </HBox>
+    
+</VBox>

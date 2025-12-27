@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="400" prefWidth="450" spacing="20" styleClass="station-popup" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.nhom.weatherdesktop.controller.AddStationDialogController">
+    
+    <padding>
+        <Insets bottom="24" left="24" right="24" top="24" />
+    </padding>
+    
+    <!-- Title -->
+    <Text styleClass="popup-title" text="Add Station" />
+    
+    <!-- Form Fields -->
+    <VBox spacing="16">
+        
+        <!-- Station Name -->
+        <VBox spacing="6">
+            <Text styleClass="field-label" text="Station Name" />
+            <TextField fx:id="nameField" promptText="Enter station name" styleClass="input-modern" />
+        </VBox>
+        
+        <!-- API Key -->
+        <VBox spacing="6">
+            <Text styleClass="field-label" text="API Key" />
+            <TextField fx:id="apiKeyField" promptText="Enter station API key" styleClass="input-modern" />
+        </VBox>
+        
+        <!-- Location -->
+        <VBox spacing="6">
+            <Text styleClass="field-label" text="Location" />
+            <HBox spacing="8">
+                <TextField fx:id="locationField" editable="false" promptText="Click to select location" styleClass="input-modern" HBox.hgrow="ALWAYS" />
+                <Button onAction="#handleSelectLocation" 
+                        prefWidth="24" prefHeight="24"
+                        minWidth="24" minHeight="24"
+                        maxWidth="24" maxHeight="24"
+                        style="-fx-padding: 0;">
+                    <graphic>
+                        <ImageView fitHeight="14" fitWidth="14" preserveRatio="true">
+                            <image>
+                                <Image url="@../../icons/location_on.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </HBox>
+        </VBox>
+        
+    </VBox>
+    
+    <!-- Spacer -->
+    <VBox VBox.vgrow="ALWAYS" />
+    
+    <!-- Action Buttons -->
+    <HBox spacing="12">
+        <Button maxWidth="Infinity" onAction="#handleCancel" styleClass="btn-secondary" text="Cancel" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleAdd" styleClass="btn-primary" text="Add Station" HBox.hgrow="ALWAYS" />
+    </HBox>
+    
+</VBox>

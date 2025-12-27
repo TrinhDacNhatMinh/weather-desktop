@@ -72,7 +72,26 @@ public class StationService implements IStationService {
 
     @Override
     public StationResponse addStationToUser(AddStationRequest request) {
-        return null;
+        try {
+            logger.debug("Adding station to user: {}", request.name());
+            StationResponse response = httpClient.put(
+                "/stations/attach",
+                request,
+                StationResponse.class,
+                true  // requiresAuth = true
+            );
+            logger.info("Successfully attached station: {}", response.name());
+            return response;
+        } catch (HttpClientService.HttpException e) {
+            logger.error("HTTP error while attaching station: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to attach station: " + e.getMessage(), e);
+        } catch (IOException e) {
+            logger.error("Network error while attaching station: {}", e.getMessage(), e);
+            throw new RuntimeException("Network error while attaching station: " + e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("Unexpected error while attaching station: {}", e.getMessage(), e);
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
     }
 
     @Override
