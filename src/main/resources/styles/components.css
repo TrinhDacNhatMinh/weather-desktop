@@ -177,8 +177,8 @@
 
 /* Sidebar Container */
 .sidebar {
-    -fx-background-color: #E8F4F8;
-    -fx-pref-width: 80px;
+    -fx-background-color: #F3F3F3;
+    -fx-pref-width: 48px;
     -fx-padding: 8px 0;
 }
 
@@ -186,8 +186,8 @@
 .sidebar-btn {
     -fx-background-color: transparent;
     -fx-background-radius: 0;
-    -fx-pref-width: 80px;
-    -fx-pref-height: 64px;
+    -fx-pref-width: 48px;
+    -fx-pref-height: 48px;
     -fx-cursor: hand;
 }
 
@@ -196,29 +196,18 @@
 }
 
 .sidebar-btn.active {
-    -fx-border-color: #FFB900;
+    -fx-border-color: #0078D4;
     -fx-border-width: 0 0 0 3px;
-    -fx-background-color: rgba(255, 185, 0, 0.1);
+    -fx-background-color: rgba(0, 120, 212, 0.05);
 }
 
 /* Sidebar Icon */
-.sidebar-icon {
-    -fx-fill: #666666;
+.sidebar-btn ImageView {
+    -fx-opacity: 0.7;
 }
 
-.sidebar-btn.active .sidebar-icon {
-    -fx-fill: #FFB900;
-}
-
-/* Sidebar Label */
-.sidebar-label {
-    -fx-font-size: 10px;
-    -fx-fill: #666666;
-}
-
-.sidebar-btn.active .sidebar-label {
-    -fx-fill: #000000;
-    -fx-font-weight: 600;
+.sidebar-btn.active ImageView {
+    -fx-opacity: 1.0;
 }
 
 /* ===== TOP BAR COMPONENTS ===== */
@@ -226,14 +215,14 @@
 /* Top Bar */
 .top-bar {
     -fx-background-color: white;
-    -fx-padding: 12px 24px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, 0, 2);
+    -fx-padding: 16px 24px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 2, 0, 0, 1);
 }
 
 /* Page Title */
 .page-title {
     -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', sans-serif;
-    -fx-font-size: 24px;
+    -fx-font-size: 20px;
     -fx-font-weight: 600;
     -fx-fill: #1a1a1a;
 }
@@ -242,12 +231,14 @@
 .icon-btn {
     -fx-background-color: transparent;
     -fx-background-radius: 4px;
-    -fx-padding: 8px;
+    -fx-padding: 6px;
     -fx-cursor: hand;
+    -fx-pref-width: 36px;
+    -fx-pref-height: 36px;
 }
 
 .icon-btn:hover {
-    -fx-background-color: rgba(0, 0, 0, 0.05);
+    -fx-background-color: rgba(0, 0, 0, 0.06);
 }
 
 /* ===== WEATHER COMPONENTS ===== */
