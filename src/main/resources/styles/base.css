@@ -1,0 +1,161 @@
+/* ============================================
+   BASE STYLES - Global Variables & Typography
+   Weather Desktop Application
+   ============================================ */
+
+/* ===== Color Variables ===== */
+.root {
+    /* Primary Colors */
+    -fx-primary-blue: #0067C0;
+    -fx-primary-blue-light: #0078D4;
+    -fx-primary-blue-dark: #005A9E;
+
+    /* Accent Colors */
+    -fx-accent-peach: #FFD4B2;
+    -fx-accent-blue-light: #B8E6F5;
+    -fx-accent-cream: #FFF5E1;
+
+    /* Text Colors */
+    -fx-text-primary: #1a1a1a;
+    -fx-text-secondary: #666666;
+    -fx-text-tertiary: #999999;
+    -fx-text-white: #FFFFFF;
+
+    /* Background Colors */
+    -fx-bg-white: #FFFFFF;
+    -fx-bg-light: #F5F5F5;
+    -fx-bg-glass: rgba(255, 255, 255, 0.65);
+
+    /* Border Colors */
+    -fx-border-light: rgba(0, 0, 0, 0.12);
+    -fx-border-medium: rgba(0, 0, 0, 0.25);
+    -fx-border-white: rgba(255, 255, 255, 0.5);
+
+    /* Shadow Colors */
+    -fx-shadow-light: rgba(0, 0, 0, 0.08);
+    -fx-shadow-medium: rgba(0, 0, 0, 0.15);
+
+    /* Font Families */
+    -fx-font-family-primary: 'Segoe UI Variable Display', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-family-body: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+}
+
+/* ===== Typography ===== */
+
+/* Headings */
+.h1 {
+    -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 32px;
+    -fx-font-weight: 600;
+    -fx-fill: #1a1a1a;
+}
+
+.h2 {
+    -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: 600;
+    -fx-fill: #1a1a1a;
+}
+
+.h3 {
+    -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-fill: #1a1a1a;
+}
+
+/* Body Text */
+.body-large {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 16px;
+    -fx-font-weight: 400;
+    -fx-fill: #1a1a1a;
+}
+
+.body {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: 400;
+    -fx-fill: #1a1a1a;
+}
+
+.body-small {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 12px;
+    -fx-font-weight: 400;
+    -fx-fill: #666666;
+}
+
+/* Label */
+.label-primary {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #333333;
+}
+
+/* Text Utilities */
+.text-primary {
+    -fx-fill: #1a1a1a;
+}
+
+.text-secondary {
+    -fx-fill: #666666;
+}
+
+.text-tertiary {
+    -fx-fill: #999999;
+}
+
+.text-white {
+    -fx-fill: #FFFFFF;
+}
+
+.text-blue {
+    -fx-fill: #0067C0;
+}
+
+/* Text Alignment */
+.text-left {
+    -fx-text-alignment: left;
+}
+
+.text-center {
+    -fx-text-alignment: center;
+}
+
+.text-right {
+    -fx-text-alignment: right;
+}
+
+/* ===== Spacing Utilities ===== */
+
+/* Margins (example - add more as needed) */
+.m-0 {
+    -fx-padding: 0px;
+}
+
+.m-1 {
+    -fx-padding: 4px;
+}
+
+.m-2 {
+    -fx-padding: 8px;
+}
+
+.m-3 {
+    -fx-padding: 12px;
+}
+
+.m-4 {
+    -fx-padding: 16px;
+}
+
+.m-5 {
+    -fx-padding: 24px;
+}
+
+/* ===== Animation & Transitions ===== */
+.smooth-transition {
+    -fx-transition: all 0.2s ease-in-out;
+}

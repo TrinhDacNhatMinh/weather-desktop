@@ -1,102 +1,74 @@
 package com.nhom.weatherdesktop.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhom.weatherdesktop.dto.request.LoginRequest;
-import com.nhom.weatherdesktop.dto.request.RefreshTokenRequest;
-import com.nhom.weatherdesktop.dto.response.AuthResponse;
 import com.nhom.weatherdesktop.dto.response.LoginResponse;
-import com.nhom.weatherdesktop.exception.AuthException;
-import com.nhom.weatherdesktop.session.SessionContext;
-import com.nhom.weatherdesktop.util.HttpRequestBuilder;
+import com.nhom.weatherdesktop.enums.AccessChannel;
+import com.nhom.weatherdesktop.util.TokenManager;
+import com.nhom.weatherdesktop.util.UserSession;
 
-import java.net.http.HttpResponse;
+import java.io.IOException;
 
-import static com.nhom.weatherdesktop.api.ApiClient.client;
-
-public class AuthService {
-
-    private static final ObjectMapper MAPPER =
-            new ObjectMapper().findAndRegisterModules();
-
-    public LoginResponse login(LoginRequest request) {
-
-        try {
-            String json = MAPPER.writeValueAsString(request);
-
-            var httpRequest = HttpRequestBuilder
-                    .create("/auth/login")
-                    .post(json)
-                    .build();
-
-            HttpResponse<String> response =
-                    client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
-
-            return switch (response.statusCode()) {
-                case 200 -> MAPPER.readValue(response.body(), LoginResponse.class);
-                case 401 -> throw new AuthException("Invalid username or password");
-                case 403 -> throw new AuthException("Account is not active or access channel not allowed");
-                default -> throw new RuntimeException(
-                        "Server error (status=" + response.statusCode() + ")"
-                );
-            };
-
-        } catch (AuthException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Login error", e);
-        }
-    }
+public class AuthService implements IAuthService {
     
-    public AuthResponse refreshToken(String refreshToken) {
+    private final HttpClientService httpClient;
+    private final TokenManager tokenManager;
+    private final UserSession userSession;
+    
+    public AuthService() {
+        this.httpClient = HttpClientService.getInstance();
+        this.tokenManager = TokenManager.getInstance();
+        this.userSession = UserSession.getInstance();
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest request) {
         try {
-            RefreshTokenRequest request = new RefreshTokenRequest(refreshToken);
-            String json = MAPPER.writeValueAsString(request);
-
-            var httpRequest = HttpRequestBuilder
-                    .create("/auth/refresh-token")
-                    .post(json)
-                    .build();
-
-            HttpResponse<String> response =
-                    client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
-
-            return switch (response.statusCode()) {
-                case 200 -> MAPPER.readValue(response.body(), AuthResponse.class);
-                case 401 -> throw new AuthException("Refresh token invalid or expired");
-                default -> throw new RuntimeException(
-                        "Server error (status=" + response.statusCode() + ")"
+            LoginRequest finalRequest = request;
+            if (request.accessChannel() == null) {
+                finalRequest = new LoginRequest(
+                    request.username(),
+                    request.password(),
+                    AccessChannel.DESKTOP
                 );
-            };
-
-        } catch (AuthException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Token refresh error", e);
+            }
+            
+            LoginResponse response = httpClient.post(
+                "/auth/login",
+                finalRequest,
+                LoginResponse.class,
+                false
+            );
+            
+            if (response != null) {
+                tokenManager.saveTokens(response.accessToken(), response.refreshToken());
+                userSession.setUserInfo(response.name(), response.email());
+            }
+            
+            return response;
+            
+        } catch (HttpClientService.HttpException e) {
+            throw new RuntimeException(getErrorMessage(e), e);
+        } catch (IOException e) {
+            throw new RuntimeException("Network error: Unable to connect to server. Please check your internet connection.", e);
         }
     }
     
     public void logout() {
-        try {
-            String refreshToken = SessionContext.refreshToken();
-            if (refreshToken == null || refreshToken.isBlank()) {
-                return; // No token to invalidate
-            }
-
-            var httpRequest = HttpRequestBuilder
-                    .create("/auth/logout")
-                    .header("Authorization", "Bearer " + refreshToken)
-                    .post()
-                    .build();
-
-            HttpResponse<String> response =
-                    client().send(httpRequest, HttpResponse.BodyHandlers.ofString());
-
-        } catch (Exception e) {
-            // Logout errors are silently handled
-        } finally {
-            // Always clear session locally
-            SessionContext.clear();
-        }
+        tokenManager.clearTokens();
+        userSession.clear();
     }
-
+    
+    public boolean isLoggedIn() {
+        return tokenManager.isAuthenticated() && userSession.isActive();
+    }
+    
+    private String getErrorMessage(HttpClientService.HttpException e) {
+        return switch (e.getStatusCode()) {
+            case 401 -> "Invalid username or password. Please try again.";
+            case 403 -> "Access denied. Your account may be inactive or you don't have permission to login from this device.";
+            case 500 -> "Server error. Please try again later.";
+            default -> "Login failed: " + e.getMessage();
+        };
+    }
 }
+

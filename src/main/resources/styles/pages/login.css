@@ -1,0 +1,25 @@
+/* ============================================
+   LOGIN PAGE STYLES
+   Page-specific styles for login screen
+   ============================================ */
+
+/* Login Root Container */
+.login-root {
+    -fx-background-color: transparent;
+    -fx-min-width: 1000px;
+    -fx-min-height: 700px;
+}
+
+/* App Icon */
+.app-icon {
+    -fx-font-size: 64px;
+    -fx-fill: linear-gradient(to bottom, #0078D4, #0067C0);
+}
+
+/* Login Button Text Style */
+.microsoft-button-text {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-fill: #333333;
+}

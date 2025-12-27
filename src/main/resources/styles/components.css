@@ -1,0 +1,174 @@
+/* ============================================
+   COMPONENT LIBRARY - Reusable Component Styles
+   Weather Desktop Application
+   ============================================ */
+
+/* ===== BUTTONS ===== */
+
+/* Primary Button (Windows Blue) */
+.btn-primary {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-background-color: linear-gradient(to bottom, #0078D4, #0067C0);
+    -fx-background-radius: 8px;
+    -fx-text-fill: white;
+    -fx-padding: 12px 32px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 103, 192, 0.3), 12, 0.4, 0, 4);
+}
+
+.btn-primary:hover {
+    -fx-background-color: linear-gradient(to bottom, #1084D8, #0074CC);
+    -fx-effect: dropshadow(gaussian, rgba(0, 103, 192, 0.4), 16, 0.5, 0, 6);
+    -fx-scale-y: 1.02;
+    -fx-scale-x: 1.02;
+}
+
+.btn-primary:pressed {
+    -fx-background-color: linear-gradient(to bottom, #005A9E, #004C87);
+    -fx-effect: dropshadow(gaussian, rgba(0, 103, 192, 0.2), 8, 0.3, 0, 2);
+    -fx-scale-y: 0.98;
+    -fx-scale-x: 0.98;
+}
+
+/* Secondary Button (Outlined) */
+.btn-secondary {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 8px;
+    -fx-text-fill: #333333;
+    -fx-border-color: rgba(0, 0, 0, 0.15);
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 8px;
+    -fx-padding: 12px 32px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 6, 0, 0, 2);
+}
+
+.btn-secondary:hover {
+    -fx-background-color: rgba(245, 245, 245, 1);
+    -fx-border-color: rgba(0, 0, 0, 0.25);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 10, 0, 0, 3);
+}
+
+.btn-secondary:pressed {
+    -fx-background-color: rgba(230, 230, 230, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, 0, 1);
+}
+
+/* ===== INPUTS ===== */
+
+/* Modern Input Field */
+.input-modern {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: rgba(255, 255, 255, 0.8);
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(0, 0, 0, 0.12);
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-padding: 12px 16px;
+    -fx-text-fill: #1a1a1a;
+    -fx-prompt-text-fill: #999999;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 4, 0, 0, 2);
+}
+
+.input-modern:focused {
+    -fx-border-color: #0067C0;
+    -fx-border-width: 2px;
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-effect: dropshadow(gaussian, rgba(0, 103, 192, 0.2), 8, 0, 0, 2);
+}
+
+.input-modern:hover {
+    -fx-border-color: rgba(0, 0, 0, 0.2);
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* ===== CARDS ===== */
+
+/* Glass Card (Glassmorphism) */
+.card-glass {
+    -fx-background-color: rgba(255, 255, 255, 0.65);
+    -fx-background-radius: 16px;
+    -fx-border-color: rgba(255, 255, 255, 0.5);
+    -fx-border-width: 1px;
+    -fx-border-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 30, 0.3, 0, 10);
+    -fx-padding: 40px;
+}
+
+/* ===== CHECKBOXES ===== */
+
+/* Modern Checkbox */
+.checkbox-modern {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #555555;
+}
+
+.checkbox-modern .box {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 4px;
+    -fx-border-color: rgba(0, 0, 0, 0.15);
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+}
+
+.checkbox-modern:selected .box {
+    -fx-background-color: #0067C0;
+    -fx-border-color: #0067C0;
+}
+
+.checkbox-modern:selected .mark {
+    -fx-background-color: white;
+}
+
+.checkbox-modern:hover .box {
+    -fx-border-color: #0067C0;
+}
+
+/* ===== LINKS ===== */
+
+/* Accent Link */
+.link-accent {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #0067C0;
+    -fx-border-color: transparent;
+    -fx-underline: false;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.link-accent:hover {
+    -fx-text-fill: #005A9E;
+    -fx-underline: true;
+}
+
+.link-accent:visited {
+    -fx-text-fill: #0067C0;
+}
+
+/* ===== DIVIDERS ===== */
+
+.divider-line {
+    -fx-background-color: rgba(0, 0, 0, 0.1);
+    -fx-pref-height: 1px;
+}
+
+.divider-text {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 12px;
+    -fx-fill: #999999;
+}
+
+/* ===== BACKGROUNDS ===== */
+
+/* Gradient Background */
+.bg-gradient-pastel {
+    -fx-background-color: linear-gradient(to bottom right, #FFD4B2 0%, #FFF5E1 25%, #B8E6F5 60%, #E3F2FD 85%, #FFFFFF 100%);
+}
