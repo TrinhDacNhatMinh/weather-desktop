@@ -313,3 +313,79 @@
     -fx-border-width: 1px;
     -fx-effect: dropshadow(gaussian, rgba(0, 103, 192, 0.2), 8, 0, 0, 2);
 }
+/* ===== STATION LIST POPUP ===== */
+
+/* Popup Container */
+.station-popup {
+    -fx-background-color: white;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 20, 0.3, 0, 4);
+}
+
+/* Popup Title */
+.popup-title {
+    -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: 600;
+    -fx-fill: #1a1a1a;
+}
+
+/* Station List */
+.station-list {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(0, 0, 0, 0.1);
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.station-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+}
+
+.station-list .list-cell:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Station Item */
+.station-item {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.station-item:hover {
+    -fx-background-color: rgba(0, 120, 212, 0.05);
+}
+
+/* Station Name */
+.station-name {
+    -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', sans-serif;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-fill: #1a1a1a;
+}
+
+/* Station Location */
+.station-location {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: 400;
+    -fx-fill: #666666;
+}
+
+/* ===== STATION DROPDOWN ===== */
+
+.station-dropdown {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 16, 0.3, 0, 4);
+    -fx-padding: 8px 0;
+}
+
+.station-dropdown .context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+}
+

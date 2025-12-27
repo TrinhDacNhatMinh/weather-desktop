@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.6"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.nhom.weatherdesktop.controller.StationListPopupController"
+      styleClass="station-popup"
+      spacing="16"
+      prefWidth="450"
+      prefHeight="550">
+    
+    <padding>
+        <Insets top="24" right="24" bottom="24" left="24"/>
+    </padding>
+    
+    <!-- Title -->
+    <Text text="My Stations" styleClass="popup-title"/>
+    
+    <!-- Station List -->
+    <ListView fx:id="stationListView" 
+              styleClass="station-list"
+              VBox.vgrow="ALWAYS"/>
+    
+    <!-- Close Button -->
+    <Button text="Close" 
+            styleClass="primary-btn"
+            onAction="#handleClose"
+            maxWidth="Infinity"/>
+    
+</VBox>

@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="fxml.components.StationItem"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<HBox xmlns="http://javafx.com/javafx/17.0.6"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.nhom.weatherdesktop.controller.StationItemController"
+      styleClass="station-item"
+      alignment="CENTER_LEFT"
+      spacing="12"
+      prefHeight="64">
+    
+    <padding>
+        <Insets top="12" right="16" bottom="12" left="16"/>
+    </padding>
+    
+    <!-- Station Info (Left) -->
+    <VBox spacing="4" HBox.hgrow="ALWAYS">
+        <!-- Station Name -->
+        <Text fx:id="stationName" text="Home Station" styleClass="station-name"/>
+        
+        <!-- Location with Icon -->
+        <HBox spacing="6" alignment="CENTER_LEFT">
+            <ImageView fitWidth="14" fitHeight="14" preserveRatio="true">
+                <image>
+                    <Image url="@../../icons/location_on.png"/>
+                </image>
+            </ImageView>
+            <Text fx:id="stationLocation" text="Hanoi, Vietnam" styleClass="station-location"/>
+        </HBox>
+    </VBox>
+    
+    <!-- Status Icon (Right) -->
+    <VBox alignment="CENTER">
+        <Text fx:id="statusIcon" text="●" styleClass="status-indicator" style="-fx-font-size: 16px;"/>
+    </VBox>
+    
+</HBox>

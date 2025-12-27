@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nhom.weatherdesktop.util.AppConfig;
 import com.nhom.weatherdesktop.util.TokenManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,6 +17,7 @@ import java.nio.charset.StandardCharsets;
  * HTTP Client Service for making REST API calls
  */
 public class HttpClientService {
+    private static final Logger logger = LoggerFactory.getLogger(HttpClientService.class);
     private static HttpClientService instance;
     private final ObjectMapper objectMapper;
     private final AppConfig config;
@@ -83,6 +86,60 @@ public class HttpClientService {
                 try {
                     String errorBody = new String(connection.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
                     errorMessage = errorBody;
+                } catch (Exception ignored) {
+                }
+                throw new HttpException(responseCode, errorMessage);
+            }
+            
+        } finally {
+            connection.disconnect();
+        }
+    }
+    
+    public <R> R get(String endpoint, com.fasterxml.jackson.core.type.TypeReference<R> typeRef, boolean includeAuth) 
+            throws IOException, HttpException {
+        
+        String fullUrl = config.getApiBaseUrl() + endpoint;
+        logger.debug("GET request to: {}", fullUrl);
+        
+        URL url = new URL(fullUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        
+        try {
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setConnectTimeout(config.getApiTimeout() * 1000);
+            connection.setReadTimeout(config.getApiTimeout() * 1000);
+            
+            logger.debug("Auth required: {}, Is authenticated: {}", includeAuth, tokenManager.isAuthenticated());
+            
+            if (includeAuth && tokenManager.isAuthenticated()) {
+                String authHeader = tokenManager.getAuthorizationHeader();
+                connection.setRequestProperty("Authorization", authHeader);
+                logger.debug("Added auth header");
+            }
+            
+            logger.debug("Sending request...");
+            int responseCode = connection.getResponseCode();
+            logger.debug("Response code: {}", responseCode);
+            
+            if (responseCode >= 200 && responseCode < 300) {
+                logger.debug("Reading response body...");
+                R result = objectMapper.readValue(connection.getInputStream(), typeRef);
+                logger.debug("Response parsed successfully");
+                return result;
+            } else if (responseCode == 401) {
+                throw new HttpException(401, "Unauthorized - Please log in again");
+            } else if (responseCode == 403) {
+                throw new HttpException(403, "Forbidden - Access denied");
+            } else if (responseCode >= 500) {
+                throw new HttpException(responseCode, "Server error - Please try again later");
+            } else {
+                String errorMessage = "HTTP Error " + responseCode;
+                try {
+                    String errorBody = new String(connection.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
+                    errorMessage = errorBody;
+                    logger.error("HTTP error response body: {}", errorBody);
                 } catch (Exception ignored) {
                 }
                 throw new HttpException(responseCode, errorMessage);
