@@ -39,9 +39,13 @@ public class WeatherCardController {
     @FXML
     private Button menuButton;
     
+    @FXML
+    private Text stationNameText;
+    
     private ContextMenu stationMenu;
     private final StationService stationService;
     private volatile boolean isLoadingStations = false;
+    private static StationResponse selectedStation; // Static to persist across controller instances
     
     public WeatherCardController() {
         this.stationService = new StationService();
@@ -49,7 +53,41 @@ public class WeatherCardController {
     
     @FXML
     public void initialize() {
-        // Data already set in FXML for demo
+        // Load first station on startup if no station selected
+        loadFirstStation();
+    }
+    
+    private void loadFirstStation() {
+        // If already have a selected station, use it
+        if (selectedStation != null) {
+            stationNameText.setText(selectedStation.name());
+            logger.info("Restored previously selected station: {}", selectedStation.name());
+            return;
+        }
+        
+        // Otherwise, load first station from API
+        new Thread(() -> {
+            try {
+                logger.debug("Loading first station...");
+                PageResponse<StationResponse> response = stationService.getMyStations(0, 1);
+                
+                if (!response.content().isEmpty()) {
+                    selectedStation = response.content().get(0);
+                    Platform.runLater(() -> {
+                        stationNameText.setText(selectedStation.name());
+                        logger.info("Loaded first station: {}", selectedStation.name());
+                    });
+                } else {
+                    Platform.runLater(() -> {
+                        stationNameText.setText("No Station");
+                        logger.info("No stations found");
+                    });
+                }
+            } catch (Exception e) {
+                logger.error("Failed to load first station: {}", e.getMessage(), e);
+                Platform.runLater(() -> stationNameText.setText("Current Weather"));
+            }
+        }).start();
     }
     
     @FXML
@@ -101,6 +139,14 @@ public class WeatherCardController {
                                 
                                 StationItemController controller = loader.getController();
                                 controller.setStationData(station);
+                                
+                                // Add click handler to select station
+                                stationItem.setOnMouseClicked(event -> {
+                                    selectedStation = station;
+                                    stationNameText.setText(station.name());
+                                    stationMenu.hide();
+                                    logger.info("Selected station: {}", station.name());
+                                });
                                 
                                 CustomMenuItem menuItem = new CustomMenuItem(stationItem);
                                 menuItem.setHideOnClick(false);  // Keep menu open when clicking items

@@ -20,7 +20,7 @@
     
     <!-- Card Title with Menu Button -->
     <HBox alignment="CENTER_LEFT">
-        <Text text="Current Weather" styleClass="card-title"/>
+        <Text fx:id="stationNameText" text="Current Weather" styleClass="card-title"/>
         
         <!-- Spacer -->
         <javafx.scene.layout.Region HBox.hgrow="ALWAYS"/>

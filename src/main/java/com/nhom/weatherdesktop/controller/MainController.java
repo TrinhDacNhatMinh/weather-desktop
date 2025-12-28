@@ -81,8 +81,15 @@ public class MainController {
                 Parent myStationScreen = loader.load();
                 contentScrollPane.setContent(myStationScreen);
                 logger.debug("My Station screen loaded successfully");
+            } else if ("Settings".equals(page)) {
+                logger.info("Navigating to Settings screen");
+                FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/fxml/screens/settings_screen.fxml")
+                );
+                Parent settingsScreen = loader.load();
+                contentScrollPane.setContent(settingsScreen);
+                logger.debug("Settings screen loaded successfully");
             }
-            // Future: Add other pages (Settings, etc.)
         } catch (Exception e) {
             logger.error("Failed to load {} screen: {}", page, e.getMessage(), e);
         }

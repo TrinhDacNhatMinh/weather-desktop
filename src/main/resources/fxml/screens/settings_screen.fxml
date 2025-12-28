@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.nhom.weatherdesktop.controller.SettingsScreenController"
+      styleClass="dashboard-content" alignment="TOP_CENTER" spacing="24">
+    
+    <padding>
+        <Insets top="40" bottom="40" left="40" right="40"/>
+    </padding>
+    <!-- Settings Content -->
+    <VBox spacing="20" maxWidth="600" alignment="CENTER_LEFT">
+        
+        <!-- Preferences Section -->
+        <VBox spacing="16" styleClass="card-glass">
+            <padding>
+                <Insets top="24" bottom="24" left="24" right="24"/>
+            </padding>
+            
+            <Text text="Preferences" styleClass="h3"/>
+            <Separator/>
+            
+            <!-- Temperature Unit -->
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <VBox HBox.hgrow="ALWAYS" spacing="4">
+                    <Text text="Temperature Unit" styleClass="label-primary"/>
+                    <Text text="Choose your preferred temperature unit" styleClass="caption text-secondary"/>
+                </VBox>
+                <ComboBox fx:id="temperatureUnitCombo" prefWidth="180" styleClass="combo-modern"/>
+            </HBox>
+            
+            <!-- Wind Speed Unit -->
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <VBox HBox.hgrow="ALWAYS" spacing="4">
+                    <Text text="Wind Speed Unit" styleClass="label-primary"/>
+                    <Text text="Choose your preferred wind speed unit" styleClass="caption text-secondary"/>
+                </VBox>
+                <ComboBox fx:id="windSpeedUnitCombo" prefWidth="180" styleClass="combo-modern"/>
+            </HBox>
+            
+            <!-- Notifications -->
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <VBox HBox.hgrow="ALWAYS" spacing="4">
+                    <Text text="Notifications" styleClass="label-primary"/>
+                    <Text text="Enable alert notifications" styleClass="caption text-secondary"/>
+                </VBox>
+                <CheckBox selected="true" styleClass="checkbox-modern"/>
+            </HBox>
+        </VBox>
+        
+        <!-- Appearance Section -->
+        <VBox spacing="16" styleClass="card-glass">
+            <padding>
+                <Insets top="24" bottom="24" left="24" right="24"/>
+            </padding>
+            
+            <Text text="Appearance" styleClass="h3"/>
+            <Separator/>
+            
+            <!-- Theme -->
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <VBox HBox.hgrow="ALWAYS" spacing="4">
+                    <Text text="Theme" styleClass="label-primary"/>
+                    <Text text="Choose your preferred color theme" styleClass="caption text-secondary"/>
+                </VBox>
+                <ComboBox fx:id="themeCombo" prefWidth="180" styleClass="combo-modern"/>
+            </HBox>
+            
+            <!-- Language -->
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <VBox HBox.hgrow="ALWAYS" spacing="4">
+                    <Text text="Language" styleClass="label-primary"/>
+                    <Text text="Choose your preferred language" styleClass="caption text-secondary"/>
+                </VBox>
+                <ComboBox fx:id="languageCombo" prefWidth="180" styleClass="combo-modern"/>
+            </HBox>
+        </VBox>
+        
+        <!-- About Section -->
+        <VBox spacing="16" styleClass="card-glass">
+            <padding>
+                <Insets top="24" bottom="24" left="24" right="24"/>
+            </padding>
+            
+            <Text text="About" styleClass="h3"/>
+            <Separator/>
+            
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <VBox HBox.hgrow="ALWAYS" spacing="4">
+                    <Text text="Version" styleClass="label-primary"/>
+                    <Text text="Weather Desktop 1.0.0" styleClass="caption text-secondary"/>
+                </VBox>
+            </HBox>
+        </VBox>
+        
+    </VBox>
+    
+</VBox>

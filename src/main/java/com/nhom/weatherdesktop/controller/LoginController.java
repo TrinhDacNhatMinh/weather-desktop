@@ -38,7 +38,7 @@ public class LoginController {
     private Button loginButton;
     
     @FXML
-    private Button microsoftLoginButton;
+    private Button signUpButton;
     
     private final AuthService authService;
     
@@ -111,9 +111,9 @@ public class LoginController {
     }
     
     @FXML
-    private void handleMicrosoftLogin() {
-        showAlert(Alert.AlertType.INFORMATION, "Microsoft Login", 
-                 "Microsoft account login functionality will be implemented soon!");
+    private void handleSignUp() {
+        showAlert(Alert.AlertType.INFORMATION, "Sign Up", 
+                 "Sign up functionality will be implemented soon!");
     }
     
     private void navigateToMainScreen() {
@@ -150,7 +150,7 @@ public class LoginController {
         rememberMeCheckbox.setDisable(disabled);
         forgotPasswordLink.setDisable(disabled);
         loginButton.setDisable(disabled);
-        microsoftLoginButton.setDisable(disabled);
+        signUpButton.setDisable(disabled);
     }
     
     private void showAlert(Alert.AlertType type, String title, String message) {
