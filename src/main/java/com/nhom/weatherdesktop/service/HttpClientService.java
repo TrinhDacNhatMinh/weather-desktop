@@ -210,6 +210,56 @@ public class HttpClientService {
         }
     }
     
+    /**
+     * Performs a DELETE HTTP request
+     * @param endpoint API endpoint (relative to base URL)
+     * @param includeAuth Whether to include authentication token
+     * @throws IOException If a network error occurs
+     * @throws HttpException If the server returns an error response
+     */
+    public void delete(String endpoint, boolean includeAuth) throws IOException, HttpException {
+        String fullUrl = config.getApiBaseUrl() + endpoint;
+        URL url = new URL(fullUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        
+        try {
+            connection.setRequestMethod("DELETE");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setConnectTimeout(config.getApiTimeout() * 1000);
+            connection.setReadTimeout(config.getApiTimeout() * 1000);
+            
+            if (includeAuth && tokenManager.isAuthenticated()) {
+                connection.setRequestProperty("Authorization", tokenManager.getAuthorizationHeader());
+            }
+            
+            int responseCode = connection.getResponseCode();
+            
+            if (responseCode >= 200 && responseCode < 300) {
+                // Success - 204 No Content expected
+                return;
+            } else if (responseCode == 401) {
+                throw new HttpException(401, "Unauthorized - Invalid credentials");
+            } else if (responseCode == 403) {
+                throw new HttpException(403, "Forbidden - Access denied");
+            } else if (responseCode == 404) {
+                throw new HttpException(404, "Station not found");
+            } else if (responseCode >= 500) {
+                throw new HttpException(responseCode, "Server error - Please try again later");
+            } else {
+                String errorMessage = "HTTP Error " + responseCode;
+                try {
+                    String errorBody = new String(connection.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
+                    errorMessage = errorBody;
+                } catch (Exception ignored) {
+                }
+                throw new HttpException(responseCode, errorMessage);
+            }
+            
+        } finally {
+            connection.disconnect();
+        }
+    }
+    
     public static class HttpException extends Exception {
         private final int statusCode;
         

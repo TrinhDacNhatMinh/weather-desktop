@@ -107,8 +107,60 @@ public class StationItemController {
 
     @FXML
     private void handleDelete() {
-        logger.info("Delete station: {}", station.name());
-        // TODO: Implement delete functionality
+        logger.info("Delete station requested: {}", station.name());
+        
+        // Show confirmation dialog
+        javafx.scene.control.Alert confirmAlert = new javafx.scene.control.Alert(
+            javafx.scene.control.Alert.AlertType.CONFIRMATION
+        );
+        confirmAlert.setTitle("Confirm Delete");
+        confirmAlert.setHeaderText(null);
+        confirmAlert.setContentText("Are you sure you want to remove \"" + station.name() + "\" from your station list?");
+        
+        confirmAlert.getButtonTypes().setAll(
+            javafx.scene.control.ButtonType.OK,
+            javafx.scene.control.ButtonType.CANCEL
+        );
+        
+        confirmAlert.showAndWait().ifPresent(response -> {
+            if (response == javafx.scene.control.ButtonType.OK) {
+                // User confirmed, delete station
+                new Thread(() -> {
+                    try {
+                        logger.debug("Detaching station: id={}, name={}", station.id(), station.name());
+                        new com.nhom.weatherdesktop.service.StationService().detachStationFromUser(station.id());
+                        
+                        javafx.application.Platform.runLater(() -> {
+                            logger.info("Station detached successfully! Station: {}, ID: {}", 
+                                station.name(), station.id());
+                            
+                            // Show success message
+                            javafx.scene.control.Alert successAlert = new javafx.scene.control.Alert(
+                                javafx.scene.control.Alert.AlertType.INFORMATION
+                            );
+                            successAlert.setTitle("Success");
+                            successAlert.setHeaderText(null);
+                            successAlert.setContentText("Station removed successfully!");
+                            successAlert.show();
+                        });
+                        
+                    } catch (Exception e) {
+                        logger.error("Failed to detach station: {}", e.getMessage(), e);
+                        javafx.application.Platform.runLater(() -> {
+                            javafx.scene.control.Alert errorAlert = new javafx.scene.control.Alert(
+                                javafx.scene.control.Alert.AlertType.ERROR
+                            );
+                            errorAlert.setTitle("Error");
+                            errorAlert.setHeaderText(null);
+                            errorAlert.setContentText("Failed to delete station: " + e.getMessage());
+                            errorAlert.showAndWait();
+                        });
+                    }
+                }).start();
+            } else {
+                logger.debug("Station delete cancelled by user");
+            }
+        });
     }
 
     public StationResponse getStation() {

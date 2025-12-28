@@ -146,7 +146,23 @@ public class StationService implements IStationService {
 
     @Override
     public void detachStationFromUser(Long id) {
-
+        try {
+            logger.debug("Detaching station from user: id={}", id);
+            httpClient.delete(
+                "/stations/" + id + "/user",
+                true  // requiresAuth = true
+            );
+            logger.info("Successfully detached station from user: id={}", id);
+        } catch (HttpClientService.HttpException e) {
+            logger.error("HTTP error while detaching station: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to detach station: " + e.getMessage(), e);
+        } catch (IOException e) {
+            logger.error("Network error while detaching station: {}", e.getMessage(), e);
+            throw new RuntimeException("Network error while detaching station: " + e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("Unexpected error while detaching station: {}", e.getMessage(), e);
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
     }
-
+    
 }
