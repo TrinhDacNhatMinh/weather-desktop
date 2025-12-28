@@ -56,6 +56,9 @@ public class MainController {
         // Update top bar title when sidebar item is clicked
         topBarController.setPageTitle(page);
         
+        // Update current screen in AlertNotificationManager
+        com.nhom.weatherdesktop.util.AlertNotificationManager.getInstance().setCurrentScreen(page);
+        
         // Load different content based on selected page
         try {
             if ("Alerts".equals(page)) {

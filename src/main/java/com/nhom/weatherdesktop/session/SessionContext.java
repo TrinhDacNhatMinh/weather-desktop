@@ -7,6 +7,7 @@ public class SessionContext {
     
     private static String accessToken;
     private static Long selectedStationId;
+    private static boolean alertsEnabled = true; // Default: enabled
     
     public static String accessToken() {
         return accessToken;
@@ -24,8 +25,17 @@ public class SessionContext {
         selectedStationId = stationId;
     }
     
+    public static boolean areAlertsEnabled() {
+        return alertsEnabled;
+    }
+    
+    public static void setAlertsEnabled(boolean enabled) {
+        alertsEnabled = enabled;
+    }
+    
     public static void clear() {
         accessToken = null;
         selectedStationId = null;
+        alertsEnabled = true;
     }
 }

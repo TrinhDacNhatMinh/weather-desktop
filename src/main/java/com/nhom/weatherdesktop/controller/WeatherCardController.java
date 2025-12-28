@@ -79,6 +79,10 @@ public class WeatherCardController {
             stompClient.setAlertHandler(this::handleAlert);
             stompClient.setConnectionStatusHandler(this::handleConnectionStatus);
             
+            // Set disable callback for AlertNotificationManager
+            com.nhom.weatherdesktop.util.AlertNotificationManager.getInstance()
+                .setOnDisableCallback(this::unsubscribeFromAllAlerts);
+            
             // Connect to WebSocket
             AppConfig config = AppConfig.getInstance();
             String wsUrl = config.getWebSocketUrl();
@@ -92,10 +96,13 @@ public class WeatherCardController {
     }
     
     private void subscribeToAllAlerts() {
-        // Subscribe to alert topics for all user stations
+        // Check if alerts are enabled
+        if (!SessionContext.areAlertsEnabled()) {
+            return;
+        }
+        
         new Thread(() -> {
             try {
-                // Wait for WebSocket connection
                 int retries = 30;
                 while (stompClient != null && !stompClient.isConnected() && retries > 0) {
                     Thread.sleep(100);
@@ -107,15 +114,12 @@ public class WeatherCardController {
                     return;
                 }
                 
-                // Get all user stations
                 PageResponse<StationResponse> response = stationService.getMyStations(0, 100);
                 
                 Platform.runLater(() -> {
-                    // Subscribe to alert topic for each station
                     for (StationResponse station : response.content()) {
                         String alertTopic = "/topic/stations/" + station.id() + "/alerts";
                         stompClient.subscribe(alertTopic, "alert");
-                        logger.debug("Subscribed to alert topic: {}", alertTopic);
                     }
                     logger.info("Subscribed to {} station alert topics", response.content().size());
                 });
@@ -139,8 +143,33 @@ public class WeatherCardController {
     
     private void handleAlert(AlertResponse alert) {
         logger.info("Received alert for station {}: {}", alert.stationId(), alert.message());
-        // Alert will be handled by AlertScreenController if it's already initialized
-        // Otherwise just log it
+        
+        // Show notification dialog
+        com.nhom.weatherdesktop.util.AlertNotificationManager.getInstance().showAlert(alert);
+    }
+    
+    private void unsubscribeFromAllAlerts() {
+        if (stompClient == null || !stompClient.isConnected()) {
+            logger.warn("Cannot unsubscribe: WebSocket not connected");
+            return;
+        }
+        
+        new Thread(() -> {
+            try {
+                PageResponse<StationResponse> response = stationService.getMyStations(0, 100);
+                
+                Platform.runLater(() -> {
+                    for (StationResponse station : response.content()) {
+                        String alertTopic = "/topic/stations/" + station.id() + "/alerts";
+                        stompClient.unsubscribe(alertTopic);
+                    }
+                    logger.info("Unsubscribed from all {} alert topics", response.content().size());
+                });
+                
+            } catch (Exception e) {
+                logger.error("Failed to unsubscribe from alerts: {}", e.getMessage(), e);
+            }
+        }).start();
     }
     
     private void handleConnectionStatus(Boolean connected) {

@@ -48,7 +48,7 @@
                     <Text text="Notifications" styleClass="label-primary"/>
                     <Text text="Enable alert notifications" styleClass="caption text-secondary"/>
                 </VBox>
-                <CheckBox selected="true" styleClass="checkbox-modern"/>
+                <CheckBox fx:id="alertNotificationsCheckbox" selected="true" onAction="#handleAlertNotificationsToggle" styleClass="checkbox-modern"/>
             </HBox>
         </VBox>
         

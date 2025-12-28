@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.nhom.weatherdesktop.controller.AlertNotificationDialogController"
+      styleClass="clean-dialog" 
+      stylesheets="@../../styles/base.css, @../../styles/components.css"
+      spacing="0" 
+      prefWidth="450" 
+      maxWidth="450">
+    
+    <!-- Header -->
+    <HBox styleClass="clean-dialog-header" alignment="CENTER_LEFT" spacing="12">
+        <padding>
+            <Insets top="20" bottom="20" left="24" right="24"/>
+        </padding>
+        <Text text="⚠️" styleClass="h2"/>
+        <Text text="New Alert" styleClass="clean-dialog-title"/>
+    </HBox>
+    
+    <!-- Content -->
+    <VBox styleClass="clean-dialog-content" spacing="16">
+        <padding>
+            <Insets top="24" bottom="24" left="24" right="24"/>
+        </padding>
+        
+        <!-- Station Name -->
+        <VBox spacing="4">
+            <Text text="STATION" styleClass="clean-label"/>
+            <Text fx:id="stationNameText" text="Loading..." styleClass="clean-value-large"/>
+        </VBox>
+        
+        <!-- Message -->
+        <VBox spacing="4">
+            <Text text="MESSAGE" styleClass="clean-label"/>
+            <Text fx:id="messageText" text="Loading..." styleClass="clean-value" wrappingWidth="400"/>
+        </VBox>
+        
+        <!-- Created At -->
+        <VBox spacing="4">
+            <Text text="TIME" styleClass="clean-label"/>
+            <Text fx:id="createdAtText" text="Loading..." styleClass="clean-value-small"/>
+        </VBox>
+    </VBox>
+    
+    <!-- Footer with Buttons -->
+    <HBox styleClass="clean-dialog-footer" spacing="12" alignment="CENTER_RIGHT">
+        <padding>
+            <Insets top="16" bottom="20" left="24" right="24"/>
+        </padding>
+        
+        <Button fx:id="disableAlertButton" text="Disable Alert" onAction="#handleDisableAlert" styleClass="btn-secondary"/>
+        <Button fx:id="closeButton" text="Close" onAction="#handleClose" styleClass="btn-primary"/>
+    </HBox>
+    
+</VBox>

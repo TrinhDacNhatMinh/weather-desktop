@@ -40,68 +40,10 @@ public class AlertScreenController {
         this.alertService = new AlertService();
         this.stationService = new StationService();
         
-        // Initialize WebSocket if not already done
-        initializeWebSocket();
-        
-        // Subscribe to alert topics
-        subscribeToAlerts();
+        // Note: WebSocket alert subscription is handled by WeatherCardController
+        // to avoid duplicate subscriptions
         
         loadAlerts();
-    }
-    
-    private void initializeWebSocket() {
-        if (stompClient == null) {
-            stompClient = new StompClient();
-            stompClient.setAlertHandler(this::handleNewAlert);
-            
-            AppConfig config = AppConfig.getInstance();
-            String wsUrl = config.getWebSocketUrl();
-            stompClient.connect(wsUrl);
-            
-            logger.info("WebSocket initialized for alerts");
-        }
-    }
-    
-    private void subscribeToAlerts() {
-        // Load user stations and subscribe to their alert topics
-        new Thread(() -> {
-            try {
-                // Wait for WebSocket connection
-                int retries = 30;
-                while (!stompClient.isConnected() && retries > 0) {
-                    Thread.sleep(100);
-                    retries--;
-                }
-                
-                if (!stompClient.isConnected()) {
-                    logger.warn("WebSocket not connected, cannot subscribe to alerts");
-                    return;
-                }
-                
-                // Get user stations
-                PageResponse<StationResponse> response = stationService.getMyStations(0, 100);
-                
-                Platform.runLater(() -> {
-                    // Subscribe to alert topic for each station
-                    for (StationResponse station : response.content()) {
-                        String alertTopic = "/topic/stations/" + station.id() + "/alerts";
-                        stompClient.subscribe(alertTopic, "alert");
-                        logger.debug("Subscribed to alert topic: {}", alertTopic);
-                    }
-                    logger.info("Subscribed to {} station alert topics", response.content().size());
-                });
-                
-            } catch (Exception e) {
-                logger.error("Failed to subscribe to alert topics: {}", e.getMessage(), e);
-            }
-        }).start();
-    }
-    
-    private void handleNewAlert(AlertResponse alert) {
-        logger.info("Received new alert for station {}: {}", alert.stationId(), alert.message());
-        
-        // Reload alerts list to show new alert
-        Platform.runLater(this::loadAlerts);
     }
     
     private void loadAlerts() {
