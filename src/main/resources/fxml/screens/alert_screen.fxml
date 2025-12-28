@@ -29,8 +29,8 @@
     </HBox>
     
     <!-- Alert List -->
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="alert-scroll-pane">
-        <VBox fx:id="alertListContainer" spacing="0" />
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="alert-scroll-pane" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER">
+        <VBox fx:id="alertListContainer" spacing="12" />
     </ScrollPane>
     
     <!-- Empty State -->

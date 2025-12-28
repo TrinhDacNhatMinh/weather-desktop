@@ -530,6 +530,35 @@
     -fx-background-color: transparent;
 }
 
+/* Hide scrollbar by default, show on hover or when scrolling */
+.alert-scroll-pane .scroll-bar:vertical {
+    -fx-opacity: 0;
+    -fx-pref-width: 8px;
+}
+
+.alert-scroll-pane:hover .scroll-bar:vertical {
+    -fx-opacity: 0.5;
+}
+
+.alert-scroll-pane .scroll-bar:vertical:hover {
+    -fx-opacity: 0.8;
+}
+
+.alert-scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(0, 0, 0, 0.3);
+    -fx-background-radius: 4px;
+}
+
+.alert-scroll-pane .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+
+.alert-scroll-pane .scroll-bar:vertical .increment-button,
+.alert-scroll-pane .scroll-bar:vertical .decrement-button {
+    -fx-padding: 0;
+    -fx-pref-height: 0;
+}
+
 /* Empty State */
 .empty-state-text {
     -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', 'Inter', sans-serif;
