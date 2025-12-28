@@ -2,7 +2,11 @@ package com.nhom.weatherdesktop.controller;
 
 import com.nhom.weatherdesktop.dto.response.PageResponse;
 import com.nhom.weatherdesktop.dto.response.StationResponse;
+import com.nhom.weatherdesktop.dto.response.WeatherDataResponse;
 import com.nhom.weatherdesktop.service.StationService;
+import com.nhom.weatherdesktop.session.SessionContext;
+import com.nhom.weatherdesktop.util.AppConfig;
+import com.nhom.weatherdesktop.websocket.StompClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javafx.application.Platform;
@@ -47,14 +51,56 @@ public class WeatherCardController {
     private volatile boolean isLoadingStations = false;
     private static StationResponse selectedStation; // Static to persist across controller instances
     
+    // WebSocket
+    private static StompClient stompClient; // Static to share connection across instances
+    private static Long currentSubscribedStationId;
+    
     public WeatherCardController() {
         this.stationService = new StationService();
     }
     
     @FXML
     public void initialize() {
+        // Initialize WebSocket if not already initialized
+        initializeWebSocket();
+        
         // Load first station on startup if no station selected
         loadFirstStation();
+    }
+    
+    private void initializeWebSocket() {
+        if (stompClient == null) {
+            stompClient = new StompClient();
+            stompClient.setWeatherDataHandler(this::handleWeatherData);
+            stompClient.setConnectionStatusHandler(this::handleConnectionStatus);
+            
+            // Connect to WebSocket
+            AppConfig config = AppConfig.getInstance();
+            String wsUrl = config.getWebSocketUrl();
+            stompClient.connect(wsUrl);
+            
+            logger.info("WebSocket initialized and connecting to: {}", wsUrl);
+        }
+    }
+    
+    private void handleWeatherData(WeatherDataResponse data) {
+        logger.debug("Received weather data: temp={}, humidity={}", data.temperature(), data.humidity());
+        updateWeatherData(
+            data.temperature(),
+            data.humidity(),
+            data.windSpeed(),
+            data.rainfall(),
+            data.dust()
+        );
+    }
+    
+    private void handleConnectionStatus(Boolean connected) {
+        logger.info("WebSocket connection status: {}", connected ? "Connected" : "Disconnected");
+        
+        if (connected && selectedStation != null) {
+            // Re-subscribe to current station when connection is restored
+            subscribeToStation(selectedStation.id());
+        }
     }
     
     private void loadFirstStation() {
@@ -62,6 +108,11 @@ public class WeatherCardController {
         if (selectedStation != null) {
             stationNameText.setText(selectedStation.name());
             logger.info("Restored previously selected station: {}", selectedStation.name());
+            
+            // Subscribe to station weather topic if not already subscribed
+            if (!selectedStation.id().equals(currentSubscribedStationId)) {
+                subscribeToStation(selectedStation.id());
+            }
             return;
         }
         
@@ -76,6 +127,9 @@ public class WeatherCardController {
                     Platform.runLater(() -> {
                         stationNameText.setText(selectedStation.name());
                         logger.info("Loaded first station: {}", selectedStation.name());
+                        
+                        // Subscribe to station weather topic
+                        subscribeToStation(selectedStation.id());
                     });
                 } else {
                     Platform.runLater(() -> {
@@ -88,6 +142,40 @@ public class WeatherCardController {
                 Platform.runLater(() -> stationNameText.setText("Current Weather"));
             }
         }).start();
+    }
+    
+    private void subscribeToStation(Long stationId) {
+        if (stompClient == null || !stompClient.isConnected()) {
+            logger.warn("Cannot subscribe: WebSocket not connected");
+            // Retry after delay
+            new Thread(() -> {
+                try {
+                    Thread.sleep(1000);
+                    if (stompClient != null && stompClient.isConnected()) {
+                        Platform.runLater(() -> subscribeToStation(stationId));
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }).start();
+            return;
+        }
+        
+        // Unsubscribe from previous station
+        if (currentSubscribedStationId != null) {
+            String oldTopic = "/topic/stations/" + currentSubscribedStationId + "/weather";
+            stompClient.unsubscribe(oldTopic);
+            logger.debug("Unsubscribed from: {}", oldTopic);
+        }
+        
+        // Subscribe to new station
+        String topic = "/topic/stations/" + stationId + "/weather";
+        stompClient.subscribe(topic, "weather");
+        currentSubscribedStationId = stationId;
+        logger.info("Subscribed to weather topic: {}", topic);
+        
+        // Save to session
+        SessionContext.setSelectedStationId(stationId);
     }
     
     @FXML
@@ -146,6 +234,9 @@ public class WeatherCardController {
                                     stationNameText.setText(station.name());
                                     stationMenu.hide();
                                     logger.info("Selected station: {}", station.name());
+                                    
+                                    // Subscribe to new station's weather topic
+                                    subscribeToStation(station.id());
                                 });
                                 
                                 CustomMenuItem menuItem = new CustomMenuItem(stationItem);

@@ -4,6 +4,7 @@ import com.nhom.weatherdesktop.dto.request.LoginRequest;
 import com.nhom.weatherdesktop.dto.response.LoginResponse;
 import com.nhom.weatherdesktop.enums.AccessChannel;
 import com.nhom.weatherdesktop.service.AuthService;
+import com.nhom.weatherdesktop.session.SessionContext;
 import com.nhom.weatherdesktop.util.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +86,10 @@ public class LoginController {
             LoginResponse response = loginTask.getValue();
             if (response != null) {
                 logger.info("Login successful! User: {}, Email: {}", response.name(), response.email());
+                
+                // Store access token in session for WebSocket authentication
+                SessionContext.setAccessToken(response.accessToken());
+                
                 navigateToMainScreen();
             }
         });
