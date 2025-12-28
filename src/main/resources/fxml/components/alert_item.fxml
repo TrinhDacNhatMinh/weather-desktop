@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="fxml.components.AlertItem"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<HBox fx:id="root" styleClass="alert-item" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.nhom.weatherdesktop.controller.AlertItemController">
+    <padding>
+        <Insets bottom="12" left="16" right="16" top="12" />
+    </padding>
+    
+    <VBox spacing="4" HBox.hgrow="ALWAYS">
+        <!-- Station Name -->
+        <Text fx:id="stationNameText" styleClass="alert-station-name" />
+        
+        <!-- Message and Time Ago -->
+        <HBox spacing="8">
+            <Text fx:id="messageText" styleClass="alert-message" HBox.hgrow="ALWAYS" />
+            <Text fx:id="timeAgoText" styleClass="alert-time" />
+        </HBox>
+    </VBox>
+</HBox>

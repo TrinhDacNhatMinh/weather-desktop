@@ -1,9 +1,15 @@
 package com.nhom.weatherdesktop.controller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.VBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MainController {
+    
+    private static final Logger logger = LoggerFactory.getLogger(MainController.class);
     
     @FXML
     private SidebarController sidebarController;
@@ -46,7 +52,28 @@ public class MainController {
         // Update top bar title when sidebar item is clicked
         topBarController.setPageTitle(page);
         
-        // Future: Load different content based on selected page
-        // For now, just updating the title
+        // Load different content based on selected page
+        try {
+            if ("Alerts".equals(page)) {
+                logger.info("Navigating to Alerts screen");
+                FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/fxml/screens/alert_screen.fxml")
+                );
+                VBox alertScreen = loader.load();
+                contentScrollPane.setContent(alertScreen);
+                logger.debug("Alert screen loaded successfully");
+            } else if ("My Station".equals(page)) {
+                logger.info("Navigating to My Station screen");
+                FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/fxml/screens/my_station_screen.fxml")
+                );
+                VBox myStationScreen = loader.load();
+                contentScrollPane.setContent(myStationScreen);
+                logger.debug("My Station screen loaded successfully");
+            }
+            // Future: Add other pages (Settings, etc.)
+        } catch (Exception e) {
+            logger.error("Failed to load {} screen: {}", page, e.getMessage(), e);
+        }
     }
 }

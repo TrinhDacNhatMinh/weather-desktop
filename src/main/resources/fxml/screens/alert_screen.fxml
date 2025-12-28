@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.nhom.weatherdesktop.controller.AlertScreenController"
+      styleClass="main-content" spacing="20">
+    
+    <padding>
+        <Insets bottom="24" left="24" right="24" top="24" />
+    </padding>
+    
+    <!-- Header with Refresh Icon -->
+    <HBox alignment="CENTER_RIGHT" spacing="16">
+        <VBox VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" />
+        <Button fx:id="refreshButton" onAction="#handleRefresh" styleClass="icon-button">
+            <graphic>
+                <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                    <image>
+                        <Image url="@/icons/refresh.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+    </HBox>
+    
+    <!-- Alert List -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="alert-scroll-pane">
+        <VBox fx:id="alertListContainer" spacing="0" />
+    </ScrollPane>
+    
+    <!-- Empty State -->
+    <VBox fx:id="emptyState" alignment="CENTER" spacing="12" VBox.vgrow="ALWAYS" visible="false" managed="false">
+        <Text styleClass="empty-state-text" text="No alerts" />
+        <Text styleClass="empty-state-subtext" text="You don't have any alerts yet" />
+    </VBox>
+    
+</VBox>

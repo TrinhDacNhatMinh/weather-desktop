@@ -59,6 +59,22 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, 0, 1);
 }
 
+/* Icon Button (for icon-only buttons like refresh) */
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px;
+    -fx-cursor: hand;
+}
+
+.icon-button:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+}
+
+.icon-button:pressed {
+    -fx-background-color: rgba(0, 0, 0, 0.1);
+}
+
 /* ===== INPUTS ===== */
 
 /* Modern Input Field */
@@ -216,6 +232,8 @@
 .top-bar {
     -fx-background-color: white;
     -fx-padding: 16px 24px;
+    -fx-min-height: 64px;
+    -fx-pref-height: 64px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 2, 0, 0, 1);
 }
 
@@ -455,6 +473,75 @@
 .list-add-button:hover {
     -fx-background-color: rgba(0, 0, 0, 0.03);
     -fx-background-radius: 6px;
+}
+
+/* ===== ALERT SCREEN STYLES ===== */
+
+/* Alert Item Container */
+.alert-item {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(0, 0, 0, 0.08);
+    -fx-border-width: 0 0 1 0;
+    -fx-cursor: hand;
+}
+
+.alert-item:hover {
+    -fx-background-color: rgba(0, 120, 212, 0.03);
+}
+
+/* Alert Station Name */
+.alert-station-name {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-fill: #1a1a1a;
+}
+
+/* Alert Message */
+.alert-message {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 14px;
+    -fx-fill: #404040;
+}
+
+/* Alert Time Ago */
+.alert-time {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 13px;
+    -fx-fill: #808080;
+}
+
+/* Screen Title */
+.screen-title {
+    -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 28px;
+    -fx-font-weight: 600;
+    -fx-fill: #1a1a1a;
+}
+
+/* Alert Scroll Pane */
+.alert-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+.alert-scroll-pane>.viewport {
+    -fx-background-color: transparent;
+}
+
+/* Empty State */
+.empty-state-text {
+    -fx-font-family: 'Segoe UI Variable Display', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-fill: #666666;
+}
+
+.empty-state-subtext {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 14px;
+    -fx-fill: #999999;
 }
 
 /* ===== CONTEXT MENU OVERRIDE ===== */
