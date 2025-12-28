@@ -81,6 +81,28 @@ public class MapPickerController {
         return confirmed;
     }
     
+    /**
+     * Set initial location for the map (used when editing existing station)
+     * @param lat Latitude
+     * @param lng Longitude
+     */
+    public void setInitialLocation(double lat, double lng) {
+        this.selectedLatitude = lat;
+        this.selectedLongitude = lng;
+        
+        // Set map center via JavaScript after map is loaded
+        WebEngine engine = mapWebView.getEngine();
+        if (engine.getLoadWorker().getState() == Worker.State.SUCCEEDED) {
+            try {
+                String script = String.format("if (typeof setMapCenter === 'function') { setMapCenter(%f, %f); }", lat, lng);
+                engine.executeScript(script);
+                logger.debug("Set initial map location: lat={}, lng={}", lat, lng);
+            } catch (Exception e) {
+                logger.warn("Failed to set initial map center: {}", e.getMessage());
+            }
+        }
+    }
+    
     @FXML
     private void handleConfirm() {
         if (selectedLatitude != null && selectedLongitude != null) {

@@ -1,6 +1,6 @@
 package com.nhom.weatherdesktop.controller;
 
-import com.nhom.weatherdesktop.dto.request.AddStationRequest;
+import com.nhom.weatherdesktop.dto.request.UpdateStationRequest;
 import com.nhom.weatherdesktop.dto.response.StationResponse;
 import com.nhom.weatherdesktop.service.LocationService;
 import com.nhom.weatherdesktop.service.StationService;
@@ -14,27 +14,28 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 
-public class AddStationDialogController {
+public class EditStationDialogController {
     
-    private static final Logger logger = LoggerFactory.getLogger(AddStationDialogController.class);
+    private static final Logger logger = LoggerFactory.getLogger(EditStationDialogController.class);
     
     @FXML
     private TextField nameField;
     
     @FXML
-    private TextField apiKeyField;
+    private TextField locationField;
     
     @FXML
-    private TextField locationField;
+    private TextField addressField;
     
     private Stage stage;
     private StationService stationService;
     private LocationService locationService;
+    private StationResponse station;
     private Double selectedLatitude;
     private Double selectedLongitude;
     private boolean success = false;
     
-    public AddStationDialogController() {
+    public EditStationDialogController() {
         this.stationService = new StationService();
         this.locationService = new LocationService();
     }
@@ -42,12 +43,46 @@ public class AddStationDialogController {
     @FXML
     public void initialize() {
         // Add enter key handler for name field
-        nameField.setOnAction(e -> apiKeyField.requestFocus());
-        apiKeyField.setOnAction(e -> handleSelectLocation());
+        nameField.setOnAction(e -> locationField.requestFocus());
+        locationField.setOnAction(e -> handleSelectLocation());
     }
     
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+    
+    public void setStation(StationResponse station) {
+        this.station = station;
+        
+        // Populate fields with existing data
+        nameField.setText(station.name());
+        locationField.setText(station.location());
+        selectedLatitude = station.latitude();
+        selectedLongitude = station.longitude();
+        
+        // Reverse geocode to get address from coordinates
+        if (selectedLatitude != null && selectedLongitude != null) {
+            new Thread(() -> {
+                try {
+                    logger.debug("Reverse geocoding address for station: lat={}, lng={}", 
+                        selectedLatitude, selectedLongitude);
+                    String address = locationService.reverseGeocode(selectedLatitude, selectedLongitude);
+                    Platform.runLater(() -> {
+                        addressField.setText(address);
+                        logger.debug("Address populated: {}", address);
+                    });
+                } catch (Exception e) {
+                    logger.warn("Failed to reverse geocode address: {}", e.getMessage());
+                    Platform.runLater(() -> {
+                        addressField.setText(station.location()); // Fallback to location text
+                    });
+                }
+            }).start();
+        } else {
+            addressField.setText(station.location()); // Fallback if no coordinates
+        }
+        
+        logger.debug("Loaded station data: id={}, name={}", station.id(), station.name());
     }
     
     public boolean isSuccess() {
@@ -67,6 +102,11 @@ public class AddStationDialogController {
             
             // Get controller
             MapPickerController mapController = loader.getController();
+            
+            // Set initial location if available
+            if (selectedLatitude != null && selectedLongitude != null) {
+                mapController.setInitialLocation(selectedLatitude, selectedLongitude);
+            }
             
             // Create and configure stage
             javafx.stage.Stage mapStage = new javafx.stage.Stage();
@@ -89,7 +129,7 @@ public class AddStationDialogController {
                 
                 // Get address from coordinates
                 String address = locationService.reverseGeocode(selectedLatitude, selectedLongitude);
-                locationField.setText(address);
+                addressField.setText(address);
             }
             
         } catch (Exception e) {
@@ -99,10 +139,10 @@ public class AddStationDialogController {
     }
     
     @FXML
-    private void handleAdd() {
+    private void handleSave() {
         // Validate inputs
         String name = nameField.getText().trim();
-        String apiKey = apiKeyField.getText().trim();
+        String location = locationField.getText().trim();
         
         if (name.isEmpty()) {
             showError("Validation Error", "Please enter a station name.");
@@ -110,44 +150,44 @@ public class AddStationDialogController {
             return;
         }
         
-        if (apiKey.isEmpty()) {
-            showError("Validation Error", "Please enter an API key.");
-            apiKeyField.requestFocus();
+        if (location.isEmpty()) {
+            showError("Validation Error", "Please enter a location.");
+            locationField.requestFocus();
             return;
         }
         
         if (selectedLatitude == null || selectedLongitude == null) {
-            showError("Validation Error", "Please select a location.");
+            showError("Validation Error", "Please select coordinates on the map.");
             return;
         }
         
         // Call API in background
         new Thread(() -> {
             try {
-                logger.info("Adding station: name={}, location=({}, {})", 
-                    name, selectedLatitude, selectedLongitude);
+                logger.info("Updating station: id={}, name={}, location={}, coords=({}, {})", 
+                    station.id(), name, location, selectedLatitude, selectedLongitude);
                 
-                AddStationRequest request = new AddStationRequest(
+                UpdateStationRequest request = new UpdateStationRequest(
                     name,
-                    apiKey,
+                    location,
                     BigDecimal.valueOf(selectedLatitude),
                     BigDecimal.valueOf(selectedLongitude)
                 );
                 
-                StationResponse response = stationService.addStationToUser(request);
+                StationResponse response = stationService.updateStation(station.id(), request);
                 
                 Platform.runLater(() -> {
-                    logger.info("Station added successfully! Station: {}, Location: {}, Coordinates: ({}, {})", 
+                    logger.info("Station updated successfully! Station: {}, Location: {}, Coordinates: ({}, {})", 
                         response.name(), response.location(), response.latitude(), response.longitude());
                     success = true;
-                    showSuccess("Success", "Station added successfully!");
+                    showSuccess("Success", "Station updated successfully!");
                     closeDialog();
                 });
                 
             } catch (Exception e) {
-                logger.error("Failed to add station: {}", e.getMessage(), e);
+                logger.error("Failed to update station: {}", e.getMessage(), e);
                 Platform.runLater(() -> {
-                    showError("Error", "Failed to add station: " + e.getMessage());
+                    showError("Error", "Failed to update station: " + e.getMessage());
                 });
             }
         }).start();
@@ -155,7 +195,7 @@ public class AddStationDialogController {
     
     @FXML
     private void handleCancel() {
-        logger.debug("Add station cancelled");
+        logger.debug("Edit station cancelled");
         closeDialog();
     }
     
@@ -174,14 +214,6 @@ public class AddStationDialogController {
     }
     
     private void showSuccess(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-    
-    private void showInfo(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);

@@ -67,7 +67,26 @@ public class StationService implements IStationService {
 
     @Override
     public StationResponse getStationById(Long id) {
-        return null;
+        try {
+            logger.debug("Fetching station with id: {}", id);
+            StationResponse response = httpClient.get(
+                "/stations/" + id,
+                new TypeReference<StationResponse>() {},
+                true  // requiresAuth = true
+            );
+            logger.info("Successfully fetched station: id={}, name={}, location={}", 
+                response.id(), response.name(), response.location());
+            return response;
+        } catch (HttpClientService.HttpException e) {
+            logger.error("HTTP error while fetching station: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to fetch station: " + e.getMessage(), e);
+        } catch (IOException e) {
+            logger.error("Network error while fetching station: {}", e.getMessage(), e);
+            throw new RuntimeException("Network error while fetching station: " + e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("Unexpected error while fetching station: {}", e.getMessage(), e);
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -96,7 +115,28 @@ public class StationService implements IStationService {
 
     @Override
     public StationResponse updateStation(Long id, UpdateStationRequest request) {
-        return null;
+        try {
+            logger.debug("Updating station with id: {}", id);
+            StationResponse response = httpClient.put(
+                "/stations/" + id,
+                request,
+                StationResponse.class,
+                true  // requiresAuth = true
+            );
+            logger.info("Successfully updated station: id={}, name={}, location={}, lat={}, lng={}", 
+                response.id(), response.name(), response.location(), 
+                response.latitude(), response.longitude());
+            return response;
+        } catch (HttpClientService.HttpException e) {
+            logger.error("HTTP error while updating station: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to update station: " + e.getMessage(), e);
+        } catch (IOException e) {
+            logger.error("Network error while updating station: {}", e.getMessage(), e);
+            throw new RuntimeException("Network error while updating station: " + e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("Unexpected error while updating station: {}", e.getMessage(), e);
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
     }
 
     @Override

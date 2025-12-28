@@ -41,6 +41,7 @@ public class WeatherCardController {
     
     private ContextMenu stationMenu;
     private final StationService stationService;
+    private volatile boolean isLoadingStations = false;
     
     public WeatherCardController() {
         this.stationService = new StationService();
@@ -66,7 +67,14 @@ public class WeatherCardController {
         stationMenu.getItems().clear();
         logger.debug("Cleared menu items");
         
+        // Prevent concurrent loading
+        if (isLoadingStations) {
+            logger.debug("Station loading already in progress, skipping");
+            return;
+        }
+        
         // Load stations in background
+        isLoadingStations = true;
         new Thread(() -> {
             try {
                 logger.debug("Starting station fetch...");
@@ -113,9 +121,12 @@ public class WeatherCardController {
                     // Create Add Station button
                     try {
                         HBox addButtonContent = new HBox(8);
-                        addButtonContent.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                        addButtonContent.setAlignment(javafx.geometry.Pos.CENTER);
                         addButtonContent.setPadding(new javafx.geometry.Insets(12, 16, 12, 16));
                         addButtonContent.setStyle("-fx-cursor: hand;");
+                        addButtonContent.setPrefWidth(300); // Match station item width
+                        addButtonContent.setMinWidth(300);
+                        addButtonContent.setMaxWidth(300);
                         
                         // Add icon
                         javafx.scene.image.ImageView addIcon = new javafx.scene.image.ImageView(
@@ -133,7 +144,7 @@ public class WeatherCardController {
                         
                         // Hover effect
                         addButtonContent.setOnMouseEntered(e -> 
-                            addButtonContent.setStyle("-fx-cursor: hand; -fx-background-color: rgba(0, 120, 212, 0.05);")
+                            addButtonContent.setStyle("-fx-cursor: hand; -fx-background-color: rgba(0, 0, 0, 0.03); -fx-background-radius: 6px;")
                         );
                         addButtonContent.setOnMouseExited(e -> 
                             addButtonContent.setStyle("-fx-cursor: hand; -fx-background-color: transparent;")
@@ -165,8 +176,12 @@ public class WeatherCardController {
             } catch (Exception e) {
                 logger.error("Failed to fetch stations: {}", e.getMessage(), e);
                 Platform.runLater(() -> {
-                    showError("Error", "Failed to load stations: " + e.getMessage());
+                    CustomMenuItem errorItem = new CustomMenuItem(new Text("Error loading stations"));
+                    errorItem.setDisable(true);
+                    stationMenu.getItems().add(errorItem);
                 });
+            } finally {
+                isLoadingStations = false;
             }
         }).start();
     }
