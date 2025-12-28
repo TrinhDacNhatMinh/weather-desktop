@@ -3,6 +3,7 @@ package com.nhom.weatherdesktop.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +60,7 @@ public class MainController {
                 FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/fxml/screens/alert_screen.fxml")
                 );
-                VBox alertScreen = loader.load();
+                Parent alertScreen = loader.load();
                 contentScrollPane.setContent(alertScreen);
                 logger.debug("Alert screen loaded successfully");
             } else if ("My Station".equals(page)) {
@@ -67,7 +68,7 @@ public class MainController {
                 FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/fxml/screens/my_station_screen.fxml")
                 );
-                VBox myStationScreen = loader.load();
+                Parent myStationScreen = loader.load();
                 contentScrollPane.setContent(myStationScreen);
                 logger.debug("My Station screen loaded successfully");
             }

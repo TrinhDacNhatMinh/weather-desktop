@@ -67,12 +67,53 @@ public class AlertService implements IAlertService {
 
     @Override
     public AlertResponse markAlertAsSeen(Long alertId) {
-        return null;
+        try {
+            String endpoint = "/alerts/" + alertId + "/seen";
+            logger.debug("Marking alert {} as seen", alertId);
+            
+            ApiResponse<AlertResponse> response = httpClient.patch(
+                endpoint,
+                null, // No request body needed
+                new TypeReference<ApiResponse<AlertResponse>>() {},
+                true  // requiresAuth = true
+            );
+            
+            AlertResponse updatedAlert = response.data();
+            logger.info("Successfully marked alert {} as seen", alertId);
+            return updatedAlert;
+            
+        } catch (HttpClientService.HttpException e) {
+            logger.error("HTTP error while marking alert as seen: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to mark alert as seen: " + e.getMessage(), e);
+        } catch (IOException e) {
+            logger.error("Network error while marking alert as seen: {}", e.getMessage(), e);
+            throw new RuntimeException("Network error: " + e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("Unexpected error while marking alert as seen: {}", e.getMessage(), e);
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
     }
 
     @Override
     public void deleteAlert(Long alertId) {
-
+        try {
+            String endpoint = "/alerts/" + alertId;
+            logger.debug("Deleting alert {}", alertId);
+            
+            httpClient.delete(endpoint, true);
+            
+            logger.info("Successfully deleted alert {}", alertId);
+            
+        } catch (HttpClientService.HttpException e) {
+            logger.error("HTTP error while deleting alert: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to delete alert: " + e.getMessage(), e);
+        } catch (IOException e) {
+            logger.error("Network error while deleting alert: {}", e.getMessage(), e);
+            throw new RuntimeException("Network error: " + e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("Unexpected error while deleting alert: {}", e.getMessage(), e);
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
     }
 
     @Override

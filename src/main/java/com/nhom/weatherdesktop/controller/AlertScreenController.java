@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,7 @@ public class AlertScreenController {
     private VBox alertListContainer;
     
     @FXML
-    private VBox emptyState;
+    private StackPane emptyState;
     
     private AlertService alertService;
     
@@ -63,6 +64,10 @@ public class AlertScreenController {
                                 HBox alertItem = loader.load();
                                 AlertItemController controller = loader.getController();
                                 controller.setAlert(alert);
+                                
+                                // Set callback to refresh alerts when dialog closes
+                                controller.setOnDialogClosed(this::loadAlerts);
+                                
                                 alertListContainer.getChildren().add(alertItem);
                             } catch (IOException e) {
                                 logger.error("Failed to load alert item: {}", e.getMessage(), e);

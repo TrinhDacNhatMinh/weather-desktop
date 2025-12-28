@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.nhom.weatherdesktop.controller.AlertDetailDialogController"
+      styleClass="clean-dialog" spacing="0" maxWidth="500" minWidth="450">
+    
+    <!-- Content Section -->
+    <VBox spacing="16" styleClass="clean-dialog-content">
+        <padding>
+            <Insets bottom="24" left="24" right="24" top="24" />
+        </padding>
+        
+        <!-- Station Info - Horizontal -->
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <Label text="Station:" styleClass="clean-label" minWidth="80" />
+            <Text fx:id="stationNameText" styleClass="clean-value-large" wrappingWidth="350" HBox.hgrow="ALWAYS" />
+        </HBox>
+        
+        <!-- Time - Horizontal -->
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <Label text="Time:" styleClass="clean-label" minWidth="80" />
+            <Text fx:id="fullTimestampText" styleClass="clean-value" />
+        </HBox>
+        
+        <!-- Message - Horizontal -->
+        <HBox spacing="12" alignment="TOP_LEFT">
+            <Label text="Message:" styleClass="clean-label" minWidth="80" />
+            <Text fx:id="messageText" styleClass="clean-value" wrappingWidth="350" HBox.hgrow="ALWAYS" />
+        </HBox>
+    </VBox>
+    
+    <!-- Divider -->
+    <Region styleClass="divider-line" />
+    
+    <!-- Footer with Actions -->
+    <HBox alignment="CENTER_RIGHT" spacing="12" styleClass="clean-dialog-footer">
+        <padding>
+            <Insets bottom="20" left="24" right="24" top="20" />
+        </padding>
+        <Button onAction="#handleDelete" styleClass="btn-delete">
+            <graphic>
+                <ImageView fitWidth="16" fitHeight="16" preserveRatio="true">
+                    <image>
+                        <Image url="@/icons/delete.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button text="Close" onAction="#handleClose" styleClass="btn-primary" prefWidth="100" />
+    </HBox>
+    
+</VBox>

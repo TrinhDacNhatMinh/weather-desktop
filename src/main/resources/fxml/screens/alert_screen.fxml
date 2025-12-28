@@ -6,37 +6,60 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.image.*?>
 
-<VBox xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" 
-      fx:controller="com.nhom.weatherdesktop.controller.AlertScreenController"
-      styleClass="main-content" spacing="20">
+<!-- Root StackPane - Background + Content Layers -->
+<StackPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" 
+           fx:controller="com.nhom.weatherdesktop.controller.AlertScreenController"
+           styleClass="main-content">
     
-    <padding>
-        <Insets bottom="24" left="24" right="24" top="24" />
-    </padding>
+    <!-- Background Layer -->
+    <Region styleClass="alert-screen-background" />
     
-    <!-- Header with Refresh Icon -->
-    <HBox alignment="CENTER_RIGHT" spacing="16">
-        <VBox VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" />
-        <Button fx:id="refreshButton" onAction="#handleRefresh" styleClass="icon-button">
-            <graphic>
-                <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
-                    <image>
-                        <Image url="@/icons/refresh.png" />
-                    </image>
-                </ImageView>
-            </graphic>
-        </Button>
-    </HBox>
-    
-    <!-- Alert List -->
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="alert-scroll-pane" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER">
-        <VBox fx:id="alertListContainer" spacing="12" />
-    </ScrollPane>
-    
-    <!-- Empty State -->
-    <VBox fx:id="emptyState" alignment="CENTER" spacing="12" VBox.vgrow="ALWAYS" visible="false" managed="false">
-        <Text styleClass="empty-state-text" text="No alerts" />
-        <Text styleClass="empty-state-subtext" text="You don't have any alerts yet" />
+    <!-- Content Layer with 2 Areas -->
+    <VBox spacing="0" alignment="TOP_CENTER">
+        
+        <!-- Area 1: Fixed Transparent Header (Top) - 60px height -->
+        <AnchorPane prefHeight="60" minHeight="60" maxHeight="60" 
+                    styleClass="alert-header-transparent">
+            <!-- Refresh Button positioned at top-right -->
+            <Button fx:id="refreshButton" onAction="#handleRefresh" 
+                    styleClass="icon-button" 
+                    AnchorPane.rightAnchor="24" AnchorPane.topAnchor="12">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                        <image>
+                            <Image url="@/icons/refresh.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </AnchorPane>
+        
+        <!-- Area 2: Scrollable Alert List (Bottom - fills remaining space) -->
+        <StackPane VBox.vgrow="ALWAYS">
+            
+            <!-- ScrollPane with alert list -->
+            <ScrollPane fx:id="alertScrollPane" fitToWidth="true" 
+                        styleClass="alert-scroll-pane" 
+                        vbarPolicy="AS_NEEDED" hbarPolicy="NEVER">
+                <padding>
+                    <Insets bottom="24" left="24" right="24" top="12" />
+                </padding>
+                <VBox fx:id="alertListContainer" spacing="12" />
+            </ScrollPane>
+            
+            <!-- Empty State -->
+            <StackPane fx:id="emptyState" visible="false" managed="false">
+                <VBox alignment="CENTER" spacing="12">
+                    <padding>
+                        <Insets bottom="24" left="24" right="24" top="24" />
+                    </padding>
+                    <Text styleClass="empty-state-text" text="No alerts" />
+                    <Text styleClass="empty-state-subtext" text="You don't have any alerts yet" />
+                </VBox>
+            </StackPane>
+            
+        </StackPane>
+        
     </VBox>
     
-</VBox>
+</StackPane>

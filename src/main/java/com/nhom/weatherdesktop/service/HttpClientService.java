@@ -11,7 +11,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 /**
  * HTTP Client Service for making REST API calls
@@ -153,6 +158,86 @@ public class HttpClientService {
             
         } finally {
             connection.disconnect();
+        }
+    }
+    
+    /**
+     * Performs a PATCH HTTP request with TypeReference for generic response types
+     * Uses Java 11+ HttpClient to properly support PATCH method
+     * @param endpoint API endpoint (relative to base URL)
+     * @param requestBody Request body to send (can be null for PATCH with no body)
+     * @param typeRef TypeReference for deserializing the response
+     * @param includeAuth Whether to include authentication token
+     * @return Deserialized response object
+     * @throws IOException If a network error occurs
+     * @throws HttpException If the server returns an error response
+     */
+    public <T, R> R patch(String endpoint, T requestBody, com.fasterxml.jackson.core.type.TypeReference<R> typeRef, boolean includeAuth) 
+            throws IOException, HttpException {
+        
+        String fullUrl = config.getApiBaseUrl() + endpoint;
+        
+        try {
+            // Create HttpClient
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(config.getApiTimeout()))
+                    .build();
+            
+            // Build request body
+            HttpRequest.BodyPublisher bodyPublisher;
+            if (requestBody != null) {
+                String jsonBody = objectMapper.writeValueAsString(requestBody);
+                bodyPublisher = HttpRequest.BodyPublishers.ofString(jsonBody, StandardCharsets.UTF_8);
+            } else {
+                bodyPublisher = HttpRequest.BodyPublishers.noBody();
+            }
+            
+            // Build request
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+                    .uri(URI.create(fullUrl))
+                    .method("PATCH", bodyPublisher)
+                    .header("Content-Type", "application/json")
+                    .header("Accept", "application/json")
+                    .timeout(Duration.ofSeconds(config.getApiTimeout()));
+            
+            // Add authentication if needed
+            if (includeAuth && tokenManager.isAuthenticated()) {
+                requestBuilder.header("Authorization", tokenManager.getAuthorizationHeader());
+            }
+            
+            HttpRequest request = requestBuilder.build();
+            
+            // Send request and get response
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            
+            int responseCode = response.statusCode();
+            logger.debug("PATCH {} - Response code: {}", endpoint, responseCode);
+            
+            // Handle response
+            if (responseCode >= 200 && responseCode < 300) {
+                if (typeRef != null && !response.body().isEmpty()) {
+                    return objectMapper.readValue(response.body(), typeRef);
+                }
+                return null;
+            } else if (responseCode == 401) {
+                throw new HttpException(401, "Unauthorized - Invalid credentials");
+            } else if (responseCode == 403) {
+                throw new HttpException(403, "Forbidden - Access denied");
+            } else if (responseCode == 404) {
+                throw new HttpException(404, "Alert not found");
+            } else if (responseCode >= 500) {
+                throw new HttpException(responseCode, "Server error - Please try again later");
+            } else {
+                String errorMessage = "HTTP Error " + responseCode;
+                if (!response.body().isEmpty()) {
+                    errorMessage = response.body();
+                }
+                throw new HttpException(responseCode, errorMessage);
+            }
+            
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Request interrupted", e);
         }
     }
     
