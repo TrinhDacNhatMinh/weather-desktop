@@ -96,4 +96,64 @@ public class AlertScreenController {
         logger.info("Refreshing alerts...");
         loadAlerts();
     }
+    
+    @FXML
+    private void handleDeleteAll() {
+        logger.info("Delete all alerts requested");
+        
+        // Show confirmation dialog
+        javafx.scene.control.Alert confirmAlert = new javafx.scene.control.Alert(
+            javafx.scene.control.Alert.AlertType.WARNING
+        );
+        confirmAlert.setTitle("Confirm Delete All");
+        confirmAlert.setHeaderText(null);
+        confirmAlert.setContentText("Are you sure you want to delete ALL alerts? This action cannot be undone.");
+        
+        confirmAlert.getButtonTypes().setAll(
+            javafx.scene.control.ButtonType.OK,
+            javafx.scene.control.ButtonType.CANCEL
+        );
+        
+        confirmAlert.showAndWait().ifPresent(response -> {
+            if (response == javafx.scene.control.ButtonType.OK) {
+                // User confirmed, delete all alerts
+                new Thread(() -> {
+                    try {
+                        logger.debug("Deleting all alerts...");
+                        alertService.deleteAllMyAlerts();
+                        
+                        Platform.runLater(() -> {
+                            logger.info("All alerts deleted successfully!");
+                            
+                            // Reload alerts (will show empty state)
+                            loadAlerts();
+                            
+                            // Show success message
+                            javafx.scene.control.Alert successAlert = new javafx.scene.control.Alert(
+                                javafx.scene.control.Alert.AlertType.INFORMATION
+                            );
+                            successAlert.setTitle("Success");
+                            successAlert.setHeaderText(null);
+                            successAlert.setContentText("All alerts deleted successfully!");
+                            successAlert.show();
+                        });
+                        
+                    } catch (Exception e) {
+                        logger.error("Failed to delete all alerts: {}", e.getMessage(), e);
+                        Platform.runLater(() -> {
+                            javafx.scene.control.Alert errorAlert = new javafx.scene.control.Alert(
+                                javafx.scene.control.Alert.AlertType.ERROR
+                            );
+                            errorAlert.setTitle("Error");
+                            errorAlert.setHeaderText(null);
+                            errorAlert.setContentText("Failed to delete alerts: " + e.getMessage());
+                            errorAlert.showAndWait();
+                        });
+                    }
+                }).start();
+            } else {
+                logger.debug("Delete all alerts cancelled by user");
+            }
+        });
+    }
 }

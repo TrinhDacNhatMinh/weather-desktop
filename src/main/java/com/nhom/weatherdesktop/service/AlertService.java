@@ -118,7 +118,25 @@ public class AlertService implements IAlertService {
 
     @Override
     public void deleteAllMyAlerts() {
-
+        try {
+            String endpoint = "/alerts/me";
+            logger.debug("Deleting all alerts for current user");
+            
+            httpClient.delete(endpoint, true);
+            
+            logger.info("Successfully deleted all alerts");
+            
+        } catch (HttpClientService.HttpException e) {
+            logger.error("HTTP error while deleting all alerts: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to delete all alerts: " + e.getMessage(), e);
+        } catch (IOException e) {
+            logger.error("Network error while deleting all alerts: {}", e.getMessage(), e);
+            throw new RuntimeException("Network error: " + e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("Unexpected error while deleting all alerts: {}", e.getMessage(), e);
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
     }
+
 
 }

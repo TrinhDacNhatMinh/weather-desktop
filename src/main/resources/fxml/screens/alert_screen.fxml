@@ -15,15 +15,28 @@
     <Region styleClass="alert-screen-background" />
     
     <!-- Content Layer with 2 Areas -->
-    <VBox spacing="0" alignment="TOP_CENTER">
+    <VBox spacing="0" alignment="TOP_CENTER" style="-fx-background-color: transparent;">
         
         <!-- Area 1: Fixed Transparent Header (Top) - 60px height -->
         <AnchorPane prefHeight="60" minHeight="60" maxHeight="60" 
                     styleClass="alert-header-transparent">
-            <!-- Refresh Button positioned at top-right -->
-            <Button fx:id="refreshButton" onAction="#handleRefresh" 
+            <!-- Delete Button positioned at top-right -->
+            <Button fx:id="deleteAllButton" onAction="#handleDeleteAll" 
                     styleClass="icon-button" 
                     AnchorPane.rightAnchor="24" AnchorPane.topAnchor="12">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                        <image>
+                            <Image url="@/icons/delete.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            
+            <!-- Refresh Button positioned next to delete button -->
+            <Button fx:id="refreshButton" onAction="#handleRefresh" 
+                    styleClass="icon-button" 
+                    AnchorPane.rightAnchor="68" AnchorPane.topAnchor="12">
                 <graphic>
                     <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
                         <image>
@@ -35,7 +48,7 @@
         </AnchorPane>
         
         <!-- Area 2: Scrollable Alert List (Bottom - fills remaining space) -->
-        <StackPane VBox.vgrow="ALWAYS">
+        <StackPane VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
             
             <!-- ScrollPane with alert list -->
             <ScrollPane fx:id="alertScrollPane" fitToWidth="true" 
