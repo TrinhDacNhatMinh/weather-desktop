@@ -1,5 +1,6 @@
 package com.nhom.weatherdesktop.controller;
 
+import com.nhom.weatherdesktop.dto.response.AlertResponse;
 import com.nhom.weatherdesktop.dto.response.PageResponse;
 import com.nhom.weatherdesktop.dto.response.StationResponse;
 import com.nhom.weatherdesktop.dto.response.WeatherDataResponse;
@@ -61,6 +62,9 @@ public class WeatherCardController {
     
     @FXML
     public void initialize() {
+        // Reset values to placeholder when controller is created (e.g., tab switch)
+        resetWeatherValues();
+        
         // Initialize WebSocket if not already initialized
         initializeWebSocket();
         
@@ -72,6 +76,7 @@ public class WeatherCardController {
         if (stompClient == null) {
             stompClient = new StompClient();
             stompClient.setWeatherDataHandler(this::handleWeatherData);
+            stompClient.setAlertHandler(this::handleAlert);
             stompClient.setConnectionStatusHandler(this::handleConnectionStatus);
             
             // Connect to WebSocket
@@ -80,7 +85,45 @@ public class WeatherCardController {
             stompClient.connect(wsUrl);
             
             logger.info("WebSocket initialized and connecting to: {}", wsUrl);
+            
+            // Subscribe to all alerts after connection
+            subscribeToAllAlerts();
         }
+    }
+    
+    private void subscribeToAllAlerts() {
+        // Subscribe to alert topics for all user stations
+        new Thread(() -> {
+            try {
+                // Wait for WebSocket connection
+                int retries = 30;
+                while (stompClient != null && !stompClient.isConnected() && retries > 0) {
+                    Thread.sleep(100);
+                    retries--;
+                }
+                
+                if (stompClient == null || !stompClient.isConnected()) {
+                    logger.warn("WebSocket not connected, cannot subscribe to alerts");
+                    return;
+                }
+                
+                // Get all user stations
+                PageResponse<StationResponse> response = stationService.getMyStations(0, 100);
+                
+                Platform.runLater(() -> {
+                    // Subscribe to alert topic for each station
+                    for (StationResponse station : response.content()) {
+                        String alertTopic = "/topic/stations/" + station.id() + "/alerts";
+                        stompClient.subscribe(alertTopic, "alert");
+                        logger.debug("Subscribed to alert topic: {}", alertTopic);
+                    }
+                    logger.info("Subscribed to {} station alert topics", response.content().size());
+                });
+                
+            } catch (Exception e) {
+                logger.error("Failed to subscribe to alert topics: {}", e.getMessage(), e);
+            }
+        }).start();
     }
     
     private void handleWeatherData(WeatherDataResponse data) {
@@ -94,11 +137,17 @@ public class WeatherCardController {
         );
     }
     
+    private void handleAlert(AlertResponse alert) {
+        logger.info("Received alert for station {}: {}", alert.stationId(), alert.message());
+        // Alert will be handled by AlertScreenController if it's already initialized
+        // Otherwise just log it
+    }
+    
     private void handleConnectionStatus(Boolean connected) {
         logger.info("WebSocket connection status: {}", connected ? "Connected" : "Disconnected");
         
-        if (connected && selectedStation != null) {
-            // Re-subscribe to current station when connection is restored
+        if (connected && selectedStation != null && !selectedStation.id().equals(currentSubscribedStationId)) {
+            // Re-subscribe to current station when connection is restored (only if not already subscribed)
             subscribeToStation(selectedStation.id());
         }
     }
@@ -167,6 +216,9 @@ public class WeatherCardController {
             stompClient.unsubscribe(oldTopic);
             logger.debug("Unsubscribed from: {}", oldTopic);
         }
+        
+        // Reset weather values when switching station
+        Platform.runLater(this::resetWeatherValues);
         
         // Subscribe to new station
         String topic = "/topic/stations/" + stationId + "/weather";
@@ -329,6 +381,14 @@ public class WeatherCardController {
         windSpeedValue.setText(String.format("%.1f", windSpeed));
         rainfallValue.setText(String.format("%.1f", rainfall));
         dustValue.setText(String.format("%.0f", dust));
+    }
+    
+    private void resetWeatherValues() {
+        temperatureValue.setText("__");
+        humidityValue.setText("__");
+        windSpeedValue.setText("__");
+        rainfallValue.setText("__");
+        dustValue.setText("__");
     }
 
     private void showError(String title, String message) {
