@@ -24,7 +24,7 @@
     <!-- Alerts Button -->
     <Button styleClass="sidebar-btn" fx:id="alertsBtn" onAction="#handleAlerts">
         <graphic>
-            <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+            <ImageView fx:id="alertsIconView" fitWidth="24" fitHeight="24" preserveRatio="true">
                 <image>
                     <Image url="@../../icons/sidebar/notifications.png"/>
                 </image>

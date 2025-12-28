@@ -49,7 +49,7 @@ public class AlertService implements IAlertService {
             return pageResponse;
             
         } catch (HttpClientService.HttpException e) {
-            logger.error("HTTP error while fetching alerts: {}", e.getMessage(), e);
+            logger.error("HTTP {} error while fetching alerts: {}", e.getStatusCode(), e.getMessage(), e);
             throw new RuntimeException("Failed to fetch alerts: " + e.getMessage(), e);
         } catch (IOException e) {
             logger.error("Network error while fetching alerts: {}", e.getMessage(), e);
@@ -83,7 +83,7 @@ public class AlertService implements IAlertService {
             return updatedAlert;
             
         } catch (HttpClientService.HttpException e) {
-            logger.error("HTTP error while marking alert as seen: {}", e.getMessage(), e);
+            logger.error("HTTP {} error while marking alert as seen: {}", e.getStatusCode(), e.getMessage(), e);
             throw new RuntimeException("Failed to mark alert as seen: " + e.getMessage(), e);
         } catch (IOException e) {
             logger.error("Network error while marking alert as seen: {}", e.getMessage(), e);
@@ -105,7 +105,7 @@ public class AlertService implements IAlertService {
             logger.info("Successfully deleted alert {}", alertId);
             
         } catch (HttpClientService.HttpException e) {
-            logger.error("HTTP error while deleting alert: {}", e.getMessage(), e);
+            logger.error("HTTP {} error while deleting alert: {}", e.getStatusCode(), e.getMessage(), e);
             throw new RuntimeException("Failed to delete alert: " + e.getMessage(), e);
         } catch (IOException e) {
             logger.error("Network error while deleting alert: {}", e.getMessage(), e);
@@ -127,7 +127,7 @@ public class AlertService implements IAlertService {
             logger.info("Successfully deleted all alerts");
             
         } catch (HttpClientService.HttpException e) {
-            logger.error("HTTP error while deleting all alerts: {}", e.getMessage(), e);
+            logger.error("HTTP {} error while deleting all alerts: {}", e.getStatusCode(), e.getMessage(), e);
             throw new RuntimeException("Failed to delete all alerts: " + e.getMessage(), e);
         } catch (IOException e) {
             logger.error("Network error while deleting all alerts: {}", e.getMessage(), e);
@@ -138,5 +138,35 @@ public class AlertService implements IAlertService {
         }
     }
 
+    /**
+     * Check if there are any NEW (unread) alerts
+     * @return true if there are any alerts with status "NEW", false otherwise
+     */
+    public boolean hasNewAlerts() {
+        try {
+            String endpoint = "/alerts/me?page=0&size=100";
+            logger.debug("Checking for new alerts...");
+            
+            ApiResponse<List<AlertResponse>> response = httpClient.get(
+                endpoint,
+                new TypeReference<ApiResponse<List<AlertResponse>>>() {},
+                true  // requiresAuth = true
+            );
+            
+            List<AlertResponse> alerts = response.data();
+            
+            // Check if any alert has status "NEW"
+            boolean hasNew = alerts.stream()
+                    .anyMatch(alert -> "NEW".equalsIgnoreCase(alert.status()));
+            
+            logger.debug("Has new alerts: {}", hasNew);
+            return hasNew;
+            
+        } catch (Exception e) {
+            logger.error("Failed to check new alerts: {}", e.getMessage(), e);
+            // Return false on error to avoid showing unread icon when we can't verify
+            return false;
+        }
+    }
 
 }

@@ -54,7 +54,7 @@ public class StationService implements IStationService {
             return result;
             
         } catch (HttpClientService.HttpException e) {
-            logger.error("HTTP error while fetching stations: {}", e.getMessage(), e);
+            logger.error("HTTP {} error while fetching stations: {}", e.getStatusCode(), e.getMessage(), e);
             throw new RuntimeException("Failed to fetch stations: " + e.getMessage(), e);
         } catch (IOException e) {
             logger.error("Network error while fetching stations: {}", e.getMessage(), e);
@@ -78,7 +78,7 @@ public class StationService implements IStationService {
                 response.id(), response.name(), response.location());
             return response;
         } catch (HttpClientService.HttpException e) {
-            logger.error("HTTP error while fetching station: {}", e.getMessage(), e);
+            logger.error("HTTP {} error while fetching station: {}", e.getStatusCode(), e.getMessage(), e);
             throw new RuntimeException("Failed to fetch station: " + e.getMessage(), e);
         } catch (IOException e) {
             logger.error("Network error while fetching station: {}", e.getMessage(), e);
@@ -102,7 +102,7 @@ public class StationService implements IStationService {
             logger.info("Successfully attached station: {}", response.name());
             return response;
         } catch (HttpClientService.HttpException e) {
-            logger.error("HTTP error while attaching station: {}", e.getMessage(), e);
+            logger.error("HTTP {} error while attaching station: {}", e.getStatusCode(), e.getMessage(), e);
             throw new RuntimeException("Failed to attach station: " + e.getMessage(), e);
         } catch (IOException e) {
             logger.error("Network error while attaching station: {}", e.getMessage(), e);
@@ -128,7 +128,7 @@ public class StationService implements IStationService {
                 response.latitude(), response.longitude());
             return response;
         } catch (HttpClientService.HttpException e) {
-            logger.error("HTTP error while updating station: {}", e.getMessage(), e);
+            logger.error("HTTP {} error while updating station: {}", e.getStatusCode(), e.getMessage(), e);
             throw new RuntimeException("Failed to update station: " + e.getMessage(), e);
         } catch (IOException e) {
             logger.error("Network error while updating station: {}", e.getMessage(), e);
@@ -154,7 +154,7 @@ public class StationService implements IStationService {
             );
             logger.info("Successfully detached station from user: id={}", id);
         } catch (HttpClientService.HttpException e) {
-            logger.error("HTTP error while detaching station: {}", e.getMessage(), e);
+            logger.error("HTTP {} error while detaching station: {}", e.getStatusCode(), e.getMessage(), e);
             throw new RuntimeException("Failed to detach station: " + e.getMessage(), e);
         } catch (IOException e) {
             logger.error("Network error while detaching station: {}", e.getMessage(), e);

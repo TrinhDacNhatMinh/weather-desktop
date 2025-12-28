@@ -6,11 +6,14 @@ import com.nhom.weatherdesktop.enums.AccessChannel;
 import com.nhom.weatherdesktop.service.interfaces.IAuthService;
 import com.nhom.weatherdesktop.util.TokenManager;
 import com.nhom.weatherdesktop.util.UserSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class AuthService implements IAuthService {
     
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final HttpClientService httpClient;
     private final TokenManager tokenManager;
     private final UserSession userSession;
@@ -24,6 +27,8 @@ public class AuthService implements IAuthService {
     @Override
     public LoginResponse login(LoginRequest request) {
         try {
+            logger.debug("Attempting login for user: {}", request.username());
+            
             LoginRequest finalRequest = request;
             if (request.accessChannel() == null) {
                 finalRequest = new LoginRequest(
@@ -43,14 +48,20 @@ public class AuthService implements IAuthService {
             if (response != null) {
                 tokenManager.saveTokens(response.accessToken(), response.refreshToken());
                 userSession.setUserInfo(response.name(), response.email());
+                logger.info("Login successful! User: {}, Email: {}", response.name(), response.email());
             }
             
             return response;
             
         } catch (HttpClientService.HttpException e) {
+            logger.error("HTTP {} error during login: {}", e.getStatusCode(), e.getMessage(), e);
             throw new RuntimeException(getErrorMessage(e), e);
         } catch (IOException e) {
+            logger.error("Network error during login: {}", e.getMessage(), e);
             throw new RuntimeException("Network error: Unable to connect to server. Please check your internet connection.", e);
+        } catch (Exception e) {
+            logger.error("Unexpected error during login: {}", e.getMessage(), e);
+            throw new RuntimeException("Unexpected error during login: " + e.getMessage(), e);
         }
     }
     

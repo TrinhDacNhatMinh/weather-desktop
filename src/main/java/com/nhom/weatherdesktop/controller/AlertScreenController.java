@@ -25,6 +25,7 @@ public class AlertScreenController {
     private StackPane emptyState;
     
     private AlertService alertService;
+    private SidebarController sidebarController;
     
     @FXML
     public void initialize() {
@@ -75,6 +76,9 @@ public class AlertScreenController {
                         }
                         
                         logger.info("Loaded {} alerts successfully", response.content().size());
+                        
+                        // Update sidebar icon after loading alerts
+                        updateSidebarIcon();
                     }
                 });
                 
@@ -89,6 +93,10 @@ public class AlertScreenController {
                 });
             }
         }).start();
+    }
+    
+    public void setSidebarController(SidebarController sidebarController) {
+        this.sidebarController = sidebarController;
     }
     
     @FXML
@@ -128,6 +136,9 @@ public class AlertScreenController {
                             // Reload alerts (will show empty state)
                             loadAlerts();
                             
+                            // Update sidebar icon
+                            updateSidebarIcon();
+                            
                             // Show success message
                             javafx.scene.control.Alert successAlert = new javafx.scene.control.Alert(
                                 javafx.scene.control.Alert.AlertType.INFORMATION
@@ -155,5 +166,11 @@ public class AlertScreenController {
                 logger.debug("Delete all alerts cancelled by user");
             }
         });
+    }
+    
+    private void updateSidebarIcon() {
+        if (sidebarController != null) {
+            sidebarController.updateAlertIcon();
+        }
     }
 }

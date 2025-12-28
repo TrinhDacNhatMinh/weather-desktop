@@ -61,6 +61,13 @@ public class MainController {
                     getClass().getResource("/fxml/screens/alert_screen.fxml")
                 );
                 Parent alertScreen = loader.load();
+                
+                // Pass sidebar controller to alert screen so it can update icon
+                AlertScreenController alertController = loader.getController();
+                if (alertController != null) {
+                    alertController.setSidebarController(sidebarController);
+                }
+                
                 contentScrollPane.setContent(alertScreen);
                 logger.debug("Alert screen loaded successfully");
             } else if ("My Station".equals(page)) {
