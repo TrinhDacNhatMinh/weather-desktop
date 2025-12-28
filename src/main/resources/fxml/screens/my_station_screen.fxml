@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" 
@@ -9,9 +7,6 @@
     
     <!-- Weather Card -->
     <fx:include source="../components/weather_card.fxml" fx:id="weatherCard"/>
-    
-    <!-- Forest Card -->
-    <fx:include source="../components/forest_card.fxml" fx:id="forestCard"/>
     
     <!-- Temperature Chart -->
     <fx:include source="../components/temperature_chart.fxml" fx:id="chart"/>

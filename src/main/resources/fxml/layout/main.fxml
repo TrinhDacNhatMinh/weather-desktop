@@ -23,16 +23,7 @@
             
             <!-- Main Content (Scrollable) -->
             <ScrollPane fx:id="contentScrollPane" fitToWidth="true" styleClass="content-scroll">
-                <VBox styleClass="dashboard-content" alignment="TOP_CENTER">
-                    <!-- Weather Card -->
-                    <fx:include source="../components/weather_card.fxml" fx:id="weatherCard"/>
-                    
-                    <!-- Forest Card -->
-                    <fx:include source="../components/forest_card.fxml" fx:id="forestCard"/>
-                    
-                    <!-- Temperature Chart -->
-                    <fx:include source="../components/temperature_chart.fxml" fx:id="chart"/>
-                </VBox>
+                <!-- Content will be loaded dynamically by MainController.initialize() -->
             </ScrollPane>
         </VBox>
     </center>

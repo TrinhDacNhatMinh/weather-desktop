@@ -28,6 +28,9 @@ public class MainController {
         
         // Increase scroll speed
         configureScrollSpeed();
+        
+        // Load My Station screen by default
+        handleNavigation("My Station");
     }
     
     private void configureScrollSpeed() {
