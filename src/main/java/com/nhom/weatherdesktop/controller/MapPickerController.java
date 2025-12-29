@@ -46,6 +46,17 @@ public class MapPickerController {
             if (newState == Worker.State.SUCCEEDED) {
                 logger.debug("Map loaded successfully");
                 setupJavaScriptBridge(engine);
+                
+                // Force map to recalculate size - fixes rendering issues in WebView
+                javafx.application.Platform.runLater(() -> {
+                    try {
+                        Thread.sleep(200); // Give Leaflet time to initialize
+                        engine.executeScript("if (map) { map.invalidateSize(); }");
+                        logger.debug("Map size invalidated");
+                    } catch (Exception e) {
+                        logger.warn("Failed to invalidate map size: {}", e.getMessage());
+                    }
+                });
             }
         });
     }

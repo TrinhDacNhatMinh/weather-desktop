@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Location</title>
 
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet CSS - using 1.7.1 which is more stable with JavaFX WebView -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 
     <style>
         * {
@@ -16,7 +16,12 @@
             box-sizing: border-box;
         }
 
+        html,
         body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
         }
@@ -25,57 +30,102 @@
             width: 100%;
             height: 100vh;
         }
+
+        /* Force hardware acceleration off - helps with JavaFX WebView */
+        .leaflet-map-pane,
+        .leaflet-tile-pane {
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+        }
     </style>
 </head>
 
 <body>
     <div id="map"></div>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet JS - version 1.7.1 -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
     <script>
-        // Initialize map centered on Hanoi
-        var map = L.map('map').setView([21.0285, 105.8542], 13);
-
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Marker for selected location
+        var map;
         var marker = null;
 
-        // Handle map clicks
-        map.on('click', function (e) {
-            var lat = e.latlng.lat;
-            var lng = e.latlng.lng;
+        // Initialize map when DOM is ready
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                // Initialize map centered on Hanoi
+                map = L.map('map', {
+                    center: [21.0285, 105.8542],
+                    zoom: 13,
+                    zoomControl: true,
+                    attributionControl: true,
+                    fadeAnimation: false,
+                    zoomAnimation: false,
+                    markerZoomAnimation: false
+                });
 
-            // Remove old marker if exists
-            if (marker) {
-                map.removeLayer(marker);
-            }
+                // Add OpenStreetMap tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors',
+                    updateWhenIdle: false,
+                    keepBuffer: 2
+                }).addTo(map);
 
-            // Add new marker
-            marker = L.marker([lat, lng]).addTo(map);
+                // Force size recalculation after a short delay
+                setTimeout(function () {
+                    map.invalidateSize(true);
+                }, 200);
 
-            // Notify Java app via bridge
-            if (window.javaApp) {
-                window.javaApp.onLocationSelected(lat, lng);
+                // Handle map clicks
+                map.on('click', function (e) {
+                    var lat = e.latlng.lat;
+                    var lng = e.latlng.lng;
+
+                    // Remove old marker if exists
+                    if (marker) {
+                        map.removeLayer(marker);
+                    }
+
+                    // Add new marker
+                    marker = L.marker([lat, lng]).addTo(map);
+
+                    // Notify Java app via bridge
+                    if (window.javaApp) {
+                        window.javaApp.onLocationSelected(lat, lng);
+                    }
+                });
+
+                console.log('Map initialized successfully');
+            } catch (error) {
+                console.error('Error initializing map:', error);
             }
         });
 
         // Function callable from Java to set initial location
         function setLocation(lat, lng) {
-            map.setView([lat, lng], 13);
+            if (map) {
+                map.setView([lat, lng], 13);
 
-            if (marker) {
-                map.removeLayer(marker);
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+
+                marker = L.marker([lat, lng]).addTo(map);
+
+                // Ensure map is rendered correctly
+                setTimeout(function () {
+                    map.invalidateSize(true);
+                }, 50);
             }
-
-            marker = L.marker([lat, lng]).addTo(map);
         }
+
+        // Additional fix for resize issues
+        window.addEventListener('resize', function () {
+            if (map) {
+                map.invalidateSize();
+            }
+        });
     </script>
 </body>
 
