@@ -75,7 +75,6 @@ public class WeatherCardController {
     private void initializeWebSocket() {
         if (stompClient == null) {
             stompClient = new StompClient();
-            stompClient.setWeatherDataHandler(this::handleWeatherData);
             stompClient.setAlertHandler(this::handleAlert);
             stompClient.setConnectionStatusHandler(this::handleConnectionStatus);
             
@@ -93,6 +92,11 @@ public class WeatherCardController {
             // Subscribe to all alerts after connection
             subscribeToAllAlerts();
         }
+        
+        // ALWAYS set weather data handler to ensure new controller instance receives updates
+        // This is critical when controller is recreated (e.g., tab switch)
+        stompClient.setWeatherDataHandler(this::handleWeatherData);
+        logger.debug("Weather data handler set for this controller instance");
     }
     
     private void subscribeToAllAlerts() {
@@ -187,10 +191,9 @@ public class WeatherCardController {
             stationNameText.setText(selectedStation.name());
             logger.info("Restored previously selected station: {}", selectedStation.name());
             
-            // Subscribe to station weather topic if not already subscribed
-            if (!selectedStation.id().equals(currentSubscribedStationId)) {
-                subscribeToStation(selectedStation.id());
-            }
+            // Always subscribe when controller reinitializes (e.g., after tab switch)
+            // This ensures WebSocket updates resume even if station was already subscribed
+            subscribeToStation(selectedStation.id());
             return;
         }
         
