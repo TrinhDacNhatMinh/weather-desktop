@@ -56,13 +56,24 @@ public class StationItemController {
         // Set location
         stationLocation.setText(station.location());
         
-        // Set status icon and text based on status field
-        if ("ON".equalsIgnoreCase(station.status())) {
-            // Green circle for ON status
+        // Set status icon and text based on status field from backend
+        // Log the actual status value for debugging
+        logger.debug("Station: {}, status='{}', active={}", 
+            station.name(), station.status(), station.active());
+        
+        boolean isOnline = false;
+        if (station.status() != null) {
+            String statusUpper = station.status().trim().toUpperCase();
+            // Check if status is ON or ONLINE
+            isOnline = statusUpper.equals("ON") || statusUpper.equals("ONLINE");
+        }
+        
+        if (isOnline) {
+            // Green circle for ONLINE status
             statusIcon.setStyle("-fx-fill: #10B981; -fx-font-size: 12px;");
             statusText.setText("on");
         } else {
-            // Red circle for OFF status
+            // Red circle for OFFLINE status
             statusIcon.setStyle("-fx-fill: #EF4444; -fx-font-size: 12px;");
             statusText.setText("off");
         }
