@@ -1,5 +1,9 @@
 package com.nhom.weatherdesktop.controller;
 
+import com.nhom.weatherdesktop.dto.response.DailyWeatherSummaryResponse;
+import com.nhom.weatherdesktop.service.WeatherDataService;
+import com.nhom.weatherdesktop.session.SessionContext;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.BarChart;
@@ -9,6 +13,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.List;
+import java.util.Locale;
 
 public class TemperatureChartController {
     
@@ -43,24 +53,138 @@ public class TemperatureChartController {
     
     private int currentChartIndex = 0;
     private final String[] chartTitles = {
-        "Temperature Trend (7 Days)",
-        "Humidity Trend (7 Days)",
-        "Wind Speed Trend (7 Days)",
-        "Dust Level Trend (7 Days)",
-        "Rainfall Trend (7 Days)"
+        "Temperature - Last 7 Days",
+        "Humidity - Last 7 Days",
+        "Wind Speed - Last 7 Days",
+        "Dust Level - Last 7 Days",
+        "Rainfall - Last 7 Days"
     };
+    
+    private final WeatherDataService weatherDataService;
+    private List<DailyWeatherSummaryResponse> weatherData;
+    private Long lastLoadedStationId = null; // Track last loaded station
+    
+    public TemperatureChartController() {
+        this.weatherDataService = WeatherDataService.getInstance();
+    }
     
     @FXML
     public void initialize() {
-        // Populate all charts with dummy data
+        // Show first chart
+        updateChartVisibility();
+        
+        // Load weather data from API (with retry if station not yet selected)
+        loadWeatherDataWithRetry();
+        
+        // Start watching for station changes
+        startStationChangeListener();
+    }
+    
+    /**
+     * Monitor SessionContext for station changes and reload chart data
+     * Uses JavaFX Timeline to check every 500ms
+     */
+    private void startStationChangeListener() {
+        javafx.animation.Timeline timeline = new javafx.animation.Timeline(
+            new javafx.animation.KeyFrame(
+                javafx.util.Duration.millis(500),
+                event -> {
+                    Long currentStationId = SessionContext.selectedStationId();
+                    
+                    // Check if station has changed
+                    if (currentStationId != null && !currentStationId.equals(lastLoadedStationId)) {
+                        logger.info("Station changed from {} to {}, reloading chart data", 
+                            lastLoadedStationId, currentStationId);
+                        loadWeatherData();
+                    }
+                }
+            )
+        );
+        timeline.setCycleCount(javafx.animation.Timeline.INDEFINITE);
+        timeline.play();
+    }
+    
+    /**
+     * Retry loading weather data if station ID is not immediately available
+     * This handles the case where chart controller initializes before station is selected
+     */
+    private void loadWeatherDataWithRetry() {
+        Long stationId = SessionContext.selectedStationId();
+        
+        if (stationId != null) {
+            // Station already selected, load immediately
+            loadWeatherData();
+        } else {
+            // Station not yet selected, retry after delay
+            logger.info("Station not yet selected, will retry in 500ms");
+            new Thread(() -> {
+                try {
+                    Thread.sleep(500);
+                    Platform.runLater(this::loadWeatherData);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }).start();
+        }
+    }
+    
+    /**
+     * Public method to refresh chart data
+     * Call this when station selection changes
+     */
+    public void refreshChartData() {
+        logger.info("Refreshing chart data...");
+        loadWeatherData();
+    }
+    
+    private void loadWeatherData() {
+        // Get selected station ID from session
+        Long stationId = SessionContext.selectedStationId();
+        
+        if (stationId == null) {
+            logger.warn("No station selected, showing empty charts");
+            showErrorMessage("Please select a station to view weather data");
+            return;
+        }
+        
+        // Update last loaded station ID
+        lastLoadedStationId = stationId;
+        
+        // Fetch data in background thread to avoid blocking UI
+        new Thread(() -> {
+            try {
+                logger.info("Fetching weather data for station: {}", stationId);
+                List<DailyWeatherSummaryResponse> data = weatherDataService.getDailySummary(stationId, 7);
+                
+                // Update UI on JavaFX thread
+                Platform.runLater(() -> {
+                    this.weatherData = data;
+                    populateAllCharts();
+                    logger.info("Successfully loaded weather data for {} days", data.size());
+                });
+                
+            } catch (Exception e) {
+                logger.error("Failed to load weather data: {}", e.getMessage(), e);
+                Platform.runLater(() -> showErrorMessage("Failed to load weather data: " + e.getMessage()));
+            }
+        }).start();
+    }
+    
+    private void populateAllCharts() {
+        if (weatherData == null || weatherData.isEmpty()) {
+            logger.warn("No weather data available");
+            return;
+        }
+        
         populateTemperatureData();
         populateHumidityData();
         populateWindSpeedData();
         populateDustData();
         populateRainfallData();
-        
-        // Show first chart
-        updateChartVisibility();
+    }
+    
+    private void showErrorMessage(String message) {
+        chartTitle.setText("Error: " + message);
     }
     
     @FXML
@@ -108,13 +232,15 @@ public class TemperatureChartController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Temperature");
         
-        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-        double[] temps = {22, 24, 23, 25, 27, 26, 24};
-        
-        for (int i = 0; i < days.length; i++) {
-            series.getData().add(new XYChart.Data<>(days[i], temps[i]));
+        for (DailyWeatherSummaryResponse day : weatherData) {
+            String dayLabel = formatDateToDay(day.date());
+            Float temp = day.avgTemperature();
+            if (temp != null) {
+                series.getData().add(new XYChart.Data<>(dayLabel, temp));
+            }
         }
         
+        temperatureChart.getData().clear();
         temperatureChart.getData().add(series);
     }
     
@@ -122,13 +248,15 @@ public class TemperatureChartController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Humidity");
         
-        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-        double[] humidity = {75, 72, 78, 80, 68, 70, 73};
-        
-        for (int i = 0; i < days.length; i++) {
-            series.getData().add(new XYChart.Data<>(days[i], humidity[i]));
+        for (DailyWeatherSummaryResponse day : weatherData) {
+            String dayLabel = formatDateToDay(day.date());
+            Float humidity = day.avgHumidity();
+            if (humidity != null) {
+                series.getData().add(new XYChart.Data<>(dayLabel, humidity));
+            }
         }
         
+        humidityChart.getData().clear();
         humidityChart.getData().add(series);
     }
     
@@ -136,13 +264,15 @@ public class TemperatureChartController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Wind Speed");
         
-        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-        double[] windSpeed = {3.2, 4.5, 3.8, 4.0, 5.2, 4.8, 3.5};
-        
-        for (int i = 0; i < days.length; i++) {
-            series.getData().add(new XYChart.Data<>(days[i], windSpeed[i]));
+        for (DailyWeatherSummaryResponse day : weatherData) {
+            String dayLabel = formatDateToDay(day.date());
+            Float windSpeed = day.avgWindSpeed();
+            if (windSpeed != null) {
+                series.getData().add(new XYChart.Data<>(dayLabel, windSpeed));
+            }
         }
         
+        windSpeedChart.getData().clear();
         windSpeedChart.getData().add(series);
     }
     
@@ -150,13 +280,15 @@ public class TemperatureChartController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Dust");
         
-        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-        double[] dust = {65, 72, 85, 95, 110, 88, 70};
-        
-        for (int i = 0; i < days.length; i++) {
-            series.getData().add(new XYChart.Data<>(days[i], dust[i]));
+        for (DailyWeatherSummaryResponse day : weatherData) {
+            String dayLabel = formatDateToDay(day.date());
+            Float dust = day.avgDust();
+            if (dust != null) {
+                series.getData().add(new XYChart.Data<>(dayLabel, dust));
+            }
         }
         
+        dustChart.getData().clear();
         dustChart.getData().add(series);
     }
     
@@ -164,13 +296,28 @@ public class TemperatureChartController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Rainfall");
         
-        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-        double[] rainfall = {0.5, 1.2, 0, 2.5, 3.8, 1.5, 0.2};
-        
-        for (int i = 0; i < days.length; i++) {
-            series.getData().add(new XYChart.Data<>(days[i], rainfall[i]));
+        for (DailyWeatherSummaryResponse day : weatherData) {
+            String dayLabel = formatDateToDay(day.date());
+            Float rainfall = day.totalRainfall();
+            if (rainfall != null) {
+                series.getData().add(new XYChart.Data<>(dayLabel, rainfall));
+            }
         }
         
+        rainfallChart.getData().clear();
         rainfallChart.getData().add(series);
+    }
+    
+    /**
+     * Format date string (yyyy-MM-dd) to day of week (e.g., "Mon", "Tue")
+     */
+    private String formatDateToDay(String dateStr) {
+        try {
+            LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);
+            return date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+        } catch (Exception e) {
+            logger.warn("Failed to parse date: {}", dateStr);
+            return dateStr;
+        }
     }
 }

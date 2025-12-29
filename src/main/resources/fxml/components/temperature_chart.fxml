@@ -22,7 +22,7 @@
     
     <!-- Card Title - Centered on Top -->
     <HBox alignment="CENTER">
-        <Text fx:id="chartTitle" text="Temperature Trend (7 Days)" styleClass="card-title"/>
+        <Text fx:id="chartTitle" text="Temperature - Last 7 Days" styleClass="card-title"/>
     </HBox>
     
     <!-- Charts with Navigation Arrows -->
