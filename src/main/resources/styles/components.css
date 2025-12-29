@@ -757,3 +757,71 @@
 .btn-delete:pressed {
     -fx-background-color: rgba(239, 68, 68, 0.2);
 }
+
+/* ===== CLEAN SCROLL PANE ===== */
+
+/* Clean modern scrollbar for dialogs */
+.clean-scroll {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+.clean-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.clean-scroll .scroll-bar:vertical {
+    -fx-pref-width: 10px;
+    -fx-opacity: 0.4;
+}
+
+.clean-scroll:hover .scroll-bar:vertical {
+    -fx-opacity: 0.6;
+}
+
+.clean-scroll .scroll-bar:vertical:hover {
+    -fx-opacity: 1.0;
+}
+
+.clean-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(0, 120, 212, 0.5);
+    -fx-background-radius: 5px;
+}
+
+.clean-scroll .scroll-bar:vertical:hover .thumb {
+    -fx-background-color: rgba(0, 120, 212, 0.8);
+}
+
+.clean-scroll .scroll-bar:vertical .track {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+    -fx-background-radius: 5px;
+}
+
+.clean-scroll .scroll-bar:vertical .increment-button,
+.clean-scroll .scroll-bar:vertical .decrement-button {
+    -fx-padding: 0;
+    -fx-pref-height: 0;
+}
+
+/* ===== THRESHOLD GROUP STYLING ===== */
+
+/* Threshold configuration group styling */
+.threshold-group {
+    -fx-background-color: rgba(0, 120, 212, 0.04);
+    -fx-background-radius: 10px;
+    -fx-padding: 16px;
+    -fx-border-color: rgba(0, 120, 212, 0.12);
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+}
+
+/* Caption text styling */
+.caption {
+    -fx-font-family: 'Segoe UI Variable Text', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 11px;
+    -fx-font-weight: 500;
+}
+
+.text-secondary {
+    -fx-fill: #666666;
+}

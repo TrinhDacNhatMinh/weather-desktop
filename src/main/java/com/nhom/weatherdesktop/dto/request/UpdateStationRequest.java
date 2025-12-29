@@ -6,6 +6,7 @@ public record UpdateStationRequest(
         String name,
         String location,
         BigDecimal latitude,
-        BigDecimal longitude
+        BigDecimal longitude,
+        Boolean isPublic
 ) {
 }

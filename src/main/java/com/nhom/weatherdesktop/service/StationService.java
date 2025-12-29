@@ -141,7 +141,27 @@ public class StationService implements IStationService {
 
     @Override
     public StationResponse updateStationSharing(Long id) {
-        return null;
+        try {
+            logger.debug("Updating station sharing status: id={}", id);
+            StationResponse response = httpClient.put(
+                "/stations/" + id + "/public",
+                null,  // No request body needed
+                StationResponse.class,
+                true  // requiresAuth = true
+            );
+            logger.info("Successfully updated station sharing: id={}, isPublic={}", 
+                response.id(), response.isPublic());
+            return response;
+        } catch (HttpClientService.HttpException e) {
+            logger.error("HTTP {} error while updating station sharing: {}", e.getStatusCode(), e.getMessage(), e);
+            throw new RuntimeException("Failed to update station sharing: " + e.getMessage(), e);
+        } catch (IOException e) {
+            logger.error("Network error while updating station sharing: {}", e.getMessage(), e);
+            throw new RuntimeException("Network error while updating station sharing: " + e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("Unexpected error while updating station sharing: {}", e.getMessage(), e);
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
+        }
     }
 
     @Override

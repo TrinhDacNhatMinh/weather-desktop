@@ -5,61 +5,152 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import org.controlsfx.control.ToggleSwitch?>
 
-<VBox prefHeight="450" prefWidth="450" spacing="20" styleClass="station-popup" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.nhom.weatherdesktop.controller.EditStationDialogController">
+<VBox xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.nhom.weatherdesktop.controller.EditStationDialogController"
+      prefWidth="520" styleClass="station-popup">
     
-    <padding>
-        <Insets bottom="24" left="24" right="24" top="24" />
-    </padding>
-    
-    <!-- Title -->
-    <Text styleClass="popup-title" text="Edit Station" />
-    
-    <!-- Form Fields -->
-    <VBox spacing="16">
-        
-        <!-- Station Name -->
-        <VBox spacing="6">
-            <Text styleClass="field-label" text="Station Name" />
-            <TextField fx:id="nameField" promptText="Enter station name" styleClass="input-modern" />
+    <!-- Scrollable Content -->
+    <ScrollPane fitToWidth="true" styleClass="clean-scroll" VBox.vgrow="ALWAYS" vbarPolicy="AS_NEEDED" pannable="true">
+        <VBox spacing="20">
+            <padding>
+                <Insets bottom="24" left="24" right="24" top="24" />
+            </padding>
+            
+            <!-- Title -->
+            <Text text="Station Info" styleClass="field-label" style="-fx-font-weight: bold; -fx-font-size: 14px;" />
+            
+            <!-- Form Fields -->
+            <VBox spacing="16">
+                
+                <!-- Station Name -->
+                <VBox spacing="6">
+                    <Text styleClass="field-label" text="Station Name" />
+                    <TextField fx:id="nameField" promptText="Enter station name" styleClass="input-modern" />
+                </VBox>
+                
+                <!-- Location (user input) -->
+                <VBox spacing="6">
+                    <Text styleClass="field-label" text="Location" />
+                    <TextField fx:id="locationField" promptText="e.g., Hanoi, Vietnam" styleClass="input-modern" />
+                </VBox>
+                
+                <!-- Address (from map) -->
+                <VBox spacing="6">
+                    <Text styleClass="field-label" text="Address (from map)" />
+                    <HBox spacing="8">
+                        <TextField fx:id="addressField" editable="false" promptText="Click map icon to select location" styleClass="input-modern" HBox.hgrow="ALWAYS" />
+                        <Button onAction="#handleSelectLocation" 
+                                prefWidth="24" prefHeight="24"
+                                minWidth="24" minHeight="24"
+                                maxWidth="24" maxHeight="24"
+                                style="-fx-padding: 0;">
+                            <graphic>
+                                <ImageView fitHeight="14" fitWidth="14" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../../icons/location_on.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </VBox>
+                
+                <!-- Public Station -->
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Text text="Public Station" styleClass="field-label" HBox.hgrow="ALWAYS"/>
+                    <ToggleSwitch fx:id="publicToggle"/>
+                </HBox>
+                
+                <Separator/>
+                
+                <!-- Threshold Configuration -->
+                <Text text="Threshold Configuration" styleClass="field-label" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+                
+                <!-- Temperature -->
+                <VBox spacing="8" styleClass="threshold-group">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Text text="Temperature (°C)" styleClass="field-label" HBox.hgrow="ALWAYS"/>
+                        <ToggleSwitch fx:id="temperatureActiveToggle"/>
+                    </HBox>
+                    <HBox spacing="12">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Text text="Min" styleClass="caption text-secondary"/>
+                            <TextField fx:id="temperatureMinField" promptText="0.0" styleClass="input-modern"/>
+                        </VBox>
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Text text="Max" styleClass="caption text-secondary"/>
+                            <TextField fx:id="temperatureMaxField" promptText="100.0" styleClass="input-modern"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+                
+                <!-- Humidity -->
+                <VBox spacing="8" styleClass="threshold-group">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Text text="Humidity (%)" styleClass="field-label" HBox.hgrow="ALWAYS"/>
+                        <ToggleSwitch fx:id="humidityActiveToggle"/>
+                    </HBox>
+                    <HBox spacing="12">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Text text="Min" styleClass="caption text-secondary"/>
+                            <TextField fx:id="humidityMinField" promptText="0.0" styleClass="input-modern"/>
+                        </VBox>
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Text text="Max" styleClass="caption text-secondary"/>
+                            <TextField fx:id="humidityMaxField" promptText="100.0" styleClass="input-modern"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+                
+                <!-- Rainfall -->
+                <VBox spacing="8" styleClass="threshold-group">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Text text="Rainfall (mm)" styleClass="field-label" HBox.hgrow="ALWAYS"/>
+                        <ToggleSwitch fx:id="rainfallActiveToggle"/>
+                    </HBox>
+                    <VBox spacing="6">
+                        <Text text="Max" styleClass="caption text-secondary"/>
+                        <TextField fx:id="rainfallMaxField" promptText="100.0" styleClass="input-modern"/>
+                    </VBox>
+                </VBox>
+                
+                <!-- Wind Speed -->
+                <VBox spacing="8" styleClass="threshold-group">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Text text="Wind Speed (m/s)" styleClass="field-label" HBox.hgrow="ALWAYS"/>
+                        <ToggleSwitch fx:id="windSpeedActiveToggle"/>
+                    </HBox>
+                    <VBox spacing="6">
+                        <Text text="Max" styleClass="caption text-secondary"/>
+                        <TextField fx:id="windSpeedMaxField" promptText="50.0" styleClass="input-modern"/>
+                    </VBox>
+                </VBox>
+                
+                <!-- Dust -->
+                <VBox spacing="8" styleClass="threshold-group">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Text text="Dust (μg/m³)" styleClass="field-label" HBox.hgrow="ALWAYS"/>
+                        <ToggleSwitch fx:id="dustActiveToggle"/>
+                    </HBox>
+                    <VBox spacing="6">
+                        <Text text="Max" styleClass="caption text-secondary"/>
+                        <TextField fx:id="dustMaxField" promptText="500.0" styleClass="input-modern"/>
+                    </VBox>
+                </VBox>
+                
+            </VBox>
         </VBox>
-        
-        <!-- Location (user input) -->
-        <VBox spacing="6">
-            <Text styleClass="field-label" text="Location" />
-            <TextField fx:id="locationField" promptText="e.g., Hanoi, Vietnam" styleClass="input-modern" />
-        </VBox>
-        
-        <!-- Address (from map) -->
-        <VBox spacing="6">
-            <Text styleClass="field-label" text="Address (from map)" />
-            <HBox spacing="8">
-                <TextField fx:id="addressField" editable="false" promptText="Click map icon to select location" styleClass="input-modern" HBox.hgrow="ALWAYS" />
-                <Button onAction="#handleSelectLocation" 
-                        prefWidth="24" prefHeight="24"
-                        minWidth="24" minHeight="24"
-                        maxWidth="24" maxHeight="24"
-                        style="-fx-padding: 0;">
-                    <graphic>
-                        <ImageView fitHeight="14" fitWidth="14" preserveRatio="true">
-                            <image>
-                                <Image url="@../../icons/location_on.png" />
-                            </image>
-                        </ImageView>
-                    </graphic>
-                </Button>
-            </HBox>
-        </VBox>
-        
-    </VBox>
+    </ScrollPane>
     
-    <!-- Spacer -->
-    <VBox VBox.vgrow="ALWAYS" />
-    
-    <!-- Action Buttons -->
-    <HBox spacing="12">
-        <Button maxWidth="Infinity" onAction="#handleCancel" styleClass="btn-secondary" text="Cancel" HBox.hgrow="ALWAYS" />
-        <Button maxWidth="Infinity" onAction="#handleSave" styleClass="btn-primary" text="Save Changes" HBox.hgrow="ALWAYS" />
+    <!-- Fixed Action Buttons -->
+    <HBox spacing="12" styleClass="station-popup" alignment="CENTER_LEFT" prefHeight="80" minHeight="80">
+        <padding>
+            <Insets bottom="20" left="24" right="24" top="20" />
+        </padding>
+        <Button maxWidth="Infinity" onAction="#handleCancel" styleClass="btn-secondary" text="Cancel" HBox.hgrow="ALWAYS" prefHeight="40" />
+        <Button maxWidth="Infinity" onAction="#handleSave" styleClass="btn-primary" text="Save Changes" HBox.hgrow="ALWAYS" prefHeight="40" />
     </HBox>
     
 </VBox>

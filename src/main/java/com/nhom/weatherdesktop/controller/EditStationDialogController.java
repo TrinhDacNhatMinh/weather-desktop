@@ -2,13 +2,16 @@ package com.nhom.weatherdesktop.controller;
 
 import com.nhom.weatherdesktop.dto.request.UpdateStationRequest;
 import com.nhom.weatherdesktop.dto.response.StationResponse;
+import com.nhom.weatherdesktop.dto.response.ThresholdResponse;
 import com.nhom.weatherdesktop.service.LocationService;
 import com.nhom.weatherdesktop.service.StationService;
+import com.nhom.weatherdesktop.service.ThresholdService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.controlsfx.control.ToggleSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,16 +30,58 @@ public class EditStationDialogController {
     @FXML
     private TextField addressField;
     
+    // Public toggle
+    @FXML
+    private ToggleSwitch publicToggle;
+    
+    // Temperature threshold
+    @FXML
+    private ToggleSwitch temperatureActiveToggle;
+    @FXML
+    private TextField temperatureMinField;
+    @FXML
+    private TextField temperatureMaxField;
+    
+    // Humidity threshold
+    @FXML
+    private ToggleSwitch humidityActiveToggle;
+    @FXML
+    private TextField humidityMinField;
+    @FXML
+    private TextField humidityMaxField;
+    
+    // Rainfall threshold
+    @FXML
+    private ToggleSwitch rainfallActiveToggle;
+    @FXML
+    private TextField rainfallMaxField;
+    
+    // Wind Speed threshold
+    @FXML
+    private ToggleSwitch windSpeedActiveToggle;
+    @FXML
+    private TextField windSpeedMaxField;
+    
+    // Dust threshold
+    @FXML
+    private ToggleSwitch dustActiveToggle;
+    @FXML
+    private TextField dustMaxField;
+    
     private Stage stage;
     private StationService stationService;
+    private ThresholdService thresholdService;
     private LocationService locationService;
     private StationResponse station;
+    private ThresholdResponse threshold;
     private Double selectedLatitude;
     private Double selectedLongitude;
     private boolean success = false;
+    private boolean isLoadingData = false;
     
     public EditStationDialogController() {
         this.stationService = new StationService();
+        this.thresholdService = new ThresholdService();
         this.locationService = new LocationService();
     }
     
@@ -45,6 +90,15 @@ public class EditStationDialogController {
         // Add enter key handler for name field
         nameField.setOnAction(e -> locationField.requestFocus());
         locationField.setOnAction(e -> handleSelectLocation());
+        
+        // Add listener for public toggle to call API
+        publicToggle.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            // Only call API if not loading data and value actually changed
+            if (station != null && !isLoadingData && !oldValue.equals(newValue)) {
+                // Call API to update sharing status
+                handlePublicToggleChanged();
+            }
+        });
     }
     
     public void setStage(Stage stage) {
@@ -53,12 +107,51 @@ public class EditStationDialogController {
     
     public void setStation(StationResponse station) {
         this.station = station;
+        this.isLoadingData = true;  // Set flag to prevent listener from calling API
         
         // Populate fields with existing data
         nameField.setText(station.name());
         locationField.setText(station.location());
+        if (station.isPublic() != null) {
+            publicToggle.setSelected(station.isPublic());
+        }
         selectedLatitude = station.latitude();
         selectedLongitude = station.longitude();
+        
+        // Load threshold data
+        new Thread(() -> {
+            try {
+                threshold = thresholdService.getThresholdByStationId(station.id());
+                if (threshold != null) {
+                    Platform.runLater(() -> {
+                        logger.debug("Populating threshold data");
+                        // Temperature
+                        if (threshold.temperatureActive() != null) temperatureActiveToggle.setSelected(threshold.temperatureActive());
+                        if (threshold.temperatureMin() != null) temperatureMinField.setText(String.valueOf(threshold.temperatureMin()));
+                        if (threshold.temperatureMax() != null) temperatureMaxField.setText(String.valueOf(threshold.temperatureMax()));
+                        
+                        // Humidity
+                        if (threshold.humidityActive() != null) humidityActiveToggle.setSelected(threshold.humidityActive());
+                        if (threshold.humidityMin() != null) humidityMinField.setText(String.valueOf(threshold.humidityMin()));
+                        if (threshold.humidityMax() != null) humidityMaxField.setText(String.valueOf(threshold.humidityMax()));
+                        
+                        // Rainfall
+                        if (threshold.rainfallActive() != null) rainfallActiveToggle.setSelected(threshold.rainfallActive());
+                        if (threshold.rainfallMax() != null) rainfallMaxField.setText(String.valueOf(threshold.rainfallMax()));
+                        
+                        // Wind Speed
+                        if (threshold.windSpeedActive() != null) windSpeedActiveToggle.setSelected(threshold.windSpeedActive());
+                        if (threshold.windSpeedMax() != null) windSpeedMaxField.setText(String.valueOf(threshold.windSpeedMax()));
+                        
+                        // Dust
+                        if (threshold.dustActive() != null) dustActiveToggle.setSelected(threshold.dustActive());
+                        if (threshold.dustMax() != null) dustMaxField.setText(String.valueOf(threshold.dustMax()));
+                    });
+                }
+            } catch (Exception e) {
+                logger.error("Failed to load threshold data: {}", e.getMessage());
+            }
+        }).start();
         
         // Reverse geocode to get address from coordinates
         if (selectedLatitude != null && selectedLongitude != null) {
@@ -82,6 +175,8 @@ public class EditStationDialogController {
             addressField.setText(station.location()); // Fallback if no coordinates
         }
         
+        // Reset loading flag after all data is loaded
+        this.isLoadingData = false;
         logger.debug("Loaded station data: id={}, name={}", station.id(), station.name());
     }
     
@@ -138,11 +233,39 @@ public class EditStationDialogController {
         }
     }
     
+    private void handlePublicToggleChanged() {
+        if (station == null) return;
+        
+        boolean newPublicStatus = publicToggle.isSelected();
+        logger.debug("Public toggle changed for station {}: {}", station.id(), newPublicStatus);
+        
+        // Call API in background thread
+        new Thread(() -> {
+            try {
+                StationResponse response = stationService.updateStationSharing(station.id());
+                Platform.runLater(() -> {
+                    logger.info("Station sharing updated successfully: id={}, isPublic={}", 
+                        response.id(), response.isPublic());
+                    // Update local station reference
+                    station = response;
+                });
+            } catch (Exception e) {
+                logger.error("Failed to update station sharing: {}", e.getMessage(), e);
+                Platform.runLater(() -> {
+                    // Revert toggle to previous state on error
+                    publicToggle.setSelected(!newPublicStatus);
+                    showError("Error", "Failed to update sharing status: " + e.getMessage());
+                });
+            }
+        }).start();
+    }
+
     @FXML
     private void handleSave() {
         // Validate inputs
         String name = nameField.getText().trim();
         String location = locationField.getText().trim();
+        Boolean isPublic = publicToggle.isSelected();
         
         if (name.isEmpty()) {
             showError("Validation Error", "Please enter a station name.");
@@ -161,24 +284,51 @@ public class EditStationDialogController {
             return;
         }
         
+        // Parse threshold values (handle empty/invalid safely)
+        final Float tempMin = parseTextField(temperatureMinField);
+        final Float tempMax = parseTextField(temperatureMaxField);
+        final Float humMin = parseTextField(humidityMinField);
+        final Float humMax = parseTextField(humidityMaxField);
+        final Float rainMax = parseTextField(rainfallMaxField);
+        final Float windMax = parseTextField(windSpeedMaxField);
+        final Float dustMax = parseTextField(dustMaxField);
+        
         // Call API in background
         new Thread(() -> {
             try {
-                logger.info("Updating station: id={}, name={}, location={}, coords=({}, {})", 
-                    station.id(), name, location, selectedLatitude, selectedLongitude);
+                logger.info("Updating station: id={}, name={}, location={}, coords=({}, {}), public={}", 
+                    station.id(), name, location, selectedLatitude, selectedLongitude, isPublic);
                 
-                UpdateStationRequest request = new UpdateStationRequest(
+                // 1. Update Station Info
+                UpdateStationRequest stationRequest = new UpdateStationRequest(
                     name,
                     location,
                     BigDecimal.valueOf(selectedLatitude),
-                    BigDecimal.valueOf(selectedLongitude)
+                    BigDecimal.valueOf(selectedLongitude),
+                    isPublic
                 );
                 
-                StationResponse response = stationService.updateStation(station.id(), request);
+                StationResponse stationResponse = stationService.updateStation(station.id(), stationRequest);
+                
+                // 2. Update Thresholds (if we have a threshold ID)
+                if (threshold != null) {
+                    com.nhom.weatherdesktop.dto.request.UpdateThresholdRequest thresholdRequest = 
+                        new com.nhom.weatherdesktop.dto.request.UpdateThresholdRequest(
+                            tempMin, tempMax, humMin, humMax, rainMax, windMax, dustMax,
+                            temperatureActiveToggle.isSelected(),
+                            humidityActiveToggle.isSelected(),
+                            rainfallActiveToggle.isSelected(),
+                            windSpeedActiveToggle.isSelected(),
+                            dustActiveToggle.isSelected()
+                        );
+                        
+                    thresholdService.updateThreshold(threshold.id(), thresholdRequest);
+                    logger.info("Thresholds updated for station {}", station.id());
+                }
                 
                 Platform.runLater(() -> {
                     logger.info("Station updated successfully! Station: {}, Location: {}, Coordinates: ({}, {})", 
-                        response.name(), response.location(), response.latitude(), response.longitude());
+                        stationResponse.name(), stationResponse.location(), stationResponse.latitude(), stationResponse.longitude());
                     success = true;
                     showSuccess("Success", "Station updated successfully!");
                     closeDialog();
@@ -191,6 +341,16 @@ public class EditStationDialogController {
                 });
             }
         }).start();
+    }
+    
+    private Float parseTextField(TextField field) {
+        String text = field.getText().trim();
+        if (text.isEmpty()) return null;
+        try {
+            return Float.parseFloat(text);
+        } catch (NumberFormatException e) {
+            return null; // Or handle error if strict validation needed
+        }
     }
     
     @FXML

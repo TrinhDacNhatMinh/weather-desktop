@@ -87,7 +87,8 @@ public class StationItemController {
             javafx.stage.Stage dialogStage = new javafx.stage.Stage();
             dialogStage.setTitle("Edit Station");
             dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-            dialogStage.setScene(new javafx.scene.Scene(dialogRoot));
+            dialogStage.setScene(new javafx.scene.Scene(dialogRoot, 520, 600));
+            dialogStage.setResizable(false);
             
             // Set stage reference
             controller.setStage(dialogStage);
