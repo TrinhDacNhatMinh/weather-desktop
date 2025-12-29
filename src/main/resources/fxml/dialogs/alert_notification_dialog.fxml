@@ -18,7 +18,7 @@
         <padding>
             <Insets top="20" bottom="20" left="24" right="24"/>
         </padding>
-        <Text text="⚠️" styleClass="h2"/>
+        <Text text="⚠" style="-fx-font-size: 24px; -fx-fill: #F59E0B;"/>
         <Text text="New Alert" styleClass="clean-dialog-title"/>
     </HBox>
     
@@ -30,19 +30,19 @@
         
         <!-- Station Name -->
         <VBox spacing="4">
-            <Text text="STATION" styleClass="clean-label"/>
+            <Text text="Station" styleClass="clean-label"/>
             <Text fx:id="stationNameText" text="Loading..." styleClass="clean-value-large"/>
         </VBox>
         
         <!-- Message -->
         <VBox spacing="4">
-            <Text text="MESSAGE" styleClass="clean-label"/>
+            <Text text="Message" styleClass="clean-label"/>
             <Text fx:id="messageText" text="Loading..." styleClass="clean-value" wrappingWidth="400"/>
         </VBox>
         
         <!-- Created At -->
         <VBox spacing="4">
-            <Text text="TIME" styleClass="clean-label"/>
+            <Text text="Time" styleClass="clean-label"/>
             <Text fx:id="createdAtText" text="Loading..." styleClass="clean-value-small"/>
         </VBox>
     </VBox>
