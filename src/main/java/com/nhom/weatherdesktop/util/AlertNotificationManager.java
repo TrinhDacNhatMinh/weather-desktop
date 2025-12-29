@@ -28,6 +28,8 @@ public class AlertNotificationManager {
     private String currentScreen = "My Station"; // Default
     private final StationService stationService;
     private Runnable onDisableCallback;
+    private Runnable onEnableCallback;
+    private Runnable onUIUpdateCallback;
     
     private AlertNotificationManager() {
         this.stationService = new StationService();
@@ -51,6 +53,22 @@ public class AlertNotificationManager {
     
     public Runnable getOnDisableCallback() {
         return onDisableCallback;
+    }
+    
+    public void setOnEnableCallback(Runnable callback) {
+        this.onEnableCallback = callback;
+    }
+    
+    public Runnable getOnEnableCallback() {
+        return onEnableCallback;
+    }
+    
+    public void setOnUIUpdateCallback(Runnable callback) {
+        this.onUIUpdateCallback = callback;
+    }
+    
+    public Runnable getOnUIUpdateCallback() {
+        return onUIUpdateCallback;
     }
     
     public void showAlert(AlertResponse alert) {

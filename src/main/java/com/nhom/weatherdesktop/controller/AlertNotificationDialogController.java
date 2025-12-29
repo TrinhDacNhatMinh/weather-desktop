@@ -58,6 +58,13 @@ public class AlertNotificationDialogController {
             onDisableCallback.run();
         }
         
+        // Notify UI to update (e.g., Settings screen checkbox)
+        Runnable uiUpdateCallback = com.nhom.weatherdesktop.util.AlertNotificationManager.getInstance()
+            .getOnUIUpdateCallback();
+        if (uiUpdateCallback != null) {
+            uiUpdateCallback.run();
+        }
+        
         handleClose();
     }
     

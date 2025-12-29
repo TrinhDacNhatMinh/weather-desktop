@@ -60,6 +60,14 @@ public class SettingsScreenController {
         // Initialize alert notifications checkbox from SessionContext
         alertNotificationsCheckbox.setSelected(SessionContext.areAlertsEnabled());
         
+        // Register callback to update checkbox when disabled from notification dialog
+        AlertNotificationManager.getInstance().setOnUIUpdateCallback(() -> {
+            javafx.application.Platform.runLater(() -> {
+                alertNotificationsCheckbox.setSelected(SessionContext.areAlertsEnabled());
+                logger.debug("Checkbox updated from external trigger: {}", SessionContext.areAlertsEnabled());
+            });
+        });
+        
         logger.info("Settings initialized - Alert notifications: {}", 
                    SessionContext.areAlertsEnabled() ? "Enabled" : "Disabled");
     }
@@ -76,7 +84,11 @@ public class SettingsScreenController {
                 unsubscribeCallback.run();
             }
         } else {
-            logger.info("Alerts enabled - will re-subscribe on next My Station visit");
+            logger.info("Alerts enabled - resubscribing to all topics");
+            Runnable enableCallback = AlertNotificationManager.getInstance().getOnEnableCallback();
+            if (enableCallback != null) {
+                enableCallback.run();
+            }
         }
     }
 }

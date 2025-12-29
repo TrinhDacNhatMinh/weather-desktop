@@ -82,6 +82,10 @@ public class WeatherCardController {
             com.nhom.weatherdesktop.util.AlertNotificationManager.getInstance()
                 .setOnDisableCallback(this::unsubscribeFromAllAlerts);
             
+            // Set enable callback to resubscribe when alerts are re-enabled
+            com.nhom.weatherdesktop.util.AlertNotificationManager.getInstance()
+                .setOnEnableCallback(this::subscribeToAllAlerts);
+            
             // Connect to WebSocket
             AppConfig config = AppConfig.getInstance();
             String wsUrl = config.getWebSocketUrl();
