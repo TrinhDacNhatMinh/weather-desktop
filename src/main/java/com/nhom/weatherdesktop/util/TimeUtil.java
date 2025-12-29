@@ -11,10 +11,8 @@ public class TimeUtil {
     
     /**
      * Calculate time ago string from createdAt instant
-     * NOTE: The API returns timestamps in VN timezone but labels them as UTC (with Z suffix)
-     * We need to interpret the timestamp as VN time, not UTC
      * 
-     * @param createdAt The instant when alert was created (mislabeled as UTC, actually VN time)
+     * @param createdAt The instant when alert was created (UTC timestamp)
      * @return Formatted string like "just now", "30 seconds ago", "5 minutes ago", "2 hours ago", "3 days ago"
      */
     public static String getTimeAgo(Instant createdAt) {
@@ -22,16 +20,11 @@ public class TimeUtil {
             return "";
         }
         
-        // API bug: createdAt is labeled as UTC but is actually VN time
-        // We need to convert it properly:
-        // 1. Get the timestamp as if it were VN time (not UTC)
-        ZonedDateTime createdVN = createdAt.atZone(ZoneId.of("UTC")).withZoneSameLocal(VIETNAM_ZONE);
+        // Get current time as Instant (UTC)
+        Instant now = Instant.now();
         
-        // 2. Get current VN time
-        ZonedDateTime nowVN = ZonedDateTime.now(VIETNAM_ZONE);
-        
-        // 3. Calculate duration
-        Duration duration = Duration.between(createdVN, nowVN);
+        // Calculate duration between created time and now (both in UTC)
+        Duration duration = Duration.between(createdAt, now);
         
         long seconds = duration.getSeconds();
         
