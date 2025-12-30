@@ -117,8 +117,26 @@ public class LoginController {
     
     @FXML
     private void handleSignUp() {
-        showAlert(Alert.AlertType.INFORMATION, "Sign Up", 
-                 "Sign up functionality will be implemented soon!");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/signup.fxml"));
+            Parent root = loader.load();
+            
+            Stage stage = (Stage) signUpButton.getScene().getWindow();
+            
+            // Get current window size
+            double width = stage.getWidth();
+            double height = stage.getHeight();
+            
+            Scene scene = new Scene(root, width, height);
+            stage.setScene(scene);
+            
+            logger.info("Navigated to sign-up screen");
+            
+        } catch (IOException e) {
+            logger.error("Error loading sign-up screen: {}", e.getMessage(), e);
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", 
+                     "Failed to load sign-up screen.");
+        }
     }
     
     private void navigateToMainScreen() {

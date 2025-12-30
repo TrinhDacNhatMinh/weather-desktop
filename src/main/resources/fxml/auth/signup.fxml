@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane styleClass="login-root" stylesheets="@../../styles/base.css, @../../styles/components.css, @../../styles/pages/login.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.nhom.weatherdesktop.controller.SignUpController">
+    
+    <!-- Background with gradient -->
+    <Pane styleClass="bg-gradient-pastel" />
+    
+    <!-- Sign Up Card Container -->
+    <VBox alignment="CENTER" maxHeight="650" maxWidth="400" styleClass="card-glass">
+        <padding>
+            <Insets top="20" right="30" bottom="20" left="30" />
+        </padding>
+
+        <!-- Header with Back Button and Logo -->
+        <StackPane>
+            <HBox alignment="CENTER_LEFT">
+                 <Button onAction="#handleBackToLogin" styleClass="icon-button">
+                     <graphic>
+                         <ImageView fitHeight="24" fitWidth="24" preserveRatio="true">
+                             <image>
+                                 <Image url="@../../icons/arrow_back.png" />
+                             </image>
+                         </ImageView>
+                     </graphic>
+                 </Button>
+            </HBox>
+            <VBox alignment="CENTER" spacing="4" pickOnBounds="false">
+                <ImageView fitHeight="48" fitWidth="48" preserveRatio="true">
+                    <image>
+                        <Image url="@../../icons/logos/partly_cloudy_day.png" />
+                    </image>
+                </ImageView>
+                <Text styleClass="h2" text="Create Account" />
+                <Text styleClass="body text-secondary" text="Join Weather Desktop" />
+            </VBox>
+        </StackPane>
+        
+        <Region prefHeight="16" />
+        
+        <!-- Input Fields Section -->
+        <VBox spacing="10">
+            <!-- Full Name Field -->
+            <VBox spacing="4">
+                <Label styleClass="label-primary" text="Full Name" />
+                <TextField fx:id="fullNameField" promptText="Enter your name" styleClass="input-modern" />
+            </VBox>
+            
+            <!-- Username Field -->
+            <VBox spacing="4">
+                <Label styleClass="label-primary" text="Username" />
+                <TextField fx:id="usernameField" promptText="Choose a username" styleClass="input-modern" />
+            </VBox>
+            
+            <!-- Email Field -->
+            <VBox spacing="4">
+                <Label styleClass="label-primary" text="Email Address" />
+                <TextField fx:id="emailField" promptText="Enter your email" styleClass="input-modern" />
+                <Text fx:id="emailErrorText" styleClass="caption text-error" visible="false" managed="false" />
+            </VBox>
+            
+            <!-- Password Field -->
+            <VBox spacing="4">
+                <Label styleClass="label-primary" text="Password" />
+                <StackPane>
+                    <PasswordField fx:id="passwordField" promptText="Create a password" styleClass="input-modern" />
+                    <TextField fx:id="passwordTextField" promptText="Create a password" styleClass="input-modern" visible="false" />
+                    <HBox alignment="CENTER_RIGHT" StackPane.alignment="CENTER_RIGHT" pickOnBounds="false">
+                        <Button fx:id="togglePasswordButton" onAction="#handleTogglePassword" styleClass="btn-icon-toggle">
+                            <graphic>
+                                <ImageView fx:id="passwordToggleIcon" fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../../icons/visibility.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <HBox.margin>
+                                <Insets right="8" />
+                            </HBox.margin>
+                        </Button>
+                    </HBox>
+                </StackPane>
+            </VBox>
+            
+            <!-- Confirm Password Field -->
+            <VBox spacing="4">
+                <Label styleClass="label-primary" text="Confirm Password" />
+                <StackPane>
+                    <PasswordField fx:id="confirmPasswordField" promptText="Re-enter password" styleClass="input-modern" />
+                    <TextField fx:id="confirmPasswordTextField" promptText="Re-enter password" styleClass="input-modern" visible="false" />
+                    <HBox alignment="CENTER_RIGHT" StackPane.alignment="CENTER_RIGHT" pickOnBounds="false">
+                        <Button fx:id="toggleConfirmPasswordButton" onAction="#handleToggleConfirmPassword" styleClass="btn-icon-toggle">
+                            <graphic>
+                                <ImageView fx:id="confirmPasswordToggleIcon" fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../../icons/visibility.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <HBox.margin>
+                                <Insets right="8" />
+                            </HBox.margin>
+                        </Button>
+                    </HBox>
+                </StackPane>
+                <Text fx:id="passwordMatchText" styleClass="caption text-error" visible="false" managed="false" />
+            </VBox>
+            
+            <!-- Password Requirements -->
+            <VBox fx:id="passwordRequirementsBox" spacing="2" styleClass="password-requirements" visible="false" managed="false">
+                <Text styleClass="caption text-secondary" text="Password must contain:" />
+                <HBox spacing="8">
+                    <Text fx:id="reqLength" styleClass="caption text-secondary" text="✗ 8+ chars" />
+                    <Text fx:id="reqUppercase" styleClass="caption text-secondary" text="✗ Uppercase" />
+                </HBox>
+                <HBox spacing="8">
+                    <Text fx:id="reqLowercase" styleClass="caption text-secondary" text="✗ Lowercase" />
+                    <Text fx:id="reqDigitSpecial" styleClass="caption text-secondary" text="✗ Digit/Special" />
+                </HBox>
+            </VBox>
+            
+            <VBox.margin>
+                <Insets bottom="4" />
+            </VBox.margin>
+        </VBox>
+        
+        <!-- Sign Up Button -->
+        <Button fx:id="signUpButton" maxWidth="Infinity" onAction="#handleSignUp" styleClass="btn-primary" text="Create Account">
+            <VBox.margin>
+                <Insets bottom="10" top="10" />
+            </VBox.margin>
+        </Button>
+        
+        <!-- Already have account link (kept for bottom reference even if back button exists) -->
+        <HBox alignment="CENTER" spacing="4">
+            <Text styleClass="body text-secondary" text="Already have an account?" />
+            <Hyperlink fx:id="signInLink" onAction="#handleBackToLogin" styleClass="link-accent" text="Sign in" />
+        </HBox>
+    </VBox>
+    
+</StackPane>

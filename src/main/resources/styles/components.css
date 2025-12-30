@@ -75,6 +75,24 @@
     -fx-background-color: rgba(0, 0, 0, 0.1);
 }
 
+/* Password Toggle Button */
+.btn-icon-toggle {
+    -fx-background-color: transparent;
+    -fx-background-radius: 50%;
+    -fx-padding: 4px;
+    -fx-cursor: hand;
+    -fx-min-width: 28px;
+    -fx-min-height: 28px;
+}
+
+.btn-icon-toggle:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+}
+
+.btn-icon-toggle:pressed {
+    -fx-background-color: rgba(0, 0, 0, 0.1);
+}
+
 /* ===== INPUTS ===== */
 
 /* Modern Input Field */
