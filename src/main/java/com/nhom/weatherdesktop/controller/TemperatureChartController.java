@@ -173,14 +173,31 @@ public class TemperatureChartController {
     private void populateAllCharts() {
         if (weatherData == null || weatherData.isEmpty()) {
             logger.warn("No weather data available");
+            
+            // Clear all charts to avoid showing old data from previous station
+            clearAllCharts();
+            
+            // Show informative message
+            chartTitle.setText("No data available for this station");
             return;
         }
+        
+        // Restore proper chart title (in case it was showing error message)
+        updateChartVisibility();
         
         populateTemperatureData();
         populateHumidityData();
         populateWindSpeedData();
         populateDustData();
         populateRainfallData();
+    }
+    
+    private void clearAllCharts() {
+        temperatureChart.getData().clear();
+        humidityChart.getData().clear();
+        windSpeedChart.getData().clear();
+        dustChart.getData().clear();
+        rainfallChart.getData().clear();
     }
     
     private void showErrorMessage(String message) {

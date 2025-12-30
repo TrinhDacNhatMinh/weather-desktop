@@ -41,7 +41,7 @@ public class SettingsScreenController {
             "m/s",
             "km/h"
         );
-        windSpeedUnitCombo.setValue("km/h");
+        windSpeedUnitCombo.setValue("m/s");
         
         // Theme
         themeCombo.getItems().addAll(
