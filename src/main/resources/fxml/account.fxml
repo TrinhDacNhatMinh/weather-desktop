@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane styleClass="login-root" stylesheets="@../styles/base.css, @../styles/components.css, @../styles/pages/login.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.nhom.weatherdesktop.controller.AccountController">
+    
+    <!-- Background with gradient -->
+    <Pane styleClass="bg-gradient-pastel" />
+    
+    <!-- Account Card Container -->
+    <VBox alignment="CENTER" maxHeight="500" maxWidth="400" styleClass="card-glass">
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30" />
+        </padding>
+
+        <!-- Header with Back Button and Title -->
+        <StackPane>
+            <HBox alignment="CENTER_LEFT">
+                 <Button onAction="#handleBack" styleClass="icon-button">
+                     <graphic>
+                         <ImageView fitHeight="24" fitWidth="24" preserveRatio="true">
+                             <image>
+                                 <Image url="@../icons/arrow_back.png" />
+                             </image>
+                         </ImageView>
+                     </graphic>
+                 </Button>
+            </HBox>
+            <VBox alignment="CENTER" spacing="4" pickOnBounds="false">
+                <ImageView fitHeight="64" fitWidth="64" preserveRatio="true">
+                    <image>
+                        <Image url="@../icons/topbar/profile.png" />
+                    </image>
+                </ImageView>
+                <Text styleClass="h2" text="Account" />
+            </VBox>
+        </StackPane>
+        
+        <Region prefHeight="24" />
+        
+        <!-- User Information Section -->
+        <VBox spacing="16" alignment="CENTER">
+            <!-- Full Name -->
+            <VBox spacing="4" alignment="CENTER">
+                <Text styleClass="caption text-secondary" text="Name" />
+                <Text fx:id="nameText" styleClass="h3" text="Loading..." />
+            </VBox>
+            
+            <!-- Email -->
+            <VBox spacing="4" alignment="CENTER">
+                <Text styleClass="caption text-secondary" text="Email" />
+                <Text fx:id="emailText" styleClass="body" text="Loading..." />
+            </VBox>
+        </VBox>
+        
+        <Region prefHeight="32" />
+        
+        <!-- Sign Out Button -->
+        <Button fx:id="signOutButton" maxWidth="Infinity" onAction="#handleSignOut" styleClass="btn-secondary">
+            <graphic>
+                <HBox spacing="8" alignment="CENTER">
+                    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+                        <image>
+                            <Image url="@../icons/logout.png" />
+                        </image>
+                    </ImageView>
+                    <Text text="Sign Out" styleClass="body" />
+                </HBox>
+            </graphic>
+            <VBox.margin>
+                <Insets top="8" />
+            </VBox.margin>
+        </Button>
+    </VBox>
+    
+</StackPane>

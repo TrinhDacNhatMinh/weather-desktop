@@ -17,6 +17,10 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import com.nhom.weatherdesktop.dto.request.RegisterRequest;
+import com.nhom.weatherdesktop.service.AuthService;
+import com.nhom.weatherdesktop.service.interfaces.IAuthService;
+
 public class SignUpController {
     
     private static final Logger logger = LoggerFactory.getLogger(SignUpController.class);
@@ -74,18 +78,8 @@ public class SignUpController {
     @FXML
     private ImageView confirmPasswordToggleIcon;
     
-    // Password requirement indicators
     @FXML
     private Text reqLength;
-    
-    @FXML
-    private Text reqUppercase;
-    
-    @FXML
-    private Text reqLowercase;
-    
-    @FXML
-    private Text reqDigitSpecial;
     
     private boolean isPasswordVisible = false;
     private boolean isConfirmPasswordVisible = false;
@@ -233,21 +227,9 @@ public class SignUpController {
         passwordRequirementsBox.setVisible(true);
         passwordRequirementsBox.setManaged(true);
 
-        // Check length (at least 8 characters)
-        boolean hasLength = password.length() >= 8;
-        updateRequirement(reqLength, hasLength, "At least 8 characters");
-        
-        // Check uppercase
-        boolean hasUppercase = password.matches(".*[A-Z].*");
-        updateRequirement(reqUppercase, hasUppercase, "Uppercase letter");
-        
-        // Check lowercase
-        boolean hasLowercase = password.matches(".*[a-z].*");
-        updateRequirement(reqLowercase, hasLowercase, "Lowercase letter");
-        
-        // Check digit or special character
-        boolean hasDigitOrSpecial = password.matches(".*[0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*");
-        updateRequirement(reqDigitSpecial, hasDigitOrSpecial, "Number or special character");
+        // Check length (at least 6 characters)
+        boolean hasLength = password.length() >= 6;
+        updateRequirement(reqLength, hasLength, "At least 6 characters");
     }
     
     private void updateRequirement(Text requirementText, boolean met, String label) {
@@ -282,12 +264,11 @@ public class SignUpController {
     }
     
     private boolean isPasswordStrong(String password) {
-        return password.length() >= 8 &&
-               password.matches(".*[A-Z].*") &&
-               password.matches(".*[a-z].*") &&
-               password.matches(".*[0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*");
+        return password.length() >= 6;
     }
     
+    private final IAuthService authService = new AuthService();
+
     @FXML
     private void handleSignUp() {
         String fullName = fullNameField.getText().trim();
@@ -333,15 +314,18 @@ public class SignUpController {
             return;
         }
         
-        // TODO: Call registration API
-        logger.info("Sign up attempt: name={}, email={}", fullName, email);
-        
-        // Show success message for now
-        showAlert(Alert.AlertType.INFORMATION, "Success", 
-                  "Account creation will be implemented soon!\n\n" +
-                  "Name: " + fullName + "\n" +
-                  "Username: " + username + "\n" +
-                  "Email: " + email);
+        try {
+            logger.info("Attempting to register user: {}", username);
+            RegisterRequest request = new RegisterRequest(fullName, username, password, email);
+            authService.register(request);
+            
+            // Show verification dialog and wait for user to dismiss it
+            showSuccessDialogAndNavigateToLogin();
+            
+        } catch (Exception e) {
+            logger.error("Registration failed", e);
+            showAlert(Alert.AlertType.ERROR, "Registration Failed", e.getMessage());
+        }
     }
     
     @FXML
@@ -366,6 +350,21 @@ public class SignUpController {
             showAlert(Alert.AlertType.ERROR, "Navigation Error", 
                      "Failed to return to login screen.");
         }
+    }
+    
+    private void showSuccessDialogAndNavigateToLogin() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Registration Successful");
+        alert.setHeaderText(null);
+        alert.setContentText("Your account has been created successfully.\n\n" +
+                           "Please check your email to verify your account before logging in.");
+        
+        // Wait for user to click OK, then navigate
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                handleBackToLogin();
+            }
+        });
     }
     
     private void showAlert(Alert.AlertType type, String title, String message) {

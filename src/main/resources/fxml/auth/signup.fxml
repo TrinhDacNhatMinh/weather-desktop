@@ -115,12 +115,7 @@
             <VBox fx:id="passwordRequirementsBox" spacing="2" styleClass="password-requirements" visible="false" managed="false">
                 <Text styleClass="caption text-secondary" text="Password must contain:" />
                 <HBox spacing="8">
-                    <Text fx:id="reqLength" styleClass="caption text-secondary" text="✗ 8+ chars" />
-                    <Text fx:id="reqUppercase" styleClass="caption text-secondary" text="✗ Uppercase" />
-                </HBox>
-                <HBox spacing="8">
-                    <Text fx:id="reqLowercase" styleClass="caption text-secondary" text="✗ Lowercase" />
-                    <Text fx:id="reqDigitSpecial" styleClass="caption text-secondary" text="✗ Digit/Special" />
+                    <Text fx:id="reqLength" styleClass="caption text-secondary" text="✗ At least 6 characters" />
                 </HBox>
             </VBox>
             
